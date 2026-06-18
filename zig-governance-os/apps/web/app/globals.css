@@ -1,26 +1,37 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f2f0e8;
+  --foreground: #15202b;
+  --zig-ink: #15202b;
+  --zig-paper: #f2f0e8;
+  --zig-paper-2: #fafaf7;
+  --zig-amber: #d9a441;
+  --zig-teal: #3e6b64;
+  --zig-ink-muted: #5b6472;
+  --zig-paper-muted: #9aa5b1;
+  --zig-border: #dedace;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-display: var(--font-display);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+::selection {
+  background: var(--zig-amber);
+  color: var(--zig-ink);
 }

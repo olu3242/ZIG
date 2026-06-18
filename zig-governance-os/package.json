@@ -15,7 +15,8 @@
     "serve": "^14.2.1"
   },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "keywords": [
     "grc",
