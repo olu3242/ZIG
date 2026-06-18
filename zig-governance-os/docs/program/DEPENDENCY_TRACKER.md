@@ -8,8 +8,8 @@ This tracker names current delivery dependencies and blockers.
 
 | Item | Depends On | Status | Notes |
 |---|---|---|---|
-| Batch 21A | Execution Governance | Ready | Reconcile and harden existing Batch 21 schema |
-| Batch 21B | Batch 21A | Partially Ready | Repository/services exist but need reconciliation to 21B standard |
+| Batch 21A | Execution Governance | Complete | Supabase structure, RLS strategy, audit hardening, seed data, and read views added; linked migration validation pending |
+| Batch 21B | Batch 21A | Ready | Repository/services exist but need reconciliation to 21B standard and Supabase adapter alignment |
 | Batch 22 | Batch 21A/21B | Blocked | Needs database and service layer finalized |
 | Batch 22A | Batch 22 | Blocked | Persona engine depends on identity and roles |
 | Batch 22B | Batch 22A | Blocked | Platform Owner OS depends on persona and internal identity |

@@ -1,4 +1,15 @@
-export type AuditAction = "create" | "update" | "delete" | "approve" | "review" | "certification";
+export type AuditAction =
+  | "create"
+  | "update"
+  | "delete"
+  | "approve"
+  | "reject"
+  | "assign"
+  | "complete"
+  | "generate"
+  | "certify"
+  | "review"
+  | "certification";
 
 export interface TenantContext {
   tenantId: string;

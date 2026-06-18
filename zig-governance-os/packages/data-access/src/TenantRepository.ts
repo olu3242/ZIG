@@ -86,6 +86,42 @@ export class TenantRepository<T extends TenantScopedRecord> {
     return result;
   }
 
+  async reject(context: TenantContext, id: string, patch: UpdateRecord<T> = {}): Promise<T | null> {
+    return this.mutateWithAudit(context, id, patch, "reject");
+  }
+
+  async assign(context: TenantContext, id: string, patch: UpdateRecord<T> = {}): Promise<T | null> {
+    return this.mutateWithAudit(context, id, patch, "assign");
+  }
+
+  async complete(context: TenantContext, id: string, patch: UpdateRecord<T> = {}): Promise<T | null> {
+    return this.mutateWithAudit(context, id, patch, "complete");
+  }
+
+  async generate(context: TenantContext, id: string, patch: UpdateRecord<T> = {}): Promise<T | null> {
+    return this.mutateWithAudit(context, id, patch, "generate");
+  }
+
+  async certify(context: TenantContext, id: string, patch: UpdateRecord<T> = {}): Promise<T | null> {
+    return this.mutateWithAudit(context, id, patch, "certify");
+  }
+
+  private async mutateWithAudit(
+    context: TenantContext,
+    id: string,
+    patch: UpdateRecord<T>,
+    action: AuditAction,
+  ): Promise<T | null> {
+    const before = await this.findById(context, id);
+    const result = await this.adapter.update(this.tableName, context, id, patch);
+
+    if (result) {
+      await this.audit(context, action, before ?? undefined, result);
+    }
+
+    return result;
+  }
+
   private async audit(context: TenantContext, action: AuditAction, before?: T, after?: T): Promise<void> {
     if (!this.auditSink) {
       return;
