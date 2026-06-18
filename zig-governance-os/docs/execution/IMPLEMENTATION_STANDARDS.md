@@ -4,6 +4,16 @@
 
 These standards define how every Zig batch is executed. They prevent inconsistent implementation styles, incomplete deliverables, and architecture drift.
 
+## Execution Controller
+
+Every implementation batch must follow `docs/execution/ZIG_EXECUTION_CONTROLLER.md`.
+
+The active execution plan is `docs/execution/EXECUTION_TRACKS.md`. The immediate queue is Track 1 MVP Release:
+
+```text
+Batch 21A -> Batch 21B -> Batch 22 -> Batch 23 -> Batch 25 -> Batch 26 -> Batch 27 -> Batch 28 -> Batch 29
+```
+
 ## Batch Execution Flow
 
 Every batch follows this order:

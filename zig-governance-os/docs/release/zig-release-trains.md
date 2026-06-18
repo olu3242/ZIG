@@ -14,13 +14,10 @@ Zig Platform -> Zig Ecosystem -> Zig Network -> Zig Standard
 
 Do not start ecosystem or network batches until the technical foundation is real.
 
-The immediate coding focus remains:
+The immediate coding focus is governed by `docs/execution/EXECUTION_TRACKS.md`. Track 1 MVP Release currently takes priority:
 
 ```text
-Batch 21 -> Core Data Platform
-Batch 22 -> Identity Platform
-Batch 23 -> Governance Graph
-Batch 24 -> Digital Governance Twin
+Batch 21A -> Batch 21B -> Batch 22 -> Batch 23 -> Batch 25 -> Batch 26 -> Batch 27 -> Batch 28 -> Batch 29
 ```
 
 These batches create the foundation required for every later capability:
