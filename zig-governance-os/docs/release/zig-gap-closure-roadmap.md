@@ -5,6 +5,7 @@
 The gap closure roadmap translates the platform gap analysis into dependency-aware execution planning. It prevents Zig from overbuilding visible features while underbuilding enterprise operating capabilities.
 
 Source: `docs/product/gap-analysis.md`.
+Closure plan: `docs/product/gap-closure-plan.md`.
 
 ## Guiding Rule
 
@@ -101,3 +102,26 @@ Each gap capability requires:
 ## Open Decision
 
 Some gap capabilities may become first-class modules; others may remain platform services. The decision must be made per capability before implementation, using PRD and ADR updates.
+
+## Inserted Closure Batches
+
+The closure plan inserts:
+
+```text
+23A Knowledge Graph Engine
+24A Workflow Operating System
+24B Policy Management
+24C Vendor Risk Management
+24D Incident Management
+24E Issue Management
+24F Governance Program Management
+24G Strategy & Objectives Engine
+24H Regulatory Change Management
+24I Control Testing Engine
+24J Maturity Model Engine
+24K Runtime OS
+24L Advanced Automation Platform
+29A Advanced Dashboard & Analytics Platform
+```
+
+These batches must not be implemented until their prerequisite platform layers are complete and their module/architecture docs exist.

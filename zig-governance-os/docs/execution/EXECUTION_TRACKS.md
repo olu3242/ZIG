@@ -161,14 +161,28 @@ Stop generating future roadmap batches. The current execution queue is:
 2. Batch 21B
 3. Batch 22
 4. Batch 23
-5. Batch 25
-6. Batch 26
-7. Batch 27
-8. Batch 28
-9. Batch 29
+5. Batch 23A
+6. Batch 24A
+7. Batch 24B
+8. Batch 24C
+9. Batch 24D
+10. Batch 24E
+11. Batch 24F
+12. Batch 24G
+13. Batch 24H
+14. Batch 24I
+15. Batch 24J
+16. Batch 24K
+17. Batch 24L
+18. Batch 25
+19. Batch 26
+20. Batch 27
+21. Batch 28
+22. Batch 29
+23. Batch 29A
 ```
 
-These nine batches produce the first real Zig MVP customers can use.
+This queue produces the first real Zig MVP customers can use while closing the platform-layer gaps discovered by the zero-based architecture review.
 
 ## Gap Closure Overlay
 

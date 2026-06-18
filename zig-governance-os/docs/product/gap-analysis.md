@@ -105,3 +105,17 @@ This gap analysis is accepted when:
 - PRD documents which gaps are platform capabilities versus product modules.
 - Future implementation prompts do not add these capabilities casually or out of dependency order.
 - Each capability receives architecture, data, module, security, and acceptance documentation before implementation.
+
+## Closure Plan
+
+The detailed closure plan lives in `docs/product/gap-closure-plan.md`.
+
+It adds:
+
+- Tier 1 MVP-required closures
+- Tier 2 enterprise closures
+- Tier 3 scale closures
+- Zero-based architecture review gaps
+- Final platform-layer gaps
+- Inserted batches `23A`, `24A-24L`, and `29A`
+- Final platform architecture stack

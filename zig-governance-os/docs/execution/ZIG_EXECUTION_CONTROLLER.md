@@ -78,8 +78,8 @@ Every batch closeout must include:
 
 ## Current Priority
 
-The immediate implementation queue is Track 1 MVP Release:
+The immediate implementation queue is Track 1 MVP Release with the gap-closure insertions from `docs/product/gap-closure-plan.md`:
 
 ```text
-Batch 21A -> Batch 21B -> Batch 22 -> Batch 23 -> Batch 25 -> Batch 26 -> Batch 27 -> Batch 28 -> Batch 29
+Batch 21A -> Batch 21B -> Batch 22 -> Batch 23 -> Batch 23A -> Batch 24A -> Batch 24B -> Batch 24C -> Batch 24D -> Batch 24E -> Batch 24F -> Batch 24G -> Batch 24H -> Batch 24I -> Batch 24J -> Batch 24K -> Batch 24L -> Batch 25 -> Batch 26 -> Batch 27 -> Batch 28 -> Batch 29 -> Batch 29A
 ```
