@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader, Section, StatCard } from "@zig/ui";
 
 export default function SettingsPage() {
@@ -15,10 +16,19 @@ export default function SettingsPage() {
       </div>
       <Section title="Role Model">
         <div className="grid gap-2 md:grid-cols-2">
-          {["Organization Admin", "GRC Manager", "Risk Analyst", "Compliance Analyst", "Auditor", "Consultant", "Viewer"].map((role) => (
+          {["Platform Admin", "Tenant Admin", "GRC Manager", "Auditor", "Analyst", "Learner"].map((role) => (
             <div key={role} className="rounded-md border border-[var(--zig-border)] px-3 py-2 text-sm">{role}</div>
           ))}
         </div>
+      </Section>
+
+      <Section
+        title="Organization Settings"
+        action={<Link className="rounded-md bg-[var(--zig-amber)] px-3 py-2 text-sm font-medium text-[var(--zig-ink)]" href="/settings/organization">Open</Link>}
+      >
+        <p className="text-sm leading-6 text-[var(--zig-ink-muted)]">
+          Configure tenant branding, framework preferences, risk appetite, and governance targets.
+        </p>
       </Section>
     </>
   );

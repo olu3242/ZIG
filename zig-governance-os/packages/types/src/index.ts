@@ -1,12 +1,19 @@
 export type RoleName =
+  | "Platform Admin"
+  | "Tenant Admin"
   | "Organization Admin"
   | "GRC Manager"
+  | "Analyst"
   | "Risk Analyst"
   | "Compliance Analyst"
   | "Auditor"
   | "Consultant"
+  | "Learner"
   | "Viewer";
 
+export type TenantStatus = "trial" | "active" | "suspended" | "archived";
+export type SubscriptionPlan = "free" | "team" | "business" | "enterprise";
+export type SubscriptionStatus = "trialing" | "active" | "past_due" | "canceled";
 export type ProjectStatus = "draft" | "active" | "paused" | "completed";
 export type ControlStatus = "planned" | "implemented" | "needs_evidence" | "accepted";
 export type RiskSeverity = "low" | "medium" | "high" | "critical";
@@ -20,7 +27,38 @@ export interface Tenant {
   id: string;
   name: string;
   slug: string;
+  status: TenantStatus;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TenantBranding {
+  tenantId: string;
+  logoUrl?: string;
+  primaryColor: string;
+  accentColor: string;
+  displayName: string;
+}
+
+export interface TenantSubscription {
+  tenantId: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  seats: number;
+  currentPeriodEndsAt: Date;
+}
+
+export interface TenantSettings {
+  tenantId: string;
+  branding: TenantBranding;
+  preferredFrameworkIds: string[];
+  riskAppetite: "low" | "moderate" | "high";
+  governanceTargets: {
+    minimumHealthScore: number;
+    evidenceCoverage: number;
+    assessmentCompletion: number;
+  };
+  updatedAt: Date;
 }
 
 export interface User {
@@ -30,6 +68,16 @@ export interface User {
   firstName: string;
   lastName: string;
   role: RoleName;
+  status: "invited" | "active" | "disabled";
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface Permission {
+  id: string;
+  action: "view" | "create" | "edit" | "delete" | "approve";
+  resource: string;
+  description: string;
 }
 
 export interface Role {
@@ -37,7 +85,7 @@ export interface Role {
   tenantId: string;
   name: RoleName;
   description: string;
-  permissions: string[];
+  permissions: Permission[];
 }
 
 export interface Project {
