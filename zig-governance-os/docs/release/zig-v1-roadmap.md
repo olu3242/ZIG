@@ -52,6 +52,10 @@ Phase E     Governance Cloud
 | Phase D Certification Ecosystem | Zig-native credentials and badge registry |
 | Phase E Governance Cloud | Enterprise-scale governance platform |
 
+## Post-Batch 33 Moat Roadmap
+
+The long-term moat expansion after AI Command Center is captured in `docs/release/zig-post-batch-33-roadmap.md`. It starts with Batch 34, the Universal Governance Model, but must not be implemented before the Batch 21-33 dependency chain is complete.
+
 ## v1 Release Principle
 
 Zig v1 is not complete because every module exists. Zig v1 is complete when every module operates through one graph, one access model, one intelligence layer, and one measurable governance improvement loop.
