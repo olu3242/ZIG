@@ -25,6 +25,7 @@ export type ScenarioRunStatus = "not_started" | "running" | "paused" | "complete
 
 export interface Tenant {
   id: string;
+  tenantId: string;
   name: string;
   slug: string;
   status: TenantStatus;

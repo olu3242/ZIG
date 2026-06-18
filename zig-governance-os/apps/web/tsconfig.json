@@ -21,6 +21,8 @@
     "paths": {
       "@/*": ["./*"],
       "@zig/types": ["../../packages/types/src/index.ts"],
+      "@zig/data-access": ["../../packages/data-access/src/index.ts"],
+      "@zig/services": ["../../packages/services/src/index.ts"],
       "@zig/framework-engine": ["../../packages/framework-engine/src/index.ts"],
       "@zig/governance-engine": ["../../packages/governance-engine/src/index.ts"],
       "@zig/ui": ["../../packages/ui/src/index.tsx"]

@@ -10,6 +10,8 @@ const nextConfig: NextConfig = {
   },
   transpilePackages: [
     "@zig/types",
+    "@zig/data-access",
+    "@zig/services",
     "@zig/framework-engine",
     "@zig/governance-engine",
     "@zig/ui",

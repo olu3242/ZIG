@@ -1,0 +1,18 @@
+{
+  "name": "@zig/services",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@zig/data-access": "0.1.0",
+    "@zig/types": "0.1.0"
+  },
+  "devDependencies": {
+    "typescript": "^5"
+  }
+}

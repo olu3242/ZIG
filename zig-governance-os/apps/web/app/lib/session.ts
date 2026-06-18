@@ -6,6 +6,7 @@ const now = new Date("2026-06-17T21:00:00.000Z");
 
 export const currentTenant: Tenant = {
   id: tenantId,
+  tenantId,
   name: "Demo SaaS Company",
   slug: "demo-saas-company",
   status: "active",
