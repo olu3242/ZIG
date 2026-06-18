@@ -51,6 +51,9 @@ Before implementation:
 
 - Confirm current batch number and track.
 - Confirm prior dependency batches are complete.
+- Review `docs/architecture/ZIG_REFERENCE_ARCHITECTURE.md`.
+- Review `docs/architecture/ZIG_DEPENDENCY_MAP.md`.
+- Review `docs/program/DEPENDENCY_TRACKER.md`.
 - Read relevant docs under `docs/execution`.
 - Read relevant architecture and data docs.
 - Read the most recent implementation report.

@@ -6,6 +6,15 @@ Zig has enough roadmap. The execution problem is sequencing work into outcome-dr
 
 This document is the weekly build guide for future implementation batches.
 
+Authoritative architecture and PMO references:
+
+- `docs/architecture/ZIG_REFERENCE_ARCHITECTURE.md`
+- `docs/architecture/ZIG_DEPENDENCY_MAP.md`
+- `docs/architecture/ZIG_IMPLEMENTATION_MASTER_PLAN.md`
+- `docs/program/EPIC_REGISTRY.md`
+- `docs/program/DEPENDENCY_TRACKER.md`
+- `docs/program/MVP_DEFINITION.md`
+
 ## Track 1: MVP Release
 
 Target: first 90 days.

@@ -60,6 +60,10 @@ The long-term moat expansion after AI Command Center is captured in `docs/releas
 
 The broader execution program is captured in `docs/release/zig-release-trains.md`. It organizes the roadmap into Zig Platform, Zig Learning and AI, Zig Ecosystem, Zig Network, and Zig Standard, while preserving the immediate Batch 21-24 critical path.
 
+## Final Reference Architecture
+
+The final architecture consolidation lives in `docs/architecture/ZIG_REFERENCE_ARCHITECTURE.md`. Program execution is governed by the docs under `docs/program/`.
+
 ## v1 Release Principle
 
 Zig v1 is not complete because every module exists. Zig v1 is complete when every module operates through one graph, one access model, one intelligence layer, and one measurable governance improvement loop.
