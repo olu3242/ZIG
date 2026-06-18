@@ -56,6 +56,10 @@ Phase E     Governance Cloud
 
 The long-term moat expansion after AI Command Center is captured in `docs/release/zig-post-batch-33-roadmap.md`. It starts with Batch 34, the Universal Governance Model, but must not be implemented before the Batch 21-33 dependency chain is complete.
 
+## Release Trains
+
+The broader execution program is captured in `docs/release/zig-release-trains.md`. It organizes the roadmap into Zig Platform, Zig Learning and AI, Zig Ecosystem, Zig Network, and Zig Standard, while preserving the immediate Batch 21-24 critical path.
+
 ## v1 Release Principle
 
 Zig v1 is not complete because every module exists. Zig v1 is complete when every module operates through one graph, one access model, one intelligence layer, and one measurable governance improvement loop.
