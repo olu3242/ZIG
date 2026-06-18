@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Mono, Space_Grotesk, Work_Sans } from "next/font/google";
-import { AppShell } from "@zig/ui";
 import { QueryProvider } from "./QueryProvider";
+import { OSInitializationProvider } from "./OSInitializationProvider";
+import { ShellGate } from "./ShellGate";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -23,6 +24,11 @@ const ibmPlexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   title: "Zig Governance OS",
   description: "AI-native governance operating system foundation.",
+  icons: {
+    icon: "/favicon.svg",
+    shortcut: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
@@ -37,7 +43,9 @@ export default function RootLayout({
     >
       <body className="min-h-full">
         <QueryProvider>
-          <AppShell>{children}</AppShell>
+          <OSInitializationProvider>
+            <ShellGate>{children}</ShellGate>
+          </OSInitializationProvider>
         </QueryProvider>
       </body>
     </html>

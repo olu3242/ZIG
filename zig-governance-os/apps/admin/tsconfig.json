@@ -19,7 +19,32 @@
       }
     ],
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./*"],
+      "@zig/agent-audit": ["../../packages/agent-audit/src/index.ts"],
+      "@zig/agent-approvals": ["../../packages/agent-approvals/src/index.ts"],
+      "@zig/agent-certification": ["../../packages/agent-certification/src/index.ts"],
+      "@zig/agent-control-tower": ["../../packages/agent-control-tower/src/index.ts"],
+      "@zig/agent-finops": ["../../packages/agent-finops/src/index.ts"],
+      "@zig/agent-alerting": ["../../packages/agent-alerting/src/index.ts"],
+      "@zig/agent-chaos": ["../../packages/agent-chaos/src/index.ts"],
+      "@zig/agent-costing": ["../../packages/agent-costing/src/index.ts"],
+      "@zig/agent-ingestion": ["../../packages/agent-ingestion/src/index.ts"],
+      "@zig/agent-ledger": ["../../packages/agent-ledger/src/index.ts"],
+      "@zig/agent-registry": ["../../packages/agent-registry/src/index.ts"],
+      "@zig/agent-reliability": ["../../packages/agent-reliability/src/index.ts"],
+      "@zig/agent-risk": ["../../packages/agent-risk/src/index.ts"],
+      "@zig/agent-scorecards": ["../../packages/agent-scorecards/src/index.ts"],
+      "@zig/agent-self-healing": ["../../packages/agent-self-healing/src/index.ts"],
+      "@zig/agent-telemetry": ["../../packages/agent-telemetry/src/index.ts"],
+      "@zig/model-telemetry": ["../../packages/model-telemetry/src/index.ts"],
+      "@zig/supervisor-agents": ["../../packages/supervisor-agents/src/index.ts"],
+      "@zig/agents": ["../../packages/agents/src/index.ts"],
+      "@zig/whitelabel": ["../../packages/whitelabel/src/index.ts"],
+      "@zig/billing": ["../../packages/billing/src/index.ts"],
+      "@zig/automation": ["../../packages/automation/src/index.ts"],
+      "@zig/integrations": ["../../packages/integrations/src/index.ts"],
+      "@zig/frameworks": ["../../packages/frameworks/src/index.ts"],
+      "@zig/api": ["../../packages/api/src/index.ts"]
     }
   },
   "include": [

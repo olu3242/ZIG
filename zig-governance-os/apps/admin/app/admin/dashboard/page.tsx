@@ -1,7 +1,18 @@
 import Link from "next/link";
 import { requirePlatformOwner } from "../guard";
 
-const links = ["/admin/tenants", "/admin/users", "/admin/runtime", "/admin/audit"];
+const links = [
+  "/admin/tenants",
+  "/admin/users",
+  "/admin/runtime",
+  "/admin/audit",
+  "/admin/billing",
+  "/admin/automation",
+  "/admin/integrations",
+  "/admin/api",
+  "/admin/agent-control-tower",
+  "/admin/agent-soc",
+];
 
 export default async function AdminDashboardPage() {
   await requirePlatformOwner();

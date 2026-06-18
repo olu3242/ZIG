@@ -1,0 +1,32 @@
+{
+  "info": {
+    "name": "Zig Governance OS API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "List Projects",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "X-Zig-API-Key", "value": "{{api_key}}" }],
+        "url": "{{base_url}}/api/v1/projects"
+      }
+    },
+    {
+      "name": "List Automation Workflows",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "X-Zig-API-Key", "value": "{{api_key}}" }],
+        "url": "{{base_url}}/api/v1/automation/workflows"
+      }
+    },
+    {
+      "name": "List Billing Subscriptions",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "X-Zig-API-Key", "value": "{{api_key}}" }],
+        "url": "{{base_url}}/api/v1/billing/subscriptions"
+      }
+    }
+  ]
+}

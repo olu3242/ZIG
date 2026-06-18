@@ -12,6 +12,7 @@ export async function signupAction(formData: FormData): Promise<void> {
 
   if (session) {
     await setSession(session);
+    await bridgeBootSequence();
     redirect("/onboarding");
   }
 
@@ -35,6 +36,7 @@ export async function loginAction(formData: FormData): Promise<void> {
     profile.userId,
     "User logged in",
   );
+  await bridgeBootSequence();
   redirect("/dashboard");
 }
 
@@ -106,4 +108,8 @@ function requireString(formData: FormData, key: string): string {
     throw new Error(`${key} is required.`);
   }
   return value;
+}
+
+function bridgeBootSequence(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 800));
 }

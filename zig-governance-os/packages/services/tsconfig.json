@@ -10,7 +10,11 @@
     "isolatedModules": true,
     "paths": {
       "@zig/types": ["../types/src/index.ts"],
-      "@zig/data-access": ["../data-access/src/index.ts"]
+      "@zig/data-access": ["../data-access/src/index.ts"],
+      "@zig/billing": ["../billing/src/index.ts"],
+      "@zig/automation": ["../automation/src/index.ts"],
+      "@zig/imports": ["../imports/src/index.ts"],
+      "@zig/exports": ["../exports/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"],

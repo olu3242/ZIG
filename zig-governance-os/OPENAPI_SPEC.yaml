@@ -1,0 +1,43 @@
+openapi: 3.1.0
+info:
+  title: Zig Governance OS API
+  version: 0.1.0
+servers:
+  - url: https://api.zig.local/api/v1
+security:
+  - bearerAuth: []
+  - apiKeyAuth: []
+paths:
+  /projects:
+    get:
+      summary: List tenant projects
+      responses:
+        "200":
+          description: Projects returned
+    post:
+      summary: Create tenant project
+      responses:
+        "201":
+          description: Project created
+  /automation/workflows:
+    get:
+      summary: List automation workflows
+      responses:
+        "200":
+          description: Workflows returned
+  /billing/subscriptions:
+    get:
+      summary: List billing subscriptions
+      responses:
+        "200":
+          description: Subscriptions returned
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-Zig-API-Key
