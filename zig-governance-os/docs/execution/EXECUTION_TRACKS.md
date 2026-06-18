@@ -170,6 +170,25 @@ Stop generating future roadmap batches. The current execution queue is:
 
 These nine batches produce the first real Zig MVP customers can use.
 
+## Gap Closure Overlay
+
+The enterprise gap analysis in `docs/product/gap-analysis.md` and `docs/release/zig-gap-closure-roadmap.md` adds a planning overlay, not a replacement for the immediate queue.
+
+The top foundational gaps are:
+
+- Workflow OS
+- Policy Management
+- Document Management
+- Vendor Risk
+- Incident Management
+- Issue Management
+- Integration Hub
+- API Platform
+- Observability Platform
+- Billing Platform
+
+Do not implement these out of order. Introduce them only when their dependency batch makes them necessary, and only after their PRD, architecture, data, security, and acceptance docs exist.
+
 ## Dependency Rules
 
 - Batch 21A and 21B must be reconciled with the already-created Batch 21 core data platform.

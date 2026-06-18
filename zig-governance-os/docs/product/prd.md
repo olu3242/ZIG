@@ -126,3 +126,25 @@ full breakdown and `CLAUDE.md` for the phase-by-phase build rules.
 
 These four stubs are the highest-priority docs to complete before any Fable 1 application
 code is written, per the Documentation-OS rule in `CLAUDE.md`.
+
+## 10. Platform gap analysis
+
+The current enterprise-platform gap analysis lives in `docs/product/gap-analysis.md`.
+
+It identifies ten foundational capabilities that must be represented in future planning:
+
+- Workflow OS
+- Policy Management
+- Document Management
+- Vendor Risk
+- Incident Management
+- Issue Management
+- Integration Hub
+- API Platform
+- Observability Platform
+- Billing Platform
+
+These are not approved for immediate unordered implementation. They are documented as
+platform gaps that require architecture, data, security, acceptance, and module
+documentation before coding. Some will remain platform services; some may become
+first-class product modules after this PRD is expanded with clear justification.
