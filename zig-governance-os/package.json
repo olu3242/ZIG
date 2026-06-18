@@ -9,7 +9,10 @@
   },
   "scripts": {
     "landing": "npx --yes serve landing-page -l 4321",
-    "docs:lint": "node scripts/check-docs.js"
+    "docs:lint": "node scripts/check-docs.js",
+    "build": "npm run build --workspace web && npm run build --workspace admin",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspace @zig/data-access && npm run typecheck --workspace @zig/services"
   },
   "devDependencies": {
     "serve": "^14.2.1"

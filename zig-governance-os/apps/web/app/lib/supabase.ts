@@ -1,5 +1,6 @@
 import { createSupabaseRepositories } from "@zig/data-access";
 import { createServices } from "@zig/services";
+import type { Persona } from "@zig/types";
 
 export interface AuthSession {
   accessToken: string;
@@ -23,6 +24,46 @@ export function getSupabaseConfig() {
 export function getZigServices() {
   const { url, serviceRoleKey } = getSupabaseConfig();
   return createServices(createSupabaseRepositories({ url, serviceRoleKey }));
+}
+
+export interface TenantProfile {
+  tenantId: string;
+  userId: string;
+  persona: Persona;
+}
+
+export async function findTenantProfileByAuthUserId(authUserId: string): Promise<TenantProfile | null> {
+  const config = getSupabaseConfig();
+  const params = new URLSearchParams({
+    auth_user_id: `eq.${authUserId}`,
+    select: "id,tenant_id,persona,status",
+    limit: "1",
+  });
+
+  const response = await fetch(`${config.url}/rest/v1/users?${params.toString()}`, {
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const rows = await response.json() as Array<{ id: string; tenant_id: string; persona: Persona; status: string }>;
+  const profile = rows.find((row) => row.status === "active") ?? rows[0];
+  if (!profile) {
+    return null;
+  }
+
+  return {
+    tenantId: profile.tenant_id,
+    userId: profile.id,
+    persona: profile.persona,
+  };
 }
 
 export async function signUpWithEmail(email: string, password: string): Promise<AuthSession | null> {

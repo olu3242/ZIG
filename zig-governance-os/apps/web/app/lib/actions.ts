@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { FrameworkRegistry } from "@zig/framework-engine";
 import { auditAuth, clearSession, requireSession, requireTenantContext, setSession, setTenantProfile } from "./auth";
-import { getZigServices, loginWithEmail, requestPasswordReset, signUpWithEmail } from "./supabase";
+import { findTenantProfileByAuthUserId, getZigServices, loginWithEmail, requestPasswordReset, signUpWithEmail } from "./supabase";
 
 export async function signupAction(formData: FormData): Promise<void> {
   const email = requireString(formData, "email");
@@ -21,7 +21,21 @@ export async function signupAction(formData: FormData): Promise<void> {
 export async function loginAction(formData: FormData): Promise<void> {
   const session = await loginWithEmail(requireString(formData, "email"), requireString(formData, "password"));
   await setSession(session);
-  redirect("/onboarding");
+  const profile = await findTenantProfileByAuthUserId(session.userId);
+
+  if (!profile) {
+    redirect("/onboarding");
+  }
+
+  await setTenantProfile(profile.tenantId, profile.userId, profile.persona);
+  await getZigServices().audit.recordAction(
+    { tenantId: profile.tenantId, actorUserId: profile.userId },
+    "login",
+    "users",
+    profile.userId,
+    "User logged in",
+  );
+  redirect("/dashboard");
 }
 
 export async function passwordResetAction(formData: FormData): Promise<void> {
@@ -70,11 +84,13 @@ export async function onboardingAction(formData: FormData): Promise<void> {
 
 export async function createProjectAction(formData: FormData): Promise<void> {
   const { context } = await requireTenantContext();
-  await getZigServices().projects.createGovernanceProject(context, {
+  const services = getZigServices();
+  const project = await services.projects.createGovernanceProject(context, {
     name: requireString(formData, "name"),
     industry: formData.get("industry")?.toString(),
     frameworkId: requireString(formData, "frameworkId"),
   });
+  await services.audit.recordAction(context, "assign", "project_frameworks", project.id, "Framework assigned to project");
   redirect("/dashboard");
 }
 
