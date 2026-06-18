@@ -1,0 +1,27 @@
+{
+  "name": "zig-governance-os",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Zig — AI-Native Governance Operating System. Documentation-OS + Fable-5 bootstrap.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "landing": "npx --yes serve landing-page -l 4321",
+    "docs:lint": "node scripts/check-docs.js"
+  },
+  "devDependencies": {
+    "serve": "^14.2.1"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "keywords": [
+    "grc",
+    "governance",
+    "compliance",
+    "risk",
+    "ai"
+  ]
+}
