@@ -1,6 +1,7 @@
 import { AuditRepository } from "./AuditRepository";
 import { InMemoryDatabaseAdapter } from "./InMemoryDatabaseAdapter";
 import { TenantRepository } from "./TenantRepository";
+import { SupabaseAuditSink, SupabaseRestAdapter, type SupabaseRestConfig } from "./SupabaseRestAdapter";
 import type {
   AssetRecord,
   AssessmentRecord,
@@ -13,6 +14,7 @@ import type {
   LearningModuleRecord,
   LearningPathRecord,
   ProjectRecord,
+  ProjectFrameworkRecord,
   RecommendationRecord,
   RiskAssessmentRecord,
   RiskRecord,
@@ -30,6 +32,7 @@ export interface ZigRepositories {
   users: TenantRepository<UserRecord>;
   roles: TenantRepository<RoleRecord>;
   projects: TenantRepository<ProjectRecord>;
+  projectFrameworks: TenantRepository<ProjectFrameworkRecord>;
   frameworks: TenantRepository<FrameworkRecord>;
   controls: TenantRepository<ControlRecord>;
   controlMappings: TenantRepository<ControlMappingRecord>;
@@ -48,6 +51,35 @@ export interface ZigRepositories {
   recommendations: TenantRepository<RecommendationRecord>;
 }
 
+export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
+  const auditEvents = new SupabaseAuditSink(config);
+
+  return {
+    auditEvents: auditEvents as unknown as AuditRepository,
+    tenants: new TenantRepository("tenants", new SupabaseRestAdapter<TenantRecord>(config), auditEvents),
+    users: new TenantRepository("users", new SupabaseRestAdapter<UserRecord>(config), auditEvents),
+    roles: new TenantRepository("roles", new SupabaseRestAdapter<RoleRecord>(config), auditEvents),
+    projects: new TenantRepository("projects", new SupabaseRestAdapter<ProjectRecord>(config), auditEvents),
+    projectFrameworks: new TenantRepository("project_frameworks", new SupabaseRestAdapter<ProjectFrameworkRecord>(config), auditEvents),
+    frameworks: new TenantRepository("frameworks", new SupabaseRestAdapter<FrameworkRecord>(config), auditEvents),
+    controls: new TenantRepository("controls", new SupabaseRestAdapter<ControlRecord>(config), auditEvents),
+    controlMappings: new TenantRepository("control_mappings", new SupabaseRestAdapter<ControlMappingRecord>(config), auditEvents),
+    assets: new TenantRepository("assets", new SupabaseRestAdapter<AssetRecord>(config), auditEvents),
+    risks: new TenantRepository("risks", new SupabaseRestAdapter<RiskRecord>(config), auditEvents),
+    riskAssessments: new TenantRepository("risk_assessments", new SupabaseRestAdapter<RiskAssessmentRecord>(config), auditEvents),
+    evidence: new TenantRepository("evidence", new SupabaseRestAdapter<EvidenceRecord>(config), auditEvents),
+    tasks: new TenantRepository("tasks", new SupabaseRestAdapter<TaskRecord>(config), auditEvents),
+    audits: new TenantRepository("audits", new SupabaseRestAdapter<AuditRecord>(config), auditEvents),
+    assessments: new TenantRepository("assessments", new SupabaseRestAdapter<AssessmentRecord>(config), auditEvents),
+    learningPaths: new TenantRepository("learning_paths", new SupabaseRestAdapter<LearningPathRecord>(config), auditEvents),
+    learningModules: new TenantRepository("learning_modules", new SupabaseRestAdapter<LearningModuleRecord>(config), auditEvents),
+    scenarios: new TenantRepository("scenarios", new SupabaseRestAdapter<ScenarioRecord>(config), auditEvents),
+    scenarioRuns: new TenantRepository("scenario_runs", new SupabaseRestAdapter<ScenarioRunRecord>(config), auditEvents),
+    governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
+    recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
+  };
+}
+
 export function createInMemoryRepositories(): ZigRepositories {
   const auditEvents = new AuditRepository();
 
@@ -57,6 +89,7 @@ export function createInMemoryRepositories(): ZigRepositories {
     users: new TenantRepository("users", new InMemoryDatabaseAdapter<UserRecord>(), auditEvents),
     roles: new TenantRepository("roles", new InMemoryDatabaseAdapter<RoleRecord>(), auditEvents),
     projects: new TenantRepository("projects", new InMemoryDatabaseAdapter<ProjectRecord>(), auditEvents),
+    projectFrameworks: new TenantRepository("project_frameworks", new InMemoryDatabaseAdapter<ProjectFrameworkRecord>(), auditEvents),
     frameworks: new TenantRepository("frameworks", new InMemoryDatabaseAdapter<FrameworkRecord>(), auditEvents),
     controls: new TenantRepository("controls", new InMemoryDatabaseAdapter<ControlRecord>(), auditEvents),
     controlMappings: new TenantRepository("control_mappings", new InMemoryDatabaseAdapter<ControlMappingRecord>(), auditEvents),

@@ -8,6 +8,8 @@ export type AuditAction =
   | "complete"
   | "generate"
   | "certify"
+  | "login"
+  | "logout"
   | "review"
   | "certification";
 

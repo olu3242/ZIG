@@ -1,8 +1,12 @@
 export type RoleName =
+  | "Platform Owner"
   | "Platform Admin"
   | "Tenant Admin"
   | "Organization Admin"
   | "GRC Manager"
+  | "Governance Manager"
+  | "Risk Manager"
+  | "Compliance Manager"
   | "Analyst"
   | "Risk Analyst"
   | "Compliance Analyst"
@@ -10,6 +14,18 @@ export type RoleName =
   | "Consultant"
   | "Learner"
   | "Viewer";
+
+export type Persona =
+  | "Platform Owner"
+  | "Platform Admin"
+  | "Tenant Admin"
+  | "Governance Manager"
+  | "Risk Manager"
+  | "Compliance Manager"
+  | "Auditor"
+  | "Executive"
+  | "Learner"
+  | "Consultant";
 
 export type TenantStatus = "trial" | "active" | "suspended" | "archived";
 export type SubscriptionPlan = "free" | "team" | "business" | "enterprise";
@@ -65,10 +81,12 @@ export interface TenantSettings {
 export interface User {
   id: string;
   tenantId: string;
+  authUserId?: string;
   email: string;
   firstName: string;
   lastName: string;
   role: RoleName;
+  persona: Persona;
   status: "invited" | "active" | "disabled";
   createdAt: Date;
   updatedAt: Date;
@@ -100,12 +118,22 @@ export interface Project {
   updatedAt: Date;
 }
 
+export interface ProjectFramework {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  frameworkId: string;
+  assignedByUserId?: string;
+  assignedAt: Date;
+}
+
 export interface Framework {
   id: string;
   code: string;
   name: string;
   version: string;
   description: string;
+  status?: "draft" | "active" | "archived";
 }
 
 export interface Control {

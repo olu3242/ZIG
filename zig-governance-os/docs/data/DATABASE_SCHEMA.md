@@ -96,7 +96,16 @@ Each event includes tenant, actor, entity table, entity id, before state, after 
 
 ## Open Issues
 
-- Supabase Auth user references are intentionally not wired until Batch 22.
-- RLS currently uses `app.current_tenant_id`; the Supabase adapter must set it per request.
+- Supabase Auth user references are wired through `users.auth_user_id` in the frontend/backend integration phase.
+- RLS reads `app.current_tenant_id` or the PostgREST `x-tenant-id` request header.
 - Framework seed data and control catalogs arrive in later framework batches.
 - Graph relationship tables are deferred to Batch 23.
+
+## Frontend Integration Additions
+
+The frontend/backend integration phase adds:
+
+- `users.auth_user_id` for Supabase Auth linkage.
+- `users.persona` for role-based experience loading.
+- `project_frameworks` for explicit project-framework assignment traceability.
+- `login` and `logout` audit actions.

@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { PageHeader, Section, StatCard } from "@zig/ui";
+import { loadDashboard } from "@/app/lib/data";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  const { tenant, persona } = await loadDashboard();
+
   return (
     <>
       <PageHeader
@@ -10,9 +13,9 @@ export default function SettingsPage() {
         description="Foundation shell for tenant, role, and project configuration before Supabase-backed administration is added."
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Tenant" value="Demo" detail="Tenant-scoped workspace." />
-        <StatCard label="Roles" value="7" detail="Documented MVP role set." />
-        <StatCard label="Users" value="5" detail="Mock cross-functional team." />
+        <StatCard label="Tenant" value={tenant?.name ?? "Unknown"} detail="Tenant-scoped workspace." />
+        <StatCard label="Persona" value={persona} detail="Loaded from profile after login." />
+        <StatCard label="Users" value="1+" detail="User counts will use the user service in the admin batch." />
       </div>
       <Section title="Role Model">
         <div className="grid gap-2 md:grid-cols-2">

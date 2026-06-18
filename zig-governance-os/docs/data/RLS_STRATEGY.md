@@ -93,3 +93,16 @@ Validation requirements:
 - Views return only active tenant data.
 
 Full Supabase RLS validation is completed when a linked Supabase environment is available.
+
+For PostgREST requests, `current_tenant_id()` also reads the `x-tenant-id` request header so service and repository calls can carry tenant context per request.
+
+## Project Framework Assignments
+
+`project_frameworks` uses the same tenant policy:
+
+```sql
+using (tenant_id = current_tenant_id())
+with check (tenant_id = current_tenant_id())
+```
+
+Framework assignment records therefore cannot cross tenant boundaries even when project and framework ids are known.

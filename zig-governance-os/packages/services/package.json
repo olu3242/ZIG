@@ -6,10 +6,12 @@
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "npm run typecheck"
   },
   "dependencies": {
     "@zig/data-access": "0.1.0",
+    "@zig/framework-engine": "0.1.0",
     "@zig/types": "0.1.0"
   },
   "devDependencies": {

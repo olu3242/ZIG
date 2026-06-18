@@ -8,4 +8,7 @@ export * from "./LearningService";
 export * from "./ProjectService";
 export * from "./RiskService";
 export * from "./ScenarioService";
+export * from "./TenantService";
+export * from "./UserService";
 export * from "./factory";
+export * from "./AuditService";

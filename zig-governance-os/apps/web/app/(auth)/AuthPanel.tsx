@@ -19,7 +19,7 @@ export function AuthPanel({
         <h1 className="mt-3 font-display text-3xl font-semibold">{title}</h1>
         <p className="mt-3 max-w-xl text-sm leading-6 text-[var(--zig-paper-muted)]">{description}</p>
         <div className="mt-8 grid gap-3 text-sm">
-          {["Tenant isolation", "Role-based access control", "Mock session context"].map((item) => (
+          {["Tenant isolation", "Role-based access control", "Persona-aware sessions"].map((item) => (
             <div key={item} className="rounded-md border border-white/15 px-3 py-2">{item}</div>
           ))}
         </div>
@@ -32,13 +32,15 @@ export function AuthPanel({
   );
 }
 
-export function Field({ label, type = "text" }: { label: string; type?: string }) {
+export function Field({ label, name, type = "text", required = true }: { label: string; name: string; type?: string; required?: boolean }) {
   return (
     <label className="grid gap-2 text-sm font-medium">
       <span>{label}</span>
       <input
         className="rounded-md border border-[var(--zig-border)] bg-white px-3 py-2 text-sm outline-none focus:border-[var(--zig-amber)] focus:ring-2 focus:ring-[var(--zig-amber)]/30"
+        name={name}
         type={type}
+        required={required}
       />
     </label>
   );

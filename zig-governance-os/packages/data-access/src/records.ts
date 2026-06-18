@@ -10,6 +10,7 @@ import type {
   LearningModule,
   LearningPath,
   Project,
+  ProjectFramework,
   Recommendation,
   Risk,
   RiskAssessment,
@@ -25,6 +26,7 @@ export type TenantRecord = Tenant;
 export type UserRecord = User;
 export type RoleRecord = Role;
 export type ProjectRecord = Project;
+export type ProjectFrameworkRecord = ProjectFramework & { createdAt: Date; updatedAt: Date };
 export type FrameworkRecord = Framework & { tenantId: string; createdAt: Date; updatedAt: Date };
 export type ControlRecord = Control & { createdAt: Date; updatedAt: Date };
 export type ControlMappingRecord = ControlMapping & { createdAt: Date; updatedAt: Date };

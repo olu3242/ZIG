@@ -1,7 +1,9 @@
 import { PageHeader, Section, StatCard } from "@zig/ui";
-import { governanceScore, recommendations } from "@/app/lib/mock-data";
+import { loadDashboard } from "@/app/lib/data";
 
-export default function MissionControlPage() {
+export default async function MissionControlPage() {
+  const { stats, projects } = await loadDashboard();
+
   return (
     <>
       <PageHeader
@@ -10,19 +12,12 @@ export default function MissionControlPage() {
         description="Single-screen operating view of score, recommendations, recent activity, and governance actions."
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Governance Score" value={governanceScore.score} detail={governanceScore.explanation} tone="attention" />
-        <StatCard label="Top Recommendations" value={recommendations.length} detail="Ranked Health Advisor guidance." />
-        <StatCard label="Recent Activity" value="11" detail="Mock updates across tasks, controls, and evidence." />
+        <StatCard label="Governance Score" value={stats.governanceScore} detail="Current project score from the governance service path." tone="attention" />
+        <StatCard label="Projects" value={projects.length} detail="Tenant-scoped projects visible to Mission Control." />
+        <StatCard label="Recent Activity" value="0" detail="Audit activity appears after user actions are recorded." />
       </div>
       <Section title="Action Queue">
-        <div className="grid gap-3">
-          {recommendations.map((recommendation) => (
-            <article key={recommendation.id} className="rounded-md border border-[var(--zig-border)] p-4">
-              <p className="font-medium">{recommendation.title}</p>
-              <p className="mt-1 text-sm text-[var(--zig-ink-muted)]">{recommendation.explanation}</p>
-            </article>
-          ))}
-        </div>
+        <p className="text-sm text-[var(--zig-ink-muted)]">Recommendations will appear after assessments and governance score calculations create service-backed records.</p>
       </Section>
     </>
   );

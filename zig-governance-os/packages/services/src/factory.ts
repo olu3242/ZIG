@@ -1,4 +1,5 @@
 import type { ZigRepositories } from "@zig/data-access";
+import { AuditService } from "./AuditService";
 import { AssetService } from "./AssetService";
 import { ControlService } from "./ControlService";
 import { EvidenceService } from "./EvidenceService";
@@ -8,8 +9,13 @@ import { LearningService } from "./LearningService";
 import { ProjectService } from "./ProjectService";
 import { RiskService } from "./RiskService";
 import { ScenarioService } from "./ScenarioService";
+import { TenantService } from "./TenantService";
+import { UserService } from "./UserService";
 
 export interface ZigServices {
+  tenants: TenantService;
+  users: UserService;
+  audit: AuditService;
   frameworks: FrameworkService;
   projects: ProjectService;
   assets: AssetService;
@@ -23,8 +29,11 @@ export interface ZigServices {
 
 export function createServices(repositories: ZigRepositories): ZigServices {
   return {
+    tenants: new TenantService(repositories.tenants, repositories.users),
+    users: new UserService(repositories.users),
+    audit: new AuditService(repositories.auditEvents),
     frameworks: new FrameworkService(repositories.frameworks),
-    projects: new ProjectService(repositories.projects),
+    projects: new ProjectService(repositories.projects, repositories.projectFrameworks),
     assets: new AssetService(repositories.assets),
     risks: new RiskService(repositories.risks, repositories.riskAssessments),
     controls: new ControlService(repositories.controls, repositories.controlMappings),

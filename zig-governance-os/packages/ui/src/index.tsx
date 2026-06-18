@@ -66,8 +66,8 @@ export function TopNav() {
     <header className="border-b border-[var(--zig-border)] bg-[var(--zig-paper-2)]">
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
         <div className="flex items-center gap-2 font-mono text-xs uppercase text-[var(--zig-ink-muted)]">
-          <span className="rounded bg-[var(--zig-teal)] px-2 py-1 text-white">Demo Tenant</span>
-          <span>Project: SaaS Governance Launch</span>
+          <span className="rounded bg-[var(--zig-teal)] px-2 py-1 text-white">Tenant Scoped</span>
+          <span>Vertical Slice MVP</span>
         </div>
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <Link className="rounded-md border border-[var(--zig-ink)] px-3 py-2 font-medium" href="/projects/new">
@@ -80,6 +80,110 @@ export function TopNav() {
       </div>
     </header>
   );
+}
+
+export function StatusBadge({ children, tone = "neutral" }: { children: ReactNode; tone?: "neutral" | "success" | "warning" }) {
+  const toneClass =
+    tone === "success"
+      ? "bg-[var(--zig-teal)] text-white"
+      : tone === "warning"
+        ? "bg-[var(--zig-amber)] text-[var(--zig-ink)]"
+        : "bg-[var(--zig-paper)] text-[var(--zig-ink-muted)]";
+
+  return <span className={`rounded px-2 py-1 font-mono text-xs uppercase ${toneClass}`}>{children}</span>;
+}
+
+export function DataTable({
+  columns,
+  rows,
+  empty,
+}: {
+  columns: string[];
+  rows: ReactNode[][];
+  empty: string;
+}) {
+  if (rows.length === 0) {
+    return <p className="rounded-md border border-[var(--zig-border)] p-4 text-sm text-[var(--zig-ink-muted)]">{empty}</p>;
+  }
+
+  return (
+    <div className="overflow-x-auto rounded-md border border-[var(--zig-border)]">
+      <table className="w-full border-collapse text-left text-sm">
+        <thead className="bg-[var(--zig-paper)] font-mono text-xs uppercase text-[var(--zig-ink-muted)]">
+          <tr>{columns.map((column) => <th key={column} className="px-3 py-2">{column}</th>)}</tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => (
+            <tr key={index} className="border-t border-[var(--zig-border)]">
+              {row.map((cell, cellIndex) => <td key={cellIndex} className="px-3 py-3">{cell}</td>)}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export function FormField({
+  label,
+  name,
+  type = "text",
+  required = false,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  type?: string;
+  required?: boolean;
+  defaultValue?: string;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium">
+      <span>{label}</span>
+      <input
+        className="rounded-md border border-[var(--zig-border)] bg-[var(--zig-paper)] px-3 py-2 text-[var(--zig-ink)]"
+        name={name}
+        type={type}
+        required={required}
+        defaultValue={defaultValue}
+      />
+    </label>
+  );
+}
+
+export function SelectField({
+  label,
+  name,
+  required = false,
+  options,
+}: {
+  label: string;
+  name: string;
+  required?: boolean;
+  options: Array<{ label: string; value: string }>;
+}) {
+  return (
+    <label className="grid gap-2 text-sm font-medium">
+      <span>{label}</span>
+      <select className="rounded-md border border-[var(--zig-border)] bg-[var(--zig-paper)] px-3 py-2" name={name} required={required}>
+        {options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>
+    </label>
+  );
+}
+
+export function DialogPanel({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="rounded-lg border border-[var(--zig-border)] bg-[var(--zig-paper-2)] p-5 shadow-sm">
+      <h2 className="font-display text-xl font-semibold">{title}</h2>
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+export function GovernanceScoreWidget({ score, detail }: { score: number; detail: string }) {
+  const tone = score >= 75 ? "healthy" : score >= 50 ? "neutral" : "attention";
+  return <StatCard label="Governance Health Score" value={score} detail={detail} tone={tone} />;
 }
 
 export function PageHeader({

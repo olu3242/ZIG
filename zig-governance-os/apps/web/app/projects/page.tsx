@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { PageHeader, Section, StatCard } from "@zig/ui";
-import { frameworks, projects } from "@/app/lib/mock-data";
+import { DataTable, PageHeader, Section, StatCard, StatusBadge } from "@zig/ui";
+import { loadProjects } from "@/app/lib/data";
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const { projects, frameworks } = await loadProjects();
+  const activeProjects = projects.filter((project) => project.status === "active").length;
+
   return (
     <>
       <PageHeader
@@ -12,24 +15,21 @@ export default function ProjectsPage() {
         actions={<Link className="rounded-md bg-[var(--zig-amber)] px-3 py-2 font-medium text-[var(--zig-ink)]" href="/projects/new">Create Project</Link>}
       />
       <div className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Active Projects" value="1" detail="One implementation initiative is currently active." tone="healthy" />
-        <StatCard label="Draft Projects" value="1" detail="One generated project is ready for review." />
+        <StatCard label="Active Projects" value={activeProjects} detail="Implementation initiatives currently active." tone="healthy" />
+        <StatCard label="Draft Projects" value={projects.length - activeProjects} detail="Projects waiting for activation." />
         <StatCard label="Framework Options" value={frameworks.length} detail="Registry-backed framework selections." />
       </div>
       <Section title="Project List View">
-        <div className="grid gap-3">
-          {projects.map((project) => (
-            <Link key={project.id} href="/projects/demo-project" className="rounded-md border border-[var(--zig-border)] p-4 hover:border-[var(--zig-ink)]">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <h2 className="font-display text-lg font-semibold">{project.name}</h2>
-                  <p className="text-sm text-[var(--zig-ink-muted)]">{project.industry} program mapped to {project.frameworkId}</p>
-                </div>
-                <span className="font-mono text-xs uppercase text-[var(--zig-teal)]">{project.status}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
+        <DataTable
+          columns={["Project", "Industry", "Framework", "Status"]}
+          empty="No projects exist yet. Create the first governance project."
+          rows={projects.map((project) => [
+            <Link key={project.id} href={`/projects/${project.id}`} className="font-medium underline underline-offset-4">{project.name}</Link>,
+            project.industry ?? "Unassigned",
+            frameworks.find((framework) => framework.id === project.frameworkId)?.name ?? project.frameworkId,
+            <StatusBadge key={`${project.id}-status`} tone="success">{project.status}</StatusBadge>,
+          ])}
+        />
       </Section>
     </>
   );
