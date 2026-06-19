@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { AdaptiveLearningEngine } from "@zig/adaptive-learning";
-import { AssessmentEngine } from "@zig/assessment-engine";
 import { LearningAnalytics } from "@zig/learning-analytics";
 import { LearningRuntime } from "@zig/learning-runtime";
 import { SkillsGraph } from "@zig/skills-graph";
@@ -10,7 +9,8 @@ import { getZigServices } from "@/app/lib/supabase";
 
 export default async function LearningPage() {
   const { context } = await requireTenantContext();
-  const learningPaths = await getZigServices().learning.findMany(context);
+  const services = getZigServices();
+  const learningPaths = await services.learning.findMany(context);
   const skills = new SkillsGraph().iso27001Core();
   const runtime = new LearningRuntime().e2eFlow();
   const recommendations = new AdaptiveLearningEngine().recommend([
@@ -18,7 +18,10 @@ export default async function LearningPage() {
     { skillId: "control-mapping", score: 48, confidence: 0.81 },
     { skillId: "internal-audit", score: 74, confidence: 0.78 },
   ]);
-  const assessment = new AssessmentEngine().grade("practical_exam", 72, ["control-mapping"]);
+  // Real assessment signal from learning_assessment_results via
+  // AssessmentService.getLearnerAssessmentSummary() — replaces the gap-report-flagged
+  // AssessmentEngine.grade("practical_exam", 72, [...]) call with hardcoded inputs.
+  const assessmentSummary = await services.assessments.getLearnerAssessmentSummary(context);
   const analyticsScore = new LearningAnalytics().operatingScore({
     learningVelocity: 76,
     skillVelocity: 69,
@@ -71,7 +74,18 @@ export default async function LearningPage() {
       </Section>
       <Section title="Assessment Signal">
         <p className="text-sm text-[var(--zig-ink-muted)]">
-          Practical exam score: <span className="font-mono text-[var(--zig-teal)]">{assessment.score}</span>. Status: {assessment.passed ? "passed" : "remediation required"}.
+          {assessmentSummary.attemptCount === 0 ? (
+            "No assessment attempts on record yet."
+          ) : (
+            <>
+              Latest assessment score:{" "}
+              <span className="font-mono text-[var(--zig-teal)]">{assessmentSummary.latestScore}</span>. {assessmentSummary.passedCount}{" "}
+              of {assessmentSummary.attemptCount} attempts passed.
+            </>
+          )}{" "}
+          <Link href="/assessment" className="font-medium underline underline-offset-4">
+            Go to Assessment Center
+          </Link>
         </p>
       </Section>
       <Section title="Learning Paths">

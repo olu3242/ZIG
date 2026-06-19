@@ -127,6 +127,28 @@ export async function completeLessonAction(formData: FormData): Promise<void> {
   redirect(`/learning/${learningPathId}`);
 }
 
+export async function submitAssessmentAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const assessmentId = requireString(formData, "assessmentId");
+  const questionIds = formData.getAll("questionId").map((value) => value.toString());
+  const services = getZigServices();
+
+  const answers = questionIds.map((questionId) => {
+    const raw = formData.get(`answer_${questionId}`)?.toString();
+    return { questionId, selectedOptionIndex: raw === undefined ? -1 : Number.parseInt(raw, 10) };
+  });
+
+  const outcome = await services.assessments.submitAttempt(context, assessmentId, answers);
+  await services.audit.recordAction(
+    context,
+    "complete",
+    "learning_assessment_results",
+    outcome.result.id,
+    `Assessment submitted; score ${outcome.score}, passed ${outcome.passed}`,
+  );
+  redirect(`/assessment/${assessmentId}?score=${outcome.score}&passed=${outcome.passed}`);
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

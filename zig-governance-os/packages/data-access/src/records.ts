@@ -7,6 +7,9 @@ import type {
   Evidence,
   Framework,
   GovernanceScore,
+  LearningAssessment,
+  LearningAssessmentQuestion,
+  LearningAssessmentResult,
   LearningModule,
   LearningPath,
   Project,
@@ -41,6 +44,9 @@ export type AuditRecord = Audit & { createdAt: Date; updatedAt: Date };
 export type AssessmentRecord = Assessment & { tenantId: string; projectId: string; frameworkId?: string; status: string; score?: number; createdAt: Date; updatedAt: Date };
 export type LearningPathRecord = LearningPath & { createdAt: Date; updatedAt: Date };
 export type LearningModuleRecord = LearningModule & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type LearningAssessmentRecord = LearningAssessment & { createdAt: Date; updatedAt: Date };
+export type LearningAssessmentQuestionRecord = LearningAssessmentQuestion & { createdAt: Date; updatedAt: Date };
+export type LearningAssessmentResultRecord = LearningAssessmentResult & { createdAt: Date; updatedAt: Date };
 export type UserProgressRecord = UserProgress & { createdAt: Date; updatedAt: Date };
 export type StudentTwinRecord = StudentTwin & { createdAt: Date; updatedAt: Date };
 export type ScenarioRecord = Scenario & { createdAt: Date; updatedAt: Date };

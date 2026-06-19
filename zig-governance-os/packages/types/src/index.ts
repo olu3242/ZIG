@@ -245,6 +245,35 @@ export interface Assessment {
   passingScore: number;
 }
 
+export interface LearningAssessment {
+  id: string;
+  tenantId: string;
+  assessmentType: string;
+  title: string;
+  passingScore: number;
+}
+
+export interface LearningAssessmentQuestion {
+  id: string;
+  tenantId: string;
+  assessmentId: string;
+  prompt: string;
+  options: string[];
+  correctOptionIndex: number;
+  weight: number;
+  orderIndex: number;
+}
+
+export interface LearningAssessmentResult {
+  id: string;
+  tenantId: string;
+  assessmentId: string;
+  learnerUserId: string;
+  score: number;
+  passed: boolean;
+  remediationSkillIds: string[];
+}
+
 export type UserProgressStatus = "enrolled" | "in_progress" | "completed";
 
 export interface UserProgress {

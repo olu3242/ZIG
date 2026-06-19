@@ -1,5 +1,6 @@
 import type { ZigRepositories } from "@zig/data-access";
 import { AuditService } from "./AuditService";
+import { AssessmentService } from "./AssessmentService";
 import { AssetService } from "./AssetService";
 import { ControlService } from "./ControlService";
 import { EvidenceService } from "./EvidenceService";
@@ -23,6 +24,7 @@ export interface ZigServices {
   controls: ControlService;
   evidence: EvidenceService;
   learning: LearningService;
+  assessments: AssessmentService;
   scenarios: ScenarioService;
   governance: GovernanceService;
 }
@@ -42,6 +44,12 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.learningPaths,
       repositories.learningModules,
       repositories.userProgress,
+      repositories.studentTwins,
+    ),
+    assessments: new AssessmentService(
+      repositories.learningAssessments,
+      repositories.learningAssessmentQuestions,
+      repositories.learningAssessmentResults,
       repositories.studentTwins,
     ),
     scenarios: new ScenarioService(repositories.scenarios, repositories.scenarioRuns),

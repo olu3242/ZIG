@@ -11,6 +11,9 @@ import type {
   EvidenceRecord,
   FrameworkRecord,
   GovernanceScoreRecord,
+  LearningAssessmentRecord,
+  LearningAssessmentQuestionRecord,
+  LearningAssessmentResultRecord,
   LearningModuleRecord,
   LearningPathRecord,
   ProjectRecord,
@@ -47,6 +50,9 @@ export interface ZigRepositories {
   assessments: TenantRepository<AssessmentRecord>;
   learningPaths: TenantRepository<LearningPathRecord>;
   learningModules: TenantRepository<LearningModuleRecord>;
+  learningAssessments: TenantRepository<LearningAssessmentRecord>;
+  learningAssessmentQuestions: TenantRepository<LearningAssessmentQuestionRecord>;
+  learningAssessmentResults: TenantRepository<LearningAssessmentResultRecord>;
   userProgress: TenantRepository<UserProgressRecord>;
   studentTwins: TenantRepository<StudentTwinRecord>;
   scenarios: TenantRepository<ScenarioRecord>;
@@ -77,6 +83,9 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     assessments: new TenantRepository("assessments", new SupabaseRestAdapter<AssessmentRecord>(config), auditEvents),
     learningPaths: new TenantRepository("learning_paths", new SupabaseRestAdapter<LearningPathRecord>(config), auditEvents),
     learningModules: new TenantRepository("learning_modules", new SupabaseRestAdapter<LearningModuleRecord>(config), auditEvents),
+    learningAssessments: new TenantRepository("learning_assessments", new SupabaseRestAdapter<LearningAssessmentRecord>(config), auditEvents),
+    learningAssessmentQuestions: new TenantRepository("learning_assessment_questions", new SupabaseRestAdapter<LearningAssessmentQuestionRecord>(config), auditEvents),
+    learningAssessmentResults: new TenantRepository("learning_assessment_results", new SupabaseRestAdapter<LearningAssessmentResultRecord>(config), auditEvents),
     userProgress: new TenantRepository("user_progress", new SupabaseRestAdapter<UserProgressRecord>(config), auditEvents),
     studentTwins: new TenantRepository("student_twins", new SupabaseRestAdapter<StudentTwinRecord>(config), auditEvents),
     scenarios: new TenantRepository("scenarios", new SupabaseRestAdapter<ScenarioRecord>(config), auditEvents),
@@ -108,6 +117,9 @@ export function createInMemoryRepositories(): ZigRepositories {
     assessments: new TenantRepository("assessments", new InMemoryDatabaseAdapter<AssessmentRecord>(), auditEvents),
     learningPaths: new TenantRepository("learning_paths", new InMemoryDatabaseAdapter<LearningPathRecord>(), auditEvents),
     learningModules: new TenantRepository("learning_modules", new InMemoryDatabaseAdapter<LearningModuleRecord>(), auditEvents),
+    learningAssessments: new TenantRepository("learning_assessments", new InMemoryDatabaseAdapter<LearningAssessmentRecord>(), auditEvents),
+    learningAssessmentQuestions: new TenantRepository("learning_assessment_questions", new InMemoryDatabaseAdapter<LearningAssessmentQuestionRecord>(), auditEvents),
+    learningAssessmentResults: new TenantRepository("learning_assessment_results", new InMemoryDatabaseAdapter<LearningAssessmentResultRecord>(), auditEvents),
     userProgress: new TenantRepository("user_progress", new InMemoryDatabaseAdapter<UserProgressRecord>(), auditEvents),
     studentTwins: new TenantRepository("student_twins", new InMemoryDatabaseAdapter<StudentTwinRecord>(), auditEvents),
     scenarios: new TenantRepository("scenarios", new InMemoryDatabaseAdapter<ScenarioRecord>(), auditEvents),
