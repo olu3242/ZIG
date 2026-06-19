@@ -3,8 +3,10 @@ import type {
   Assessment,
   Audit,
   Control,
+  ControlEvidence,
   ControlMapping,
   Evidence,
+  EvidenceReview,
   Framework,
   GovernanceScore,
   LabArtifact,
@@ -42,6 +44,8 @@ export type AssetRecord = Asset & { createdAt: Date; updatedAt: Date };
 export type RiskRecord = Risk & { createdAt: Date; updatedAt: Date };
 export type RiskAssessmentRecord = RiskAssessment & { createdAt: Date; updatedAt: Date };
 export type EvidenceRecord = Evidence & { createdAt: Date; updatedAt: Date };
+export type ControlEvidenceRecord = ControlEvidence & { createdAt: Date; updatedAt: Date };
+export type EvidenceReviewRecord = EvidenceReview & { createdAt: Date; updatedAt: Date };
 export type TaskRecord = Task & { createdAt: Date; updatedAt: Date };
 export type AuditRecord = Audit & { createdAt: Date; updatedAt: Date };
 export type AssessmentRecord = Assessment & { tenantId: string; projectId: string; frameworkId?: string; status: string; score?: number; createdAt: Date; updatedAt: Date };

@@ -41,6 +41,12 @@ export default async function DashboardPage() {
         <StatCard label="Labs Completed" value={stats.labCompletedCount} detail="Lab runs scored with a persisted lab_artifacts row." tone="healthy" />
       </div>
 
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatCard label="Evidence Records" value={stats.evidenceCount} detail="Rows persisted to the evidence table." />
+        <StatCard label="Evidence Pending Review" value={stats.evidencePendingReviewCount} detail="Not yet approved via evidence_reviews." tone={stats.evidencePendingReviewCount > 0 ? "attention" : "healthy"} />
+        <StatCard label="Evidence Approved" value={stats.evidenceApprovedCount} detail="evidence_reviews status = approved." tone="healthy" />
+      </div>
+
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <Section title="Projects">
           <DataTable

@@ -184,6 +184,38 @@ export async function scoreLabAction(formData: FormData): Promise<void> {
   redirect(`/learning/practice-lab/${scenarioRunId}`);
 }
 
+export async function uploadEvidenceAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const controlId = requireString(formData, "controlId");
+  const title = requireString(formData, "title");
+  const sourceUri = formData.get("sourceUri")?.toString().trim() || undefined;
+  const services = getZigServices();
+
+  const evidence = await services.evidence.createEvidence(context, { title, controlId, sourceUri });
+  await services.audit.recordAction(context, "create", "evidence", evidence.id, "Evidence recorded and linked to control");
+  redirect("/evidence");
+}
+
+export async function reviewEvidenceAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const evidenceId = requireString(formData, "evidenceId");
+  const decision = requireString(formData, "decision");
+  if (decision !== "approved" && decision !== "rejected") {
+    throw new Error(`Invalid evidence review decision: ${decision}`);
+  }
+  const services = getZigServices();
+
+  const outcome = await services.evidence.reviewEvidence(context, evidenceId, { status: decision });
+  await services.audit.recordAction(
+    context,
+    "review",
+    "evidence_reviews",
+    outcome.review.id,
+    `Evidence reviewed; decision ${decision}`,
+  );
+  redirect("/evidence");
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

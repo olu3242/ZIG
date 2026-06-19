@@ -198,8 +198,30 @@ export interface Evidence {
   controlId: string;
   title: string;
   status: EvidenceStatus;
+  sourceUri?: string;
   submittedById?: string;
   submittedAt?: Date;
+}
+
+export type ControlEvidenceCoverage = "supporting" | "primary";
+
+export interface ControlEvidence {
+  id: string;
+  tenantId: string;
+  controlId: string;
+  evidenceId: string;
+  coverage: ControlEvidenceCoverage;
+}
+
+export type EvidenceReviewStatus = "pending_review" | "approved" | "rejected";
+
+export interface EvidenceReview {
+  id: string;
+  tenantId: string;
+  evidenceId: string;
+  reviewerUserId?: string;
+  status: EvidenceReviewStatus;
+  reviewedAt?: Date;
 }
 
 export interface Task {
