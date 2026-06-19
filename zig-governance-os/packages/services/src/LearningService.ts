@@ -185,6 +185,36 @@ export class LearningService extends BaseService<LearningPathRecord> {
     return { enrolledPathCount, completedLessonCount };
   }
 
+  /**
+   * Real career-readiness rollup for the current actor: averages the
+   * student_twins columns that already have a confirmed writer
+   * (learningScore from lesson completion, knowledgeScore from
+   * assessments, skillsScore from scenarios/labs) plus portfolioScore and
+   * certificationScore, which read as 0 until a future Portfolio Engine
+   * writes them — an honest partial rollup, not a fabricated complete one.
+   * behaviorScore/confidenceScore are excluded: no data source for either
+   * exists anywhere in the codebase (docs/academy/CAREER_PATH_CROSSWALK.md).
+   */
+  async getCareerReadiness(context: TenantContext): Promise<{
+    readinessScore: number;
+    twin: StudentTwinRecord | null;
+  }> {
+    const userId = this.requireActorUserId(context);
+    const existing = await this.studentTwinRepository.findMany(context, {
+      filters: { learnerUserId: userId },
+    });
+    const twin = existing[0] ?? null;
+
+    if (!twin) {
+      return { readinessScore: 0, twin: null };
+    }
+
+    const inputs = [twin.learningScore, twin.knowledgeScore, twin.skillsScore, twin.portfolioScore, twin.certificationScore];
+    const readinessScore = Math.round(inputs.reduce((sum, value) => sum + value, 0) / inputs.length);
+
+    return { readinessScore, twin };
+  }
+
   private requireActorUserId(context: TenantContext): string {
     if (!context.actorUserId) {
       throw new Error("A signed-in actor is required to perform this learning action.");

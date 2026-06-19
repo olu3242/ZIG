@@ -181,3 +181,35 @@ These are not approved for immediate unordered implementation. They are document
 platform gaps that require architecture, data, security, acceptance, and module
 documentation before coding. Some will remain platform services; some may become
 first-class product modules after this PRD is expanded with clear justification.
+
+## 12. Documented module-surface gap: Career Readiness
+
+Per the same `CLAUDE.md` rule invoked in Section 11, this is the justification for Career
+Readiness, written before any career-engine code changes (`docs/certification/
+E2E_GAP_REPORT.md` #9 Career — FAIL: `CareerReadinessEngine` scores hardcoded literals, no
+DB I/O; `WORKFLOW_TRACEABILITY_MATRIX.md` #12 Career Progression — OPEN).
+
+**Decision: Career Readiness is NOT a 12th/13th top-level module.** It is scoped as a
+**real-data view under Executive Reporting** (module #11) — it reports a learner's
+governance-skill readiness computed from real platform signals, the same way Executive
+Reporting already "generates ... Readiness Report, Governance Summary" (Section 6.7) from
+live data rather than manually compiled documents. Concretely:
+
+- `apps/web/app/career/page.tsx` is rewritten to compute its readiness score from real,
+  persisted `student_twins` columns (`learningScore`, `knowledgeScore`, `skillsScore`,
+  already written by the Learning/Assessment/Lab workflow closures) rather than the
+  hardcoded `{portfolio: 72, projects: 76, labs: 81, ...}` literals the audit flagged.
+  `portfolioScore`/`certificationScore` remain `0`/unset until a future Portfolio Engine
+  (already scoped, not built, in `docs/academy/PORTFOLIO_ENGINE_ARCHITECTURE.md`) writes
+  them — this is an honest partial rollup, not a fabricated complete one.
+- No new top-level navigation item, module doc, or top-level service key is introduced.
+  The existing `LearningService`/`AssessmentService`/`ScenarioService` read paths
+  (already real, from Phases 1–3) are reused as-is; no `CareerService` is created.
+- `behaviorScore`/`confidenceScore` are excluded from the rollup, consistent with
+  `docs/academy/CAREER_PATH_CROSSWALK.md`'s finding that no plausible data source for
+  either exists anywhere in the codebase — inventing one was explicitly rejected there and
+  is not done here either.
+
+This decision applies only to Career Readiness's existing `/career` route. It does not
+resolve the separate, still-open Learning/Labs/Academy-vs-11-modules conflict in
+`docs/academy/HARMONIZATION_REPORT.md` Section 4, which remains undecided.

@@ -65,6 +65,13 @@ export async function loadVendors() {
   return { projects, vendors, assessmentsByVendorId, findingsByAssessmentId };
 }
 
+export async function loadCareer() {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+  const readiness = await services.learning.getCareerReadiness(context);
+  return { readiness };
+}
+
 export async function loadEvidence() {
   const { context } = await requireTenantContext();
   const services = getZigServices();
