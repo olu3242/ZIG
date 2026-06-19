@@ -5,6 +5,7 @@ const links = [
   "/admin/tenants",
   "/admin/users",
   "/admin/runtime",
+  "/admin/platform/auth",
   "/admin/audit",
   "/admin/billing",
   "/admin/automation",

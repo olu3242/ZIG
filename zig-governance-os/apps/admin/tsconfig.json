@@ -39,6 +39,7 @@
       "@zig/model-telemetry": ["../../packages/model-telemetry/src/index.ts"],
       "@zig/supervisor-agents": ["../../packages/supervisor-agents/src/index.ts"],
       "@zig/agents": ["../../packages/agents/src/index.ts"],
+      "@zig/auth": ["../../packages/auth/src/index.ts"],
       "@zig/whitelabel": ["../../packages/whitelabel/src/index.ts"],
       "@zig/billing": ["../../packages/billing/src/index.ts"],
       "@zig/automation": ["../../packages/automation/src/index.ts"],

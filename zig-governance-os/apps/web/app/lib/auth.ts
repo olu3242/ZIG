@@ -7,17 +7,29 @@ const sessionCookie = "zig_session";
 const tenantCookie = "zig_tenant_id";
 const userCookie = "zig_user_id";
 const personaCookie = "zig_persona";
+const sessionMaxAgeSeconds = 60 * 60 * 24 * 7;
+
+function protectedCookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    path: "/",
+    secure: process.env.NODE_ENV === "production",
+    maxAge: sessionMaxAgeSeconds,
+  };
+}
 
 export async function setSession(session: AuthSession): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(sessionCookie, JSON.stringify(session), { httpOnly: true, sameSite: "lax", path: "/" });
+  cookieStore.set(sessionCookie, JSON.stringify(session), protectedCookieOptions());
 }
 
 export async function setTenantProfile(tenantId: string, userId: string, persona: Persona): Promise<void> {
   const cookieStore = await cookies();
-  cookieStore.set(tenantCookie, tenantId, { httpOnly: true, sameSite: "lax", path: "/" });
-  cookieStore.set(userCookie, userId, { httpOnly: true, sameSite: "lax", path: "/" });
-  cookieStore.set(personaCookie, persona, { httpOnly: true, sameSite: "lax", path: "/" });
+  const options = protectedCookieOptions();
+  cookieStore.set(tenantCookie, tenantId, options);
+  cookieStore.set(userCookie, userId, options);
+  cookieStore.set(personaCookie, persona, options);
 }
 
 export async function clearSession(): Promise<void> {
@@ -34,7 +46,11 @@ export async function getSession(): Promise<AuthSession | null> {
   }
 
   try {
-    return JSON.parse(raw) as AuthSession;
+    const session = JSON.parse(raw) as Partial<AuthSession>;
+    if (!session.accessToken || !session.userId || !session.email) {
+      return null;
+    }
+    return session as AuthSession;
   } catch {
     return null;
   }

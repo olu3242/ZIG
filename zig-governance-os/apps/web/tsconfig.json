@@ -67,6 +67,7 @@
       "@zig/workforce-analytics": ["../../packages/workforce-analytics/src/index.ts"],
       "@zig/training-partners": ["../../packages/training-partners/src/index.ts"],
       "@zig/agents": ["../../packages/agents/src/index.ts"],
+      "@zig/auth": ["../../packages/auth/src/index.ts"],
       "@zig/agent-memory": ["../../packages/agent-memory/src/index.ts"],
       "@zig/approvals": ["../../packages/approvals/src/index.ts"],
       "@zig/runtime-queue": ["../../packages/runtime-queue/src/index.ts"],

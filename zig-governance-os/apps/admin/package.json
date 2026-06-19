@@ -28,6 +28,7 @@
     "@zig/model-telemetry": "0.1.0",
     "@zig/agents": "0.1.0",
     "@zig/api": "0.1.0",
+    "@zig/auth": "0.1.0",
     "@zig/automation": "0.1.0",
     "@zig/billing": "0.1.0",
     "@zig/frameworks": "0.1.0",

@@ -21,6 +21,7 @@ const nextConfig: NextConfig = {
     "@zig/model-telemetry",
     "@zig/supervisor-agents",
     "@zig/agents",
+    "@zig/auth",
     "@zig/whitelabel",
     "@zig/billing",
     "@zig/automation",

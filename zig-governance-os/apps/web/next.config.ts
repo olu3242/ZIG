@@ -1,8 +1,10 @@
 import type { NextConfig } from "next";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const repoRoot = join(dirname(fileURLToPath(import.meta.url)), "../..");
+loadRootEnvironment();
 
 const nextConfig: NextConfig = {
   turbopack: {
@@ -56,6 +58,7 @@ const nextConfig: NextConfig = {
     "@zig/workforce-analytics",
     "@zig/training-partners",
     "@zig/agents",
+    "@zig/auth",
     "@zig/agent-memory",
     "@zig/approvals",
     "@zig/runtime-queue",
@@ -103,3 +106,23 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+function loadRootEnvironment() {
+  const envPath = join(repoRoot, ".env.local");
+  if (!existsSync(envPath)) {
+    return;
+  }
+
+  for (const line of readFileSync(envPath, "utf8").split(/\r?\n/)) {
+    const match = line.match(/^\s*([^#=]+)=(.*)$/);
+    if (!match) {
+      continue;
+    }
+
+    const key = match[1].trim();
+    const value = match[2].trim().replace(/^["']|["']$/g, "");
+    if (!process.env[key]) {
+      process.env[key] = value;
+    }
+  }
+}

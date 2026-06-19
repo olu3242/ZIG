@@ -1,0 +1,827 @@
+Folder PATH listing
+Volume serial number is 0000027C 04AA:2BD5
+C:\CDEV\ZIG GRCOS\ZIG-GOVERNANCE-OS\PACKAGES
++---adaptive-learning
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-alerting
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-approvals
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-audit
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-certification
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-chaos
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-control-tower
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-costing
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-finops
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-handoffs
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-ingestion
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-ledger
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-memory
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-memory-governance
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-performance
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-raci
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-registry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-reliability
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-risk
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-scorecards
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-self-healing
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-telemetry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agent-workforce
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---agents
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---ai
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---ai-engine
++---ai-governance
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---api
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---apprenticeship
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---approvals
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---assessment-engine
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---assessment-os
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---audits
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---automation
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---autonomous-analytics
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---autonomous-evidence
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---autonomous-risk
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---autonomous-workflows
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---billing
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---board-reporting
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---capstones
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---career-os
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---career-readiness
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---certification-journeys
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---certification-readiness
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---cohorts
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---community
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---community-os
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---compliance-network
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---compliance-protocol
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---continuous-compliance
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---controls
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---copilot-runtime
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---corporate-academies
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---credentials
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---data-access
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|       |   AuditRepository.ts
+|       |   index.ts
+|       |   InMemoryDatabaseAdapter.ts
+|       |   records.ts
+|       |   repositories.ts
+|       |   SupabaseRestAdapter.ts
+|       |   TenantRepository.ts
+|       |   types.ts
+|       |   
+|       \---tests
+|               supabase-adapter.test.ts
+|               tenant-isolation.test.ts
+|               
++---developer-platform
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---digital-twin
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---employer-cloud
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---employer-matching
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---employment
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---enterprise-connectors
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---evidence
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---evidence-engine
++---exports
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---framework-engine
+|   |   package.json
+|   |   
+|   \---src
+|           FrameworkRegistry.ts
+|           index.ts
+|           
++---frameworks
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---gaps
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---governance-engine
+|   |   package.json
+|   |   
+|   \---src
+|       |   GovernanceScoreEngine.ts
+|       |   index.ts
+|       |   
+|       \---rbac
+|               index.ts
+|               RbacEngine.ts
+|               
++---imports
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---instructor-os
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---integrations
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---knowledge-graph
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-agents
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-analytics
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-engine
++---learning-kernel
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-marketplace
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-memory
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-orchestrator
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-os
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-paths
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-runtime
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---learning-telemetry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---marketplace
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---mentorship
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---mentorship-cloud
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---model-telemetry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---observability
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---partners
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---policies
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---practice-lab
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---regulatory-intelligence
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---risks
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---runtime-persistence
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---runtime-queue
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---runtime-telemetry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---scenario-engine
++---services
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|       |   AssetService.ts
+|       |   AuditService.ts
+|       |   BaseService.ts
+|       |   ControlService.ts
+|       |   EvidenceService.ts
+|       |   factory.ts
+|       |   FrameworkService.ts
+|       |   GovernanceService.ts
+|       |   index.ts
+|       |   LearningService.ts
+|       |   ProjectService.ts
+|       |   RiskService.ts
+|       |   ScenarioService.ts
+|       |   TenantService.ts
+|       |   UserService.ts
+|       |   
+|       +---automation
+|       |       index.ts
+|       |       
+|       +---billing
+|       |       index.ts
+|       |       
+|       +---exports
+|       |       index.ts
+|       |       
+|       +---imports
+|       |       index.ts
+|       |       
+|       \---tests
+|               service-layer.test.ts
+|               vertical-slice.test.ts
+|               
++---services-marketplace
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---skills-graph
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---student-lifecycle
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---student-twin
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---supervisor-agents
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---telemetry
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---training-cloud
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---training-marketplace
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---training-partners
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---types
+|   |   package.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---ui
+|   |   package.json
+|   |   
+|   \---src
+|           index.tsx
+|           
++---university-platform
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---webhooks
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---whitelabel
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
++---workforce-analytics
+|   |   package.json
+|   |   tsconfig.json
+|   |   
+|   \---src
+|           index.ts
+|           
+\---workforce-development
+    |   package.json
+    |   tsconfig.json
+    |   
+    \---src
+            index.ts
+            

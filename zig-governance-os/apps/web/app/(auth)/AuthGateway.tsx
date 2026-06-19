@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect } from "react";
 import { useFormStatus } from "react-dom";
 import { useOSInitialization } from "@/app/OSInitializationProvider";
 import Logo from "@/app/Logo";
@@ -9,6 +10,9 @@ import Logo from "@/app/Logo";
 interface AuthGatewayProps {
   mode: "login" | "signup";
   action: (formData: FormData) => Promise<void>;
+  googleAction: () => Promise<void>;
+  error?: string;
+  success?: string;
 }
 
 const copy = {
@@ -34,9 +38,38 @@ const copy = {
 
 const trustSignals = ["Tenant-isolated by design", "Persona-aware authorization", "AI-native compliance operations"];
 
-export function AuthGateway({ mode, action }: AuthGatewayProps) {
+const errorCopy: Record<string, string> = {
+  invalid_credentials: "We could not authenticate that email and password combination.",
+  oauth: "Google authentication did not complete. Please try again.",
+  password_length: "Use a password with at least 8 characters.",
+  password_mismatch: "Password confirmation did not match.",
+};
+
+const successCopy: Record<string, string> = {
+  check_email: "Check your inbox to finish workspace initialization.",
+  password_reset: "Password reset instructions have been sent if the email exists.",
+};
+
+export function AuthGateway({ mode, action, googleAction, error, success }: AuthGatewayProps) {
   const { isInitializing, beginInitialization } = useOSInitialization();
   const content = copy[mode];
+  const banner = error ? { type: "error" as const, message: errorCopy[error] ?? "Authentication failed." } :
+    success ? { type: "success" as const, message: successCopy[success] ?? "Authentication request completed." } :
+      null;
+
+  useEffect(() => {
+    console.log("[AUTH STEP]", "STEP_04_RENDER", mode);
+  }, [mode]);
+
+  function handleCredentialSubmit() {
+    console.log("[AUTH STEP]", "STEP_01_START", mode);
+    beginInitialization();
+  }
+
+  function handleGoogleSubmit() {
+    console.log("[AUTH STEP]", "STEP_03_OAUTH", mode);
+    beginInitialization();
+  }
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-zinc-950 text-white">
@@ -70,7 +103,10 @@ export function AuthGateway({ mode, action }: AuthGatewayProps) {
                   <p className="mt-3 text-sm leading-6 text-zinc-400">{content.description}</p>
                 </div>
 
-                <form action={action} onSubmit={beginInitialization} className="mt-8 grid gap-5">
+                {banner ? <AuthBanner type={banner.type} message={banner.message} /> : null}
+
+                <form action={action} onSubmit={handleCredentialSubmit} className="mt-8 grid gap-5">
+                  {mode === "signup" ? <AuthInput label="Full name" name="name" type="text" autoComplete="name" /> : null}
                   <AuthInput label="Email" name="email" type="email" autoComplete="email" />
                   <AuthInput
                     label="Password"
@@ -78,17 +114,38 @@ export function AuthGateway({ mode, action }: AuthGatewayProps) {
                     type="password"
                     autoComplete={mode === "login" ? "current-password" : "new-password"}
                   />
+                  {mode === "signup" ? (
+                    <AuthInput label="Confirm password" name="confirmPassword" type="password" autoComplete="new-password" />
+                  ) : (
+                    <label className="flex items-center justify-between gap-3 text-sm text-zinc-400">
+                      <span className="flex items-center gap-2">
+                        <input
+                          name="remember"
+                          type="checkbox"
+                          className="size-4 rounded border-zinc-800 bg-zinc-950 text-blue-500 focus:ring-blue-500/30"
+                        />
+                        Remember this workspace
+                      </span>
+                      <Link href="/forgot-password" className="transition hover:text-white">
+                        Forgot password?
+                      </Link>
+                    </label>
+                  )}
                   <SubmitButton label={content.button} />
                 </form>
 
+                <div className="my-6 flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-zinc-600">
+                  <span className="h-px flex-1 bg-zinc-800" />
+                  or
+                  <span className="h-px flex-1 bg-zinc-800" />
+                </div>
+
+                <form action={googleAction} onSubmit={handleGoogleSubmit}>
+                  <GoogleButton label={mode === "login" ? "Continue with Google" : "Initialize with Google"} />
+                </form>
+
                 <div className="mt-6 flex flex-col gap-3 border-t border-zinc-800 pt-5 text-sm text-zinc-400 sm:flex-row sm:items-center sm:justify-between">
-                  {mode === "login" ? (
-                    <Link href="/forgot-password" className="transition hover:text-white">
-                      Reset password
-                    </Link>
-                  ) : (
-                    <span className="text-zinc-500">Supabase Auth protected</span>
-                  )}
+                  <span className="text-zinc-500">Supabase Auth protected</span>
                   <span>
                     {content.alternate}{" "}
                     <Link href={content.alternateHref} className="font-medium text-blue-300 transition hover:text-blue-200">
@@ -102,6 +159,18 @@ export function AuthGateway({ mode, action }: AuthGatewayProps) {
         </div>
       </section>
     </main>
+  );
+}
+
+function AuthBanner({ type, message }: { type: "error" | "success"; message: string }) {
+  const styles = type === "error"
+    ? "border-red-500/30 bg-red-950/35 text-red-100"
+    : "border-emerald-500/30 bg-emerald-950/35 text-emerald-100";
+
+  return (
+    <div className={`mt-6 rounded-2xl border px-4 py-3 text-sm shadow-lg backdrop-blur-xl ${styles}`}>
+      {message}
+    </div>
   );
 }
 
@@ -199,6 +268,27 @@ function SubmitButton({ label }: { label: string }) {
       className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-blue-300/30 bg-zinc-900/50 text-sm font-semibold text-white shadow-[0_16px_40px_rgba(59,130,246,0.22),inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-xl transition hover:border-blue-300/60 hover:bg-zinc-900/70 disabled:cursor-wait disabled:opacity-80"
     >
       {pending ? <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" /> : label}
+    </button>
+  );
+}
+
+function GoogleButton({ label }: { label: string }) {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-zinc-800 bg-zinc-900/50 text-sm font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-xl transition hover:border-zinc-700 hover:bg-zinc-900/70 disabled:cursor-wait disabled:opacity-80"
+    >
+      {pending ? (
+        <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+      ) : (
+        <>
+          <span className="grid size-5 place-items-center rounded-full bg-white text-xs font-bold text-zinc-950">G</span>
+          {label}
+        </>
+      )}
     </button>
   );
 }
