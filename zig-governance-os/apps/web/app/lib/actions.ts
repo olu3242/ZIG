@@ -216,6 +216,59 @@ export async function reviewEvidenceAction(formData: FormData): Promise<void> {
   redirect("/evidence");
 }
 
+export async function createVendorAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const name = requireString(formData, "name");
+  const projectId = requireString(formData, "projectId");
+  const category = formData.get("category")?.toString().trim() || undefined;
+  const criticality = formData.get("criticality")?.toString().trim() || undefined;
+  const contactEmail = formData.get("contactEmail")?.toString().trim() || undefined;
+  const services = getZigServices();
+
+  const vendor = await services.risks.createVendor(context, {
+    name,
+    projectId,
+    category,
+    criticality: criticality as "low" | "medium" | "high" | "critical" | undefined,
+    contactEmail,
+  });
+  await services.audit.recordAction(context, "create", "vendors", vendor.id, "Vendor added to register");
+  redirect("/vendors");
+}
+
+export async function startVendorAssessmentAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const vendorId = requireString(formData, "vendorId");
+  const services = getZigServices();
+
+  const assessment = await services.risks.startVendorAssessment(context, vendorId);
+  await services.audit.recordAction(context, "create", "vendor_assessments", assessment.id, "Vendor assessment started");
+  redirect("/vendors");
+}
+
+export async function completeVendorAssessmentAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const vendorAssessmentId = requireString(formData, "vendorAssessmentId");
+  const likelihood = Number(requireString(formData, "likelihood"));
+  const impact = Number(requireString(formData, "impact"));
+  const findingTitle = formData.get("findingTitle")?.toString().trim();
+  const findingSeverity = formData.get("findingSeverity")?.toString().trim();
+  const services = getZigServices();
+
+  const findings = findingTitle
+    ? [{ title: findingTitle, severity: (findingSeverity ?? "medium") as "low" | "medium" | "high" | "critical" }]
+    : [];
+  const outcome = await services.risks.completeVendorAssessment(context, vendorAssessmentId, likelihood, impact, findings);
+  await services.audit.recordAction(
+    context,
+    "complete",
+    "vendor_assessments",
+    outcome.assessment.id,
+    `Vendor assessment completed; risk score ${outcome.assessment.riskScore}, ${outcome.findings.length} finding(s) recorded`,
+  );
+  redirect("/vendors");
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

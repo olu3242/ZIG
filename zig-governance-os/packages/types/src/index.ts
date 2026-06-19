@@ -361,6 +361,48 @@ export interface LabArtifact {
   score: number;
 }
 
+export type VendorCriticality = "low" | "medium" | "high" | "critical";
+export type VendorStatus = "active" | "offboarding" | "offboarded";
+
+export interface Vendor {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  name: string;
+  category: string;
+  criticality: VendorCriticality;
+  status: VendorStatus;
+  contactEmail?: string;
+}
+
+export type VendorAssessmentStatus = "in_progress" | "completed";
+
+export interface VendorAssessment {
+  id: string;
+  tenantId: string;
+  vendorId: string;
+  assessedByUserId?: string;
+  likelihood: number;
+  impact: number;
+  riskScore: number;
+  status: VendorAssessmentStatus;
+  assessedAt?: Date;
+}
+
+export type VendorFindingSeverity = "low" | "medium" | "high" | "critical";
+export type VendorFindingStatus = "open" | "remediating" | "resolved" | "accepted";
+
+export interface VendorFinding {
+  id: string;
+  tenantId: string;
+  vendorAssessmentId: string;
+  vendorId: string;
+  title: string;
+  severity: VendorFindingSeverity;
+  status: VendorFindingStatus;
+  remediationDueAt?: Date;
+}
+
 export interface GovernanceScore {
   tenantId: string;
   projectId: string;

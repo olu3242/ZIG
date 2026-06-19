@@ -131,6 +131,39 @@ code is written, per the Documentation-OS rule in `CLAUDE.md`.
 
 The current enterprise-platform gap analysis lives in `docs/product/gap-analysis.md`.
 
+## 11. Documented module-surface gap: Third-Party / Vendor Risk
+
+Per the "Do not add additional modules unless a clear gap is documented and justified in
+`docs/product/prd.md` first" rule in `CLAUDE.md`, this section is that justification,
+written before any vendor schema/service/route work begins (`docs/certification/
+E2E_GAP_REPORT.md` #7 Vendor — FAIL, `WORKFLOW_TRACEABILITY_MATRIX.md` #10 Vendor
+Assessment — OPEN, "no schema, no service, no route").
+
+**Decision: Third-Party/Vendor Risk is NOT a 12th top-level module.** It is justified and
+scoped as an **extension of the existing Risk Workspace and Evidence Workspace**, using the
+exact same shape Risk Workspace already uses for its own sub-entities
+(`risk_assessments`, `risk_acceptances`, `risk_reviews` all hang off `risks` without being
+separate modules). Concretely:
+
+- A vendor is a governance object that gets **assessed** (producing a risk posture) and
+  **reviewed periodically** (producing evidence) — i.e. it is a specialization of the
+  existing Asset → Risk → Evidence chain in the Universal Governance Model, not a new chain.
+  `lab_artifacts.artifact_type` already anticipates this with its `'vendor_review'` value
+  (added in the Lab Workflow closure, Phase 3).
+- New tables (`vendors`, `vendor_assessments`, `vendor_findings`) are scoped under the
+  **Risk Workspace** product surface area (module #5), the same way `risk_acceptances` and
+  `risk_reviews` are — they do not introduce a new top-level navigation item, a new module
+  doc under `docs/modules/`, or a new top-level service key beyond what `RiskService` (or a
+  narrowly-scoped sibling reusing its repositories) already owns.
+- This does not contradict the 11-module list: the list constrains **top-level product
+  surface**, not every sub-entity a workspace manages. Risk Workspace already manages four
+  distinct entity types under one module; Vendor Risk becomes a fifth.
+
+This decision applies only to Vendor. It does not retroactively resolve the separate,
+still-open Learning/Labs/Career/Academy-vs-11-modules conflict flagged in
+`docs/academy/HARMONIZATION_REPORT.md` Section 4, which remains a blocking, undecided
+question for those workflows.
+
 It identifies ten foundational capabilities that must be represented in future planning:
 
 - Workflow OS

@@ -30,6 +30,9 @@ import type {
   Tenant,
   User,
   UserProgress,
+  Vendor,
+  VendorAssessment,
+  VendorFinding,
 } from "@zig/types";
 
 export type TenantRecord = Tenant;
@@ -61,5 +64,8 @@ export type ScenarioRunRecord = ScenarioRun & { createdAt: Date; updatedAt: Date
 export type LabTaskRecord = LabTask & { createdAt: Date; updatedAt: Date };
 export type LabTaskSubmissionRecord = LabTaskSubmission & { createdAt: Date; updatedAt: Date };
 export type LabArtifactRecord = LabArtifact & { createdAt: Date; updatedAt: Date };
+export type VendorRecord = Vendor & { createdAt: Date; updatedAt: Date };
+export type VendorAssessmentRecord = VendorAssessment & { createdAt: Date; updatedAt: Date };
+export type VendorFindingRecord = VendorFinding & { createdAt: Date; updatedAt: Date };
 export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: Date; updatedAt: Date };
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };

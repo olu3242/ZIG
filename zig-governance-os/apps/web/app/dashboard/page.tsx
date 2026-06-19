@@ -8,6 +8,7 @@ const quickActions = [
   ["Learning Center", "/learning"],
   ["Scenario Lab", "/scenarios"],
   ["Practice Lab", "/learning/practice-lab"],
+  ["Vendor Risk", "/vendors"],
   ["AI Coach", "/ai-command"],
 ] as const;
 
@@ -45,6 +46,12 @@ export default async function DashboardPage() {
         <StatCard label="Evidence Records" value={stats.evidenceCount} detail="Rows persisted to the evidence table." />
         <StatCard label="Evidence Pending Review" value={stats.evidencePendingReviewCount} detail="Not yet approved via evidence_reviews." tone={stats.evidencePendingReviewCount > 0 ? "attention" : "healthy"} />
         <StatCard label="Evidence Approved" value={stats.evidenceApprovedCount} detail="evidence_reviews status = approved." tone="healthy" />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        <StatCard label="Vendors" value={stats.vendorCount} detail="Rows persisted to the vendors table." />
+        <StatCard label="Open Vendor Findings" value={stats.vendorOpenFindingCount} detail="vendor_findings status open or remediating." tone={stats.vendorOpenFindingCount > 0 ? "attention" : "healthy"} />
+        <StatCard label="Avg. Vendor Risk Score" value={stats.vendorAverageRiskScore} detail="Across completed vendor_assessments." />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">

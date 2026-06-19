@@ -34,6 +34,9 @@ import type {
   TenantRecord,
   UserProgressRecord,
   UserRecord,
+  VendorAssessmentRecord,
+  VendorFindingRecord,
+  VendorRecord,
 } from "./records";
 
 export interface ZigRepositories {
@@ -67,6 +70,9 @@ export interface ZigRepositories {
   labTasks: TenantRepository<LabTaskRecord>;
   labTaskSubmissions: TenantRepository<LabTaskSubmissionRecord>;
   labArtifacts: TenantRepository<LabArtifactRecord>;
+  vendors: TenantRepository<VendorRecord>;
+  vendorAssessments: TenantRepository<VendorAssessmentRecord>;
+  vendorFindings: TenantRepository<VendorFindingRecord>;
   governanceScores: TenantRepository<GovernanceScoreRecord>;
   recommendations: TenantRepository<RecommendationRecord>;
 }
@@ -105,6 +111,9 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     labTasks: new TenantRepository("lab_tasks", new SupabaseRestAdapter<LabTaskRecord>(config), auditEvents),
     labTaskSubmissions: new TenantRepository("lab_task_submissions", new SupabaseRestAdapter<LabTaskSubmissionRecord>(config), auditEvents),
     labArtifacts: new TenantRepository("lab_artifacts", new SupabaseRestAdapter<LabArtifactRecord>(config), auditEvents),
+    vendors: new TenantRepository("vendors", new SupabaseRestAdapter<VendorRecord>(config), auditEvents),
+    vendorAssessments: new TenantRepository("vendor_assessments", new SupabaseRestAdapter<VendorAssessmentRecord>(config), auditEvents),
+    vendorFindings: new TenantRepository("vendor_findings", new SupabaseRestAdapter<VendorFindingRecord>(config), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
     recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
   };
@@ -144,6 +153,9 @@ export function createInMemoryRepositories(): ZigRepositories {
     labTasks: new TenantRepository("lab_tasks", new InMemoryDatabaseAdapter<LabTaskRecord>(), auditEvents),
     labTaskSubmissions: new TenantRepository("lab_task_submissions", new InMemoryDatabaseAdapter<LabTaskSubmissionRecord>(), auditEvents),
     labArtifacts: new TenantRepository("lab_artifacts", new InMemoryDatabaseAdapter<LabArtifactRecord>(), auditEvents),
+    vendors: new TenantRepository("vendors", new InMemoryDatabaseAdapter<VendorRecord>(), auditEvents),
+    vendorAssessments: new TenantRepository("vendor_assessments", new InMemoryDatabaseAdapter<VendorAssessmentRecord>(), auditEvents),
+    vendorFindings: new TenantRepository("vendor_findings", new InMemoryDatabaseAdapter<VendorFindingRecord>(), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new InMemoryDatabaseAdapter<GovernanceScoreRecord>(), auditEvents),
     recommendations: new TenantRepository("recommendations", new InMemoryDatabaseAdapter<RecommendationRecord>(), auditEvents),
   };

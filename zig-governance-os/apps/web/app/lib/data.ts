@@ -4,7 +4,7 @@ import { requireTenantContext } from "./auth";
 export async function loadDashboard() {
   const { context, persona } = await requireTenantContext();
   const services = getZigServices();
-  const [tenant, projects, frameworks, learning, assessments, labs, evidence] = await Promise.all([
+  const [tenant, projects, frameworks, learning, assessments, labs, evidence, vendorRisk] = await Promise.all([
     services.tenants.findProfileTenant(context),
     services.projects.findMany(context),
     services.frameworks.findAvailableFrameworks(context),
@@ -12,6 +12,7 @@ export async function loadDashboard() {
     services.assessments.getLearnerAssessmentSummary(context),
     services.scenarios.getLearnerLabSummary(context),
     services.evidence.getEvidenceSummary(context),
+    services.risks.getVendorRiskSummary(context),
   ]);
   const activeProjects = projects.filter((project) => project.status === "active").length;
   const latestProject = projects[0];
@@ -36,8 +37,32 @@ export async function loadDashboard() {
       evidenceCount: evidence.evidenceCount,
       evidencePendingReviewCount: evidence.pendingReviewCount,
       evidenceApprovedCount: evidence.approvedCount,
+      vendorCount: vendorRisk.vendorCount,
+      vendorOpenFindingCount: vendorRisk.openFindingCount,
+      vendorAverageRiskScore: vendorRisk.averageRiskScore,
     },
   };
+}
+
+export async function loadVendors() {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+  const [projects, vendors] = await Promise.all([
+    services.projects.findMany(context),
+    services.risks.findVendors(context),
+  ]);
+
+  const assessmentsByVendorId = new Map<string, Awaited<ReturnType<typeof services.risks.findVendorAssessments>>>();
+  const findingsByAssessmentId = new Map<string, Awaited<ReturnType<typeof services.risks.findVendorFindings>>>();
+  for (const vendor of vendors) {
+    const assessments = await services.risks.findVendorAssessments(context, vendor.id);
+    assessmentsByVendorId.set(vendor.id, assessments);
+    for (const assessment of assessments) {
+      findingsByAssessmentId.set(assessment.id, await services.risks.findVendorFindings(context, assessment.id));
+    }
+  }
+
+  return { projects, vendors, assessmentsByVendorId, findingsByAssessmentId };
 }
 
 export async function loadEvidence() {
