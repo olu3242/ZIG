@@ -307,6 +307,38 @@ export interface ScenarioRun {
   completedAt?: Date;
 }
 
+export interface LabTask {
+  id: string;
+  tenantId: string;
+  scenarioId: string;
+  title: string;
+  instructions: string;
+  expectedOutputType: string;
+  weight: number;
+  orderIndex: number;
+}
+
+export type LabArtifactType = "risk_register" | "audit_finding" | "gap_assessment" | "evidence_record" | "vendor_review";
+
+export interface LabTaskSubmission {
+  id: string;
+  tenantId: string;
+  scenarioRunId: string;
+  labTaskId: string;
+  submittedBy?: string;
+  content: Record<string, unknown>;
+  isComplete: boolean;
+}
+
+export interface LabArtifact {
+  id: string;
+  tenantId: string;
+  scenarioRunId: string;
+  artifactType: LabArtifactType;
+  content: Record<string, unknown>;
+  score: number;
+}
+
 export interface GovernanceScore {
   tenantId: string;
   projectId: string;

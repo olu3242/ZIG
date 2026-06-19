@@ -11,6 +11,9 @@ import type {
   EvidenceRecord,
   FrameworkRecord,
   GovernanceScoreRecord,
+  LabArtifactRecord,
+  LabTaskRecord,
+  LabTaskSubmissionRecord,
   LearningAssessmentRecord,
   LearningAssessmentQuestionRecord,
   LearningAssessmentResultRecord,
@@ -57,6 +60,9 @@ export interface ZigRepositories {
   studentTwins: TenantRepository<StudentTwinRecord>;
   scenarios: TenantRepository<ScenarioRecord>;
   scenarioRuns: TenantRepository<ScenarioRunRecord>;
+  labTasks: TenantRepository<LabTaskRecord>;
+  labTaskSubmissions: TenantRepository<LabTaskSubmissionRecord>;
+  labArtifacts: TenantRepository<LabArtifactRecord>;
   governanceScores: TenantRepository<GovernanceScoreRecord>;
   recommendations: TenantRepository<RecommendationRecord>;
 }
@@ -90,6 +96,9 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     studentTwins: new TenantRepository("student_twins", new SupabaseRestAdapter<StudentTwinRecord>(config), auditEvents),
     scenarios: new TenantRepository("scenarios", new SupabaseRestAdapter<ScenarioRecord>(config), auditEvents),
     scenarioRuns: new TenantRepository("scenario_runs", new SupabaseRestAdapter<ScenarioRunRecord>(config), auditEvents),
+    labTasks: new TenantRepository("lab_tasks", new SupabaseRestAdapter<LabTaskRecord>(config), auditEvents),
+    labTaskSubmissions: new TenantRepository("lab_task_submissions", new SupabaseRestAdapter<LabTaskSubmissionRecord>(config), auditEvents),
+    labArtifacts: new TenantRepository("lab_artifacts", new SupabaseRestAdapter<LabArtifactRecord>(config), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
     recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
   };
@@ -124,6 +133,9 @@ export function createInMemoryRepositories(): ZigRepositories {
     studentTwins: new TenantRepository("student_twins", new InMemoryDatabaseAdapter<StudentTwinRecord>(), auditEvents),
     scenarios: new TenantRepository("scenarios", new InMemoryDatabaseAdapter<ScenarioRecord>(), auditEvents),
     scenarioRuns: new TenantRepository("scenario_runs", new InMemoryDatabaseAdapter<ScenarioRunRecord>(), auditEvents),
+    labTasks: new TenantRepository("lab_tasks", new InMemoryDatabaseAdapter<LabTaskRecord>(), auditEvents),
+    labTaskSubmissions: new TenantRepository("lab_task_submissions", new InMemoryDatabaseAdapter<LabTaskSubmissionRecord>(), auditEvents),
+    labArtifacts: new TenantRepository("lab_artifacts", new InMemoryDatabaseAdapter<LabArtifactRecord>(), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new InMemoryDatabaseAdapter<GovernanceScoreRecord>(), auditEvents),
     recommendations: new TenantRepository("recommendations", new InMemoryDatabaseAdapter<RecommendationRecord>(), auditEvents),
   };

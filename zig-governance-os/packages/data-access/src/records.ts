@@ -7,6 +7,9 @@ import type {
   Evidence,
   Framework,
   GovernanceScore,
+  LabArtifact,
+  LabTask,
+  LabTaskSubmission,
   LearningAssessment,
   LearningAssessmentQuestion,
   LearningAssessmentResult,
@@ -51,5 +54,8 @@ export type UserProgressRecord = UserProgress & { createdAt: Date; updatedAt: Da
 export type StudentTwinRecord = StudentTwin & { createdAt: Date; updatedAt: Date };
 export type ScenarioRecord = Scenario & { createdAt: Date; updatedAt: Date };
 export type ScenarioRunRecord = ScenarioRun & { createdAt: Date; updatedAt: Date };
+export type LabTaskRecord = LabTask & { createdAt: Date; updatedAt: Date };
+export type LabTaskSubmissionRecord = LabTaskSubmission & { createdAt: Date; updatedAt: Date };
+export type LabArtifactRecord = LabArtifact & { createdAt: Date; updatedAt: Date };
 export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: Date; updatedAt: Date };
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };

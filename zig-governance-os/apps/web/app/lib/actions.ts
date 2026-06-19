@@ -149,6 +149,41 @@ export async function submitAssessmentAction(formData: FormData): Promise<void> 
   redirect(`/assessment/${assessmentId}?score=${outcome.score}&passed=${outcome.passed}`);
 }
 
+export async function launchLabAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const scenarioId = requireString(formData, "scenarioId");
+  const services = getZigServices();
+  const run = await services.scenarios.launchLab(context, scenarioId);
+  await services.audit.recordAction(context, "create", "scenario_runs", run.id, "Lab launched from scenario");
+  redirect(`/learning/practice-lab/${run.id}`);
+}
+
+export async function completeLabTaskAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const scenarioRunId = requireString(formData, "scenarioRunId");
+  const labTaskId = requireString(formData, "labTaskId");
+  const response = formData.get("response")?.toString() ?? "";
+  const services = getZigServices();
+  const submission = await services.scenarios.completeTask(context, scenarioRunId, labTaskId, { response });
+  await services.audit.recordAction(context, "complete", "lab_task_submissions", submission.id, "Lab task submission persisted");
+  redirect(`/learning/practice-lab/${scenarioRunId}`);
+}
+
+export async function scoreLabAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const scenarioRunId = requireString(formData, "scenarioRunId");
+  const services = getZigServices();
+  const outcome = await services.scenarios.scoreAndComplete(context, scenarioRunId);
+  await services.audit.recordAction(
+    context,
+    "complete",
+    "lab_artifacts",
+    outcome.artifact.id,
+    `Lab scored ${outcome.score}% (${outcome.completedTaskCount}/${outcome.totalTaskCount} tasks); skills signal updated`,
+  );
+  redirect(`/learning/practice-lab/${scenarioRunId}`);
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

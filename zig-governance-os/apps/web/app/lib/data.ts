@@ -4,12 +4,13 @@ import { requireTenantContext } from "./auth";
 export async function loadDashboard() {
   const { context, persona } = await requireTenantContext();
   const services = getZigServices();
-  const [tenant, projects, frameworks, learning, assessments] = await Promise.all([
+  const [tenant, projects, frameworks, learning, assessments, labs] = await Promise.all([
     services.tenants.findProfileTenant(context),
     services.projects.findMany(context),
     services.frameworks.findAvailableFrameworks(context),
     services.learning.getLearnerSummary(context),
     services.assessments.getLearnerAssessmentSummary(context),
+    services.scenarios.getLearnerLabSummary(context),
   ]);
   const activeProjects = projects.filter((project) => project.status === "active").length;
   const latestProject = projects[0];
@@ -29,6 +30,8 @@ export async function loadDashboard() {
       completedLessonCount: learning.completedLessonCount,
       assessmentAttemptCount: assessments.attemptCount,
       assessmentPassedCount: assessments.passedCount,
+      labLaunchedCount: labs.launchedRunCount,
+      labCompletedCount: labs.completedRunCount,
     },
   };
 }

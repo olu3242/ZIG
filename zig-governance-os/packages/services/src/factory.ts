@@ -52,7 +52,14 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.learningAssessmentResults,
       repositories.studentTwins,
     ),
-    scenarios: new ScenarioService(repositories.scenarios, repositories.scenarioRuns),
+    scenarios: new ScenarioService(
+      repositories.scenarios,
+      repositories.scenarioRuns,
+      repositories.labTasks,
+      repositories.labTaskSubmissions,
+      repositories.labArtifacts,
+      repositories.studentTwins,
+    ),
     governance: new GovernanceService(repositories.governanceScores, repositories.recommendations),
   };
 }

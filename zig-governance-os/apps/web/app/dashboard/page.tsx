@@ -7,6 +7,7 @@ const quickActions = [
   ["Framework Library", "/frameworks"],
   ["Learning Center", "/learning"],
   ["Scenario Lab", "/scenarios"],
+  ["Practice Lab", "/learning/practice-lab"],
   ["AI Coach", "/ai-command"],
 ] as const;
 
@@ -33,6 +34,11 @@ export default async function DashboardPage() {
         <StatCard label="Lessons Completed" value={stats.completedLessonCount} detail="Lesson completions persisted to user_progress." tone="healthy" />
         <StatCard label="Assessment Attempts" value={stats.assessmentAttemptCount} detail="Submitted attempts persisted to learning_assessment_results." />
         <StatCard label="Assessments Passed" value={stats.assessmentPassedCount} detail="Attempts that met the assessment's passing score." tone="healthy" />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2">
+        <StatCard label="Labs Launched" value={stats.labLaunchedCount} detail="scenario_runs created from the Practice Lab." />
+        <StatCard label="Labs Completed" value={stats.labCompletedCount} detail="Lab runs scored with a persisted lab_artifacts row." tone="healthy" />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
