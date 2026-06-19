@@ -14,7 +14,9 @@
       "@zig/billing": ["../billing/src/index.ts"],
       "@zig/automation": ["../automation/src/index.ts"],
       "@zig/imports": ["../imports/src/index.ts"],
-      "@zig/exports": ["../exports/src/index.ts"]
+      "@zig/exports": ["../exports/src/index.ts"],
+      "@zig/progress-engine": ["../progress-engine/src/index.ts"],
+      "@zig/completion-engine": ["../completion-engine/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"],

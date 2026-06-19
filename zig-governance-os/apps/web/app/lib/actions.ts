@@ -102,6 +102,31 @@ export async function logoutAction(): Promise<void> {
   redirect("/login");
 }
 
+export async function enrollAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const learningPathId = requireString(formData, "learningPathId");
+  const services = getZigServices();
+  await services.learning.enroll(context, learningPathId);
+  await services.audit.recordAction(context, "create", "user_progress", learningPathId, "Learner enrolled in learning path");
+  redirect(`/learning/${learningPathId}`);
+}
+
+export async function completeLessonAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const lessonId = requireString(formData, "lessonId");
+  const learningPathId = requireString(formData, "learningPathId");
+  const services = getZigServices();
+  const result = await services.learning.completeLesson(context, lessonId);
+  await services.audit.recordAction(
+    context,
+    "complete",
+    "user_progress",
+    result.progress.id,
+    `Lesson completed; learning score ${result.learningScore}, career score ${result.careerScore}`,
+  );
+  redirect(`/learning/${learningPathId}`);
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

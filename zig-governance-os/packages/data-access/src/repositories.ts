@@ -21,8 +21,10 @@ import type {
   RoleRecord,
   ScenarioRecord,
   ScenarioRunRecord,
+  StudentTwinRecord,
   TaskRecord,
   TenantRecord,
+  UserProgressRecord,
   UserRecord,
 } from "./records";
 
@@ -45,6 +47,8 @@ export interface ZigRepositories {
   assessments: TenantRepository<AssessmentRecord>;
   learningPaths: TenantRepository<LearningPathRecord>;
   learningModules: TenantRepository<LearningModuleRecord>;
+  userProgress: TenantRepository<UserProgressRecord>;
+  studentTwins: TenantRepository<StudentTwinRecord>;
   scenarios: TenantRepository<ScenarioRecord>;
   scenarioRuns: TenantRepository<ScenarioRunRecord>;
   governanceScores: TenantRepository<GovernanceScoreRecord>;
@@ -73,6 +77,8 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     assessments: new TenantRepository("assessments", new SupabaseRestAdapter<AssessmentRecord>(config), auditEvents),
     learningPaths: new TenantRepository("learning_paths", new SupabaseRestAdapter<LearningPathRecord>(config), auditEvents),
     learningModules: new TenantRepository("learning_modules", new SupabaseRestAdapter<LearningModuleRecord>(config), auditEvents),
+    userProgress: new TenantRepository("user_progress", new SupabaseRestAdapter<UserProgressRecord>(config), auditEvents),
+    studentTwins: new TenantRepository("student_twins", new SupabaseRestAdapter<StudentTwinRecord>(config), auditEvents),
     scenarios: new TenantRepository("scenarios", new SupabaseRestAdapter<ScenarioRecord>(config), auditEvents),
     scenarioRuns: new TenantRepository("scenario_runs", new SupabaseRestAdapter<ScenarioRunRecord>(config), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
@@ -102,6 +108,8 @@ export function createInMemoryRepositories(): ZigRepositories {
     assessments: new TenantRepository("assessments", new InMemoryDatabaseAdapter<AssessmentRecord>(), auditEvents),
     learningPaths: new TenantRepository("learning_paths", new InMemoryDatabaseAdapter<LearningPathRecord>(), auditEvents),
     learningModules: new TenantRepository("learning_modules", new InMemoryDatabaseAdapter<LearningModuleRecord>(), auditEvents),
+    userProgress: new TenantRepository("user_progress", new InMemoryDatabaseAdapter<UserProgressRecord>(), auditEvents),
+    studentTwins: new TenantRepository("student_twins", new InMemoryDatabaseAdapter<StudentTwinRecord>(), auditEvents),
     scenarios: new TenantRepository("scenarios", new InMemoryDatabaseAdapter<ScenarioRecord>(), auditEvents),
     scenarioRuns: new TenantRepository("scenario_runs", new InMemoryDatabaseAdapter<ScenarioRunRecord>(), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new InMemoryDatabaseAdapter<GovernanceScoreRecord>(), auditEvents),

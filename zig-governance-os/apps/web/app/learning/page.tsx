@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AdaptiveLearningEngine } from "@zig/adaptive-learning";
 import { AssessmentEngine } from "@zig/assessment-engine";
 import { LearningAnalytics } from "@zig/learning-analytics";
@@ -82,6 +83,9 @@ export default async function LearningPage() {
               <h2 className="font-display text-lg font-semibold">{path.title}</h2>
               <p className="mt-2 text-sm leading-6 text-[var(--zig-ink-muted)]">{path.description}</p>
               <p className="mt-3 font-mono text-xs uppercase text-[var(--zig-teal)]">{path.progressPercent}% complete</p>
+              <Link href={`/learning/${path.id}`} className="mt-3 inline-block text-sm font-medium underline underline-offset-4">
+                Open path
+              </Link>
             </article>
           ))}
         </div>

@@ -17,9 +17,11 @@ import type {
   Role,
   Scenario,
   ScenarioRun,
+  StudentTwin,
   Task,
   Tenant,
   User,
+  UserProgress,
 } from "@zig/types";
 
 export type TenantRecord = Tenant;
@@ -39,6 +41,8 @@ export type AuditRecord = Audit & { createdAt: Date; updatedAt: Date };
 export type AssessmentRecord = Assessment & { tenantId: string; projectId: string; frameworkId?: string; status: string; score?: number; createdAt: Date; updatedAt: Date };
 export type LearningPathRecord = LearningPath & { createdAt: Date; updatedAt: Date };
 export type LearningModuleRecord = LearningModule & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type UserProgressRecord = UserProgress & { createdAt: Date; updatedAt: Date };
+export type StudentTwinRecord = StudentTwin & { createdAt: Date; updatedAt: Date };
 export type ScenarioRecord = Scenario & { createdAt: Date; updatedAt: Date };
 export type ScenarioRunRecord = ScenarioRun & { createdAt: Date; updatedAt: Date };
 export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: Date; updatedAt: Date };

@@ -38,7 +38,12 @@ export function createServices(repositories: ZigRepositories): ZigServices {
     risks: new RiskService(repositories.risks, repositories.riskAssessments),
     controls: new ControlService(repositories.controls, repositories.controlMappings),
     evidence: new EvidenceService(repositories.evidence),
-    learning: new LearningService(repositories.learningPaths, repositories.learningModules),
+    learning: new LearningService(
+      repositories.learningPaths,
+      repositories.learningModules,
+      repositories.userProgress,
+      repositories.studentTwins,
+    ),
     scenarios: new ScenarioService(repositories.scenarios, repositories.scenarioRuns),
     governance: new GovernanceService(repositories.governanceScores, repositories.recommendations),
   };

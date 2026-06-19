@@ -12,9 +12,11 @@
     "docs:lint": "node scripts/check-docs.js",
     "build": "npm run build --workspace web && npm run build --workspace admin",
     "test": "npm run test --workspaces --if-present",
+    "test:e2e": "playwright test -c tests/e2e/playwright.config.ts",
     "typecheck": "npm run typecheck --workspace @zig/data-access && npm run typecheck --workspace @zig/services"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.0",
     "serve": "^14.2.1"
   },
   "workspaces": [

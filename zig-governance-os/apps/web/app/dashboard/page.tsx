@@ -28,6 +28,11 @@ export default async function DashboardPage() {
         <StatCard label="Onboarding" value={stats.onboardingState} detail="Vertical slice readiness for the current tenant." />
       </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <StatCard label="Learning Paths Enrolled" value={stats.enrolledPathCount} detail="Distinct learning paths with a user_progress row for this user." />
+        <StatCard label="Lessons Completed" value={stats.completedLessonCount} detail="Lesson completions persisted to user_progress." tone="healthy" />
+      </div>
+
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
         <Section title="Projects">
           <DataTable

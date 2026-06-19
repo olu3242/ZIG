@@ -12,10 +12,12 @@
   "dependencies": {
     "@zig/automation": "0.1.0",
     "@zig/billing": "0.1.0",
+    "@zig/completion-engine": "0.1.0",
     "@zig/data-access": "0.1.0",
     "@zig/exports": "0.1.0",
     "@zig/framework-engine": "0.1.0",
     "@zig/imports": "0.1.0",
+    "@zig/progress-engine": "0.1.0",
     "@zig/types": "0.1.0"
   },
   "devDependencies": {

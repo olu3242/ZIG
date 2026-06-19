@@ -245,6 +245,19 @@ export interface Assessment {
   passingScore: number;
 }
 
+export type UserProgressStatus = "enrolled" | "in_progress" | "completed";
+
+export interface UserProgress {
+  id: string;
+  tenantId: string;
+  userId: string;
+  learningPathId: string;
+  moduleId?: string;
+  lessonId?: string;
+  status: UserProgressStatus;
+  completedAt?: Date;
+}
+
 export interface Scenario {
   id: string;
   tenantId: string;
@@ -275,6 +288,21 @@ export interface GovernanceScore {
   assessmentCompletion: number;
   explanation: string;
   calculatedAt: Date;
+}
+
+export interface StudentTwin {
+  id: string;
+  tenantId: string;
+  learnerUserId: string;
+  knowledgeScore: number;
+  skillsScore: number;
+  competencyScore: number;
+  portfolioScore: number;
+  certificationScore: number;
+  careerScore: number;
+  behaviorScore: number;
+  confidenceScore: number;
+  learningScore: number;
 }
 
 export interface Recommendation {
