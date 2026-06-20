@@ -5,6 +5,7 @@ import { FrameworkRegistry } from "@zig/framework-engine";
 import { auditAuth, clearSession, requireSession, requireTenantContext, setSession, setTenantProfile } from "./auth";
 import { findTenantProfileByAuthUserId, getZigServices, loginWithEmail, requestPasswordReset, signUpWithEmail } from "./supabase";
 import { trackForLearningPath } from "./certificationTracks";
+import type { QuestionnaireTemplateType, TrustDocumentCategory, TrustDocumentVisibility } from "@zig/types";
 
 export async function signupAction(formData: FormData): Promise<void> {
   const email = requireString(formData, "email");
@@ -320,6 +321,133 @@ export async function awardCertificationAction(formData: FormData): Promise<void
   const award = await services.certificationAwards.awardCertification(context, track);
   await services.audit.recordAction(context, "create", "certification_awards", award.id, `Certification awarded: ${track.title}`);
   redirect("/certifications");
+}
+
+export async function publishTrustProfileAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  const slug = requireString(formData, "slug");
+  const organizationName = requireString(formData, "organizationName");
+  const tagline = formData.get("tagline")?.toString().trim() || undefined;
+  const supportEmail = formData.get("supportEmail")?.toString().trim() || undefined;
+  const services = getZigServices();
+
+  const profile = await services.trustCenter.upsertProfile(context, projectId, {
+    slug,
+    organizationName,
+    tagline,
+    supportEmail,
+  });
+  await services.trustCenter.setPublished(context, profile.id, true);
+  await services.audit.recordAction(context, "create", "trust_center_profiles", profile.id, "Trust Center profile published");
+  redirect("/trust-center");
+}
+
+export async function publishTrustDocumentAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  const title = requireString(formData, "title");
+  const category = requireString(formData, "category") as TrustDocumentCategory;
+  const visibility = requireString(formData, "visibility") as TrustDocumentVisibility;
+  const sourceUri = requireString(formData, "sourceUri");
+  const services = getZigServices();
+
+  const document = await services.trustDocuments.publish(context, projectId, { title, category, visibility, sourceUri });
+  await services.audit.recordAction(context, "create", "trust_documents", document.id, "Trust document published");
+  redirect("/trust-center");
+}
+
+export async function submitTrustRequestAction(formData: FormData): Promise<void> {
+  const services = getZigServices();
+  const projectId = requireString(formData, "projectId");
+  const requesterName = requireString(formData, "requesterName");
+  const requesterEmail = requireString(formData, "requesterEmail");
+  const requesterCompany = formData.get("requesterCompany")?.toString().trim() || undefined;
+  const reason = requireString(formData, "reason");
+  const documentId = formData.get("documentId")?.toString().trim() || undefined;
+  const context = { tenantId: requireString(formData, "tenantId") };
+
+  const request = await services.trustRequests.submitRequest(context, projectId, {
+    documentId,
+    requesterName,
+    requesterEmail,
+    requesterCompany,
+    reason,
+  });
+  await services.trustAnalytics.logEvent(context, projectId, { eventType: "document_request", resourceId: documentId, visitorEmail: requesterEmail });
+  await services.audit.recordAction(context, "create", "trust_requests", request.id, "Trust access request submitted");
+  redirect(`/trust/request-access?slug=${formData.get("slug")?.toString() ?? ""}&submitted=1`);
+}
+
+export async function decideTrustRequestAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const requestId = requireString(formData, "requestId");
+  const approve = formData.get("decision")?.toString() === "approved";
+  const services = getZigServices();
+
+  const request = await services.trustRequests.decide(context, requestId, approve);
+  await services.audit.recordAction(context, "review", "trust_requests", request.id, `Trust request ${request.status}`);
+  redirect("/trust-center");
+}
+
+export async function fulfillTrustRequestAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const requestId = requireString(formData, "requestId");
+  const services = getZigServices();
+
+  const request = await services.trustRequests.fulfill(context, requestId);
+  await services.audit.recordAction(context, "complete", "trust_requests", request.id, "Trust document released");
+  redirect("/trust-center");
+}
+
+export async function createQuestionnaireTemplateAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const name = requireString(formData, "name");
+  const templateType = requireString(formData, "templateType") as QuestionnaireTemplateType;
+  const questionsRaw = requireString(formData, "questions");
+  const questions = questionsRaw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((text, index) => ({ key: `q${index + 1}`, text }));
+  const services = getZigServices();
+
+  const template = await services.questionnaires.createTemplate(context, { name, templateType, questions });
+  await services.audit.recordAction(context, "create", "questionnaire_templates", template.id, "Questionnaire template created");
+  redirect("/trust-center");
+}
+
+export async function startQuestionnaireSubmissionAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  const templateId = requireString(formData, "templateId");
+  const requesterName = requireString(formData, "requesterName");
+  const requesterEmail = requireString(formData, "requesterEmail");
+  const services = getZigServices();
+
+  const submission = await services.questionnaires.startSubmission(context, projectId, templateId, { requesterName, requesterEmail });
+  await services.audit.recordAction(context, "create", "questionnaire_submissions", submission.id, "Questionnaire submission started");
+  redirect("/trust-center");
+}
+
+export async function autoAnswerQuestionnaireAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const submissionId = requireString(formData, "submissionId");
+  const services = getZigServices();
+
+  const answers = await services.questionnaires.autoAnswer(context, submissionId);
+  await services.audit.recordAction(context, "generate", "questionnaire_answers", submissionId, `${answers.length} questionnaire answer(s) auto-generated`);
+  redirect("/trust-center");
+}
+
+export async function completeQuestionnaireSubmissionAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const submissionId = requireString(formData, "submissionId");
+  const services = getZigServices();
+
+  const submission = await services.questionnaires.completeSubmission(context, submissionId);
+  await services.audit.recordAction(context, "complete", "questionnaire_submissions", submission.id, "Questionnaire submission completed");
+  redirect("/trust-center");
 }
 
 function requireString(formData: FormData, key: string): string {

@@ -1,5 +1,6 @@
 import { BaseService } from "./BaseService";
 import { computeFrameworkCoverage, computeFrameworkGaps } from "./frameworkIntelligence";
+import { computeDocumentReadiness } from "./trustIntelligence";
 import type { CoachContextType } from "@zig/types";
 import type {
   CoachConversationRecord,
@@ -12,6 +13,7 @@ import type {
   StudentTwinRecord,
   TenantContext,
   TenantRepository,
+  TrustDocumentRecord,
 } from "@zig/data-access";
 
 export interface CoachReply {
@@ -36,6 +38,7 @@ export class CoachService extends BaseService<CoachConversationRecord> {
     private readonly frameworkControlRepository: TenantRepository<FrameworkControlRecord>,
     private readonly controlEvidenceRepository: TenantRepository<ControlEvidenceRecord>,
     private readonly evidenceReviewRepository: TenantRepository<EvidenceReviewRecord>,
+    private readonly trustDocumentRepository: TenantRepository<TrustDocumentRecord>,
   ) {
     super(conversationRepository);
   }
@@ -132,6 +135,11 @@ export class CoachService extends BaseService<CoachConversationRecord> {
     const controlCoverage = controls.length ? Math.round((implementedControlCount / controls.length) * 100) : 0;
     const twin = twins[0];
 
+    const trustAdvisorReply = await this.tryGenerateTrustAdvisorReply(context, learnerContent, controls);
+    if (trustAdvisorReply) {
+      return trustAdvisorReply;
+    }
+
     const supportingData: Record<string, unknown> = {
       openRiskCount,
       totalRiskCount: risks.length,
@@ -224,6 +232,74 @@ export class CoachService extends BaseService<CoachConversationRecord> {
       supportingData: { ...baseSupportingData, frameworkGapCount: totalGapCount },
       confidence: 0.7,
       frameworkReference: referenceFrameworkId,
+    };
+  }
+
+  /**
+   * AI Trust Advisor — extends the existing Coach reply pipeline rather than a separate
+   * agent (Phase 11.5 spec: "Extend existing AI Coach. Do NOT create new Coach
+   * framework."). Triggers on keywords tied to the six named capabilities (Questionnaire
+   * Assistance, Compliance Explanation, Control Explanation, Evidence Recommendation,
+   * Trust Readiness Guidance, Sales Security Support) and reuses computeFrameworkCoverage
+   * plus computeDocumentReadiness from trustIntelligence.ts — the same data Trust Center
+   * surfaces — rather than duplicating any calculation. Returns null to fall through when
+   * the message doesn't match a trust-related intent.
+   */
+  private async tryGenerateTrustAdvisorReply(
+    context: TenantContext,
+    learnerContent: string,
+    controls: ControlRecord[],
+  ): Promise<CoachReply | null> {
+    const text = learnerContent.toLowerCase();
+    const isTrustIntent =
+      /questionnaire|sig\b|caiq|trust (center|portal|readiness)|compliance status|sales security|security review|prospect|auditor/.test(
+        text,
+      );
+    if (!text || !isTrustIntent) {
+      return null;
+    }
+
+    const frameworkIds = Array.from(new Set(controls.map((control) => control.frameworkId)));
+    const [allFrameworkControls, controlEvidenceLinks, evidenceReviews, documents] = await Promise.all([
+      this.frameworkControlRepository.findMany(context),
+      this.controlEvidenceRepository.findMany(context),
+      this.evidenceReviewRepository.findMany(context),
+      this.trustDocumentRepository.findMany(context),
+    ]);
+
+    const coverages = frameworkIds
+      .map((frameworkId) => {
+        const frameworkControls = allFrameworkControls.filter((control) => control.frameworkId === frameworkId);
+        const ownControls = controls.filter((control) => control.frameworkId === frameworkId);
+        if (frameworkControls.length === 0) {
+          return null;
+        }
+        return { frameworkId, coverage: computeFrameworkCoverage(frameworkControls, ownControls, controlEvidenceLinks, evidenceReviews) };
+      })
+      .filter((entry): entry is { frameworkId: string; coverage: ReturnType<typeof computeFrameworkCoverage> } => entry !== null);
+
+    const avgCoverage = coverages.length
+      ? Math.round(coverages.reduce((sum, entry) => sum + entry.coverage.coveragePercent, 0) / coverages.length)
+      : 0;
+    const documentReadiness = computeDocumentReadiness(documents);
+
+    const supportingData: Record<string, unknown> = {
+      averageFrameworkCoveragePercent: avgCoverage,
+      frameworkCount: coverages.length,
+      documentReadinessPercent: documentReadiness.readinessPercent,
+      missingDocumentCategories: documentReadiness.missingCategories,
+    };
+
+    return {
+      content: `Trust readiness: ${avgCoverage}% average framework coverage across ${coverages.length} framework(s) and ${documentReadiness.readinessPercent}% document readiness (${documentReadiness.missingCategories.length} category gap(s)). ${
+        documentReadiness.missingCategories.length > 0
+          ? `Publish missing documents (${documentReadiness.missingCategories.slice(0, 3).join(", ")}) before sharing your Trust Portal with prospects or auditors.`
+          : "Your document library is complete — you're ready to respond to a security questionnaire or share your Trust Portal."
+      }`,
+      reasoning: "Computed from this tenant's real framework coverage (computeFrameworkCoverage) and trust document set (computeDocumentReadiness) — the same functions Trust Center's Compliance Status and Document Center surface.",
+      supportingData,
+      confidence: coverages.length > 0 ? 0.75 : 0.5,
+      frameworkReference: coverages[0]?.frameworkId,
     };
   }
 

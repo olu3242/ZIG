@@ -33,6 +33,9 @@ import type {
   LearnerPortfolioRecord,
   ProjectRecord,
   ProjectFrameworkRecord,
+  QuestionnaireAnswerRecord,
+  QuestionnaireSubmissionRecord,
+  QuestionnaireTemplateRecord,
   RecommendationRecord,
   RiskAssessmentRecord,
   RiskRecord,
@@ -42,6 +45,10 @@ import type {
   StudentTwinRecord,
   TaskRecord,
   TenantRecord,
+  TrustAccessLogRecord,
+  TrustCenterProfileRecord,
+  TrustDocumentRecord,
+  TrustRequestRecord,
   UserProgressRecord,
   UserRecord,
   VendorAssessmentRecord,
@@ -95,6 +102,13 @@ export interface ZigRepositories {
   capstoneProjects: TenantRepository<CapstoneProjectRecord>;
   learnerPortfolios: TenantRepository<LearnerPortfolioRecord>;
   certificationAwards: TenantRepository<CertificationAwardRecord>;
+  trustCenterProfiles: TenantRepository<TrustCenterProfileRecord>;
+  trustDocuments: TenantRepository<TrustDocumentRecord>;
+  trustRequests: TenantRepository<TrustRequestRecord>;
+  questionnaireTemplates: TenantRepository<QuestionnaireTemplateRecord>;
+  questionnaireSubmissions: TenantRepository<QuestionnaireSubmissionRecord>;
+  questionnaireAnswers: TenantRepository<QuestionnaireAnswerRecord>;
+  trustAccessLogs: TenantRepository<TrustAccessLogRecord>;
 }
 
 export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
@@ -146,6 +160,13 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     capstoneProjects: new TenantRepository("capstone_projects", new SupabaseRestAdapter<CapstoneProjectRecord>(config), auditEvents),
     learnerPortfolios: new TenantRepository("learner_portfolios", new SupabaseRestAdapter<LearnerPortfolioRecord>(config), auditEvents),
     certificationAwards: new TenantRepository("certification_awards", new SupabaseRestAdapter<CertificationAwardRecord>(config), auditEvents),
+    trustCenterProfiles: new TenantRepository("trust_center_profiles", new SupabaseRestAdapter<TrustCenterProfileRecord>(config), auditEvents),
+    trustDocuments: new TenantRepository("trust_documents", new SupabaseRestAdapter<TrustDocumentRecord>(config), auditEvents),
+    trustRequests: new TenantRepository("trust_requests", new SupabaseRestAdapter<TrustRequestRecord>(config), auditEvents),
+    questionnaireTemplates: new TenantRepository("questionnaire_templates", new SupabaseRestAdapter<QuestionnaireTemplateRecord>(config), auditEvents),
+    questionnaireSubmissions: new TenantRepository("questionnaire_submissions", new SupabaseRestAdapter<QuestionnaireSubmissionRecord>(config), auditEvents),
+    questionnaireAnswers: new TenantRepository("questionnaire_answers", new SupabaseRestAdapter<QuestionnaireAnswerRecord>(config), auditEvents),
+    trustAccessLogs: new TenantRepository("trust_access_logs", new SupabaseRestAdapter<TrustAccessLogRecord>(config), auditEvents),
   };
 }
 
@@ -198,5 +219,12 @@ export function createInMemoryRepositories(): ZigRepositories {
     capstoneProjects: new TenantRepository("capstone_projects", new InMemoryDatabaseAdapter<CapstoneProjectRecord>(), auditEvents),
     learnerPortfolios: new TenantRepository("learner_portfolios", new InMemoryDatabaseAdapter<LearnerPortfolioRecord>(), auditEvents),
     certificationAwards: new TenantRepository("certification_awards", new InMemoryDatabaseAdapter<CertificationAwardRecord>(), auditEvents),
+    trustCenterProfiles: new TenantRepository("trust_center_profiles", new InMemoryDatabaseAdapter<TrustCenterProfileRecord>(), auditEvents),
+    trustDocuments: new TenantRepository("trust_documents", new InMemoryDatabaseAdapter<TrustDocumentRecord>(), auditEvents),
+    trustRequests: new TenantRepository("trust_requests", new InMemoryDatabaseAdapter<TrustRequestRecord>(), auditEvents),
+    questionnaireTemplates: new TenantRepository("questionnaire_templates", new InMemoryDatabaseAdapter<QuestionnaireTemplateRecord>(), auditEvents),
+    questionnaireSubmissions: new TenantRepository("questionnaire_submissions", new InMemoryDatabaseAdapter<QuestionnaireSubmissionRecord>(), auditEvents),
+    questionnaireAnswers: new TenantRepository("questionnaire_answers", new InMemoryDatabaseAdapter<QuestionnaireAnswerRecord>(), auditEvents),
+    trustAccessLogs: new TenantRepository("trust_access_logs", new InMemoryDatabaseAdapter<TrustAccessLogRecord>(), auditEvents),
   };
 }

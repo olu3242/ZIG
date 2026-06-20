@@ -66,6 +66,67 @@ export async function findTenantProfileByAuthUserId(authUserId: string): Promise
   };
 }
 
+export interface PublicTrustProfile {
+  tenantId: string;
+  projectId: string;
+  slug: string;
+  organizationName: string;
+  tagline?: string;
+  supportEmail?: string;
+}
+
+/**
+ * Resolves a published Trust Center profile by its public slug, mirroring
+ * findTenantProfileByAuthUserId's raw-fetch pattern. This is the only entry point public
+ * /trust/* routes use to establish a tenant context — it requires is_published = true so an
+ * unpublished profile is never reachable anonymously, matching the trust_center_profiles_public_read
+ * RLS policy used as defense-in-depth.
+ */
+export async function findPublishedTrustProfileBySlug(slug: string): Promise<PublicTrustProfile | null> {
+  const config = getSupabaseConfig();
+  const params = new URLSearchParams({
+    slug: `eq.${slug}`,
+    is_published: "eq.true",
+    select: "tenant_id,project_id,slug,organization_name,tagline,support_email",
+    limit: "1",
+  });
+
+  const response = await fetch(`${config.url}/rest/v1/trust_center_profiles?${params.toString()}`, {
+    headers: {
+      apikey: config.serviceRoleKey,
+      Authorization: `Bearer ${config.serviceRoleKey}`,
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const rows = (await response.json()) as Array<{
+    tenant_id: string;
+    project_id: string;
+    slug: string;
+    organization_name: string;
+    tagline: string | null;
+    support_email: string | null;
+  }>;
+  const profile = rows[0];
+  if (!profile) {
+    return null;
+  }
+
+  return {
+    tenantId: profile.tenant_id,
+    projectId: profile.project_id,
+    slug: profile.slug,
+    organizationName: profile.organization_name,
+    tagline: profile.tagline ?? undefined,
+    supportEmail: profile.support_email ?? undefined,
+  };
+}
+
 export async function signUpWithEmail(email: string, password: string): Promise<AuthSession | null> {
   const config = getSupabaseConfig();
   const response = await fetch(`${config.url}/auth/v1/signup`, {

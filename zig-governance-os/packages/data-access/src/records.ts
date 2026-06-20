@@ -29,6 +29,9 @@ import type {
   LearnerPortfolio,
   Project,
   ProjectFramework,
+  QuestionnaireAnswer,
+  QuestionnaireSubmission,
+  QuestionnaireTemplate,
   Recommendation,
   Risk,
   RiskAssessment,
@@ -38,6 +41,10 @@ import type {
   StudentTwin,
   Task,
   Tenant,
+  TrustAccessLog,
+  TrustCenterProfile,
+  TrustDocument,
+  TrustRequest,
   User,
   UserProgress,
   Vendor,
@@ -89,3 +96,10 @@ export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt
 export type CapstoneProjectRecord = CapstoneProject & { createdAt: Date; updatedAt: Date };
 export type LearnerPortfolioRecord = LearnerPortfolio & { createdAt: Date; updatedAt: Date };
 export type CertificationAwardRecord = CertificationAward & { createdAt: Date; updatedAt: Date };
+export type TrustCenterProfileRecord = TrustCenterProfile & { createdAt: Date; updatedAt: Date };
+export type TrustDocumentRecord = TrustDocument & { createdAt: Date; updatedAt: Date };
+export type TrustRequestRecord = TrustRequest & { createdAt: Date; updatedAt: Date };
+export type QuestionnaireTemplateRecord = QuestionnaireTemplate & { createdAt: Date; updatedAt: Date };
+export type QuestionnaireSubmissionRecord = QuestionnaireSubmission & { createdAt: Date; updatedAt: Date };
+export type QuestionnaireAnswerRecord = QuestionnaireAnswer & { createdAt: Date; updatedAt: Date };
+export type TrustAccessLogRecord = TrustAccessLog & { createdAt: Date; updatedAt: Date };

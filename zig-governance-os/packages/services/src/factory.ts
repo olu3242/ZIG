@@ -6,6 +6,7 @@ import { CertificationAwardService } from "./CertificationAwardService";
 import { CertificationEligibilityService } from "./CertificationEligibilityService";
 import { CertificationProgressService } from "./CertificationProgressService";
 import { CoachService } from "./CoachService";
+import { ComplianceStatusService } from "./ComplianceStatusService";
 import { ControlService } from "./ControlService";
 import { EvidenceReuseService } from "./EvidenceReuseService";
 import { EvidenceService } from "./EvidenceService";
@@ -19,9 +20,14 @@ import { GovernanceService } from "./GovernanceService";
 import { LearningService } from "./LearningService";
 import { PortfolioService } from "./PortfolioService";
 import { ProjectService } from "./ProjectService";
+import { QuestionnaireService } from "./QuestionnaireService";
 import { RiskService } from "./RiskService";
 import { ScenarioService } from "./ScenarioService";
 import { TenantService } from "./TenantService";
+import { TrustAnalyticsService } from "./TrustAnalyticsService";
+import { TrustCenterService } from "./TrustCenterService";
+import { TrustDocumentService } from "./TrustDocumentService";
+import { TrustRequestService } from "./TrustRequestService";
 import { UserService } from "./UserService";
 
 export interface ZigServices {
@@ -49,6 +55,12 @@ export interface ZigServices {
   frameworkMappings: FrameworkMappingService;
   frameworkRoadmaps: FrameworkRoadmapService;
   evidenceReuse: EvidenceReuseService;
+  trustCenter: TrustCenterService;
+  complianceStatus: ComplianceStatusService;
+  trustDocuments: TrustDocumentService;
+  trustRequests: TrustRequestService;
+  questionnaires: QuestionnaireService;
+  trustAnalytics: TrustAnalyticsService;
 }
 
 export function createServices(repositories: ZigRepositories): ZigServices {
@@ -142,6 +154,7 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.frameworkControls,
       repositories.controlEvidence,
       repositories.evidenceReviews,
+      repositories.trustDocuments,
     ),
     exports: new ExportsService(
       repositories.controls,
@@ -149,6 +162,12 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.evidence,
       repositories.vendors,
       repositories.audits,
+      repositories.frameworks,
+      repositories.frameworkControls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+      repositories.questionnaireSubmissions,
+      repositories.questionnaireAnswers,
     ),
     frameworkCoverage: new FrameworkCoverageService(
       repositories.frameworkControls,
@@ -179,5 +198,30 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.frameworkControls,
       repositories.frameworkMappings,
     ),
+    trustCenter: new TrustCenterService(repositories.trustCenterProfiles),
+    complianceStatus: new ComplianceStatusService(
+      repositories.frameworks,
+      repositories.frameworkControls,
+      repositories.controls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+    ),
+    trustDocuments: new TrustDocumentService(repositories.trustDocuments),
+    trustRequests: new TrustRequestService(repositories.trustRequests),
+    questionnaires: new QuestionnaireService(
+      repositories.questionnaireTemplates,
+      repositories.questionnaireSubmissions,
+      repositories.questionnaireAnswers,
+      repositories.frameworks,
+      repositories.frameworkControls,
+      repositories.controls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+      repositories.evidence,
+      repositories.vendors,
+      repositories.vendorAssessments,
+      repositories.governanceScores,
+    ),
+    trustAnalytics: new TrustAnalyticsService(repositories.trustAccessLogs),
   };
 }

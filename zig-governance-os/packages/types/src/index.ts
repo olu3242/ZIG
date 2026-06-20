@@ -544,3 +544,109 @@ export interface Recommendation {
   confidence: number;
   frameworkReference?: string;
 }
+
+export interface TrustCenterProfile {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  slug: string;
+  organizationName: string;
+  tagline?: string;
+  supportEmail?: string;
+  isPublished: boolean;
+}
+
+export type TrustDocumentVisibility = "public" | "protected" | "nda_required" | "approval_required";
+
+export type TrustDocumentCategory =
+  | "information_security_policy"
+  | "acceptable_use_policy"
+  | "vendor_management_policy"
+  | "risk_management_policy"
+  | "incident_response_plan"
+  | "business_continuity_plan"
+  | "disaster_recovery_plan"
+  | "privacy_policy"
+  | "security_overview"
+  | "compliance_report"
+  | "audit_report";
+
+export interface TrustDocument {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  title: string;
+  category: TrustDocumentCategory;
+  visibility: TrustDocumentVisibility;
+  sourceUri: string;
+  expiresAt?: Date;
+}
+
+export type TrustRequestStatus = "pending" | "approved" | "denied" | "fulfilled";
+
+export interface TrustRequest {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  documentId?: string;
+  requesterName: string;
+  requesterEmail: string;
+  requesterCompany?: string;
+  reason: string;
+  status: TrustRequestStatus;
+  decidedByUserId?: string;
+  decidedAt?: Date;
+}
+
+export type QuestionnaireTemplateType = "sig" | "sig_lite" | "caiq" | "hipaa_vendor" | "soc" | "custom";
+
+export interface QuestionnaireQuestion {
+  key: string;
+  text: string;
+  category?: string;
+}
+
+export interface QuestionnaireTemplate {
+  id: string;
+  tenantId: string;
+  name: string;
+  templateType: QuestionnaireTemplateType;
+  questions: QuestionnaireQuestion[];
+}
+
+export type QuestionnaireSubmissionStatus = "in_progress" | "submitted" | "completed";
+
+export interface QuestionnaireSubmission {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  templateId: string;
+  requesterName: string;
+  requesterEmail: string;
+  status: QuestionnaireSubmissionStatus;
+  completedAt?: Date;
+}
+
+export interface QuestionnaireAnswer {
+  id: string;
+  tenantId: string;
+  submissionId: string;
+  questionKey: string;
+  questionText: string;
+  answerText: string;
+  aiGenerated: boolean;
+  confidence: number;
+  reasoning: string;
+}
+
+export type TrustAccessEventType = "profile_view" | "document_view" | "document_request" | "questionnaire_request";
+
+export interface TrustAccessLog {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  eventType: TrustAccessEventType;
+  resourceId?: string;
+  visitorEmail?: string;
+  occurredAt: Date;
+}

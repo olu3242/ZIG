@@ -1,4 +1,4 @@
-import { getZigServices } from "./supabase";
+import { getZigServices, findPublishedTrustProfileBySlug } from "./supabase";
 import { requireTenantContext } from "./auth";
 import { trackForLearningPath } from "./certificationTracks";
 
@@ -123,6 +123,75 @@ export async function loadProjects() {
 export async function loadFrameworks() {
   const { context } = await requireTenantContext();
   return getZigServices().frameworks.findAvailableFrameworks(context);
+}
+
+/**
+ * Internal (authenticated) Trust Center management loader. Composes already-instantiated
+ * services from getZigServices() at the page layer — mirroring loadCertifications() and
+ * loadDashboard() — rather than injecting GovernanceService/FrameworkCoverageService into a
+ * new constructor, since calculateScore()/getComplianceCenter() are service methods, not
+ * pure functions.
+ */
+export async function loadTrustCenter() {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+  const projects = await services.projects.findMany(context);
+  const project = projects[0];
+
+  if (!project) {
+    return { project: null, profile: null, documents: [], requests: [], templates: [], submissions: [], complianceCenter: [], governance: null, vendorRisk: null, analytics: null };
+  }
+
+  const [profile, documents, requests, templates, submissions, complianceCenter, governance, vendorRisk] = await Promise.all([
+    services.trustCenter.findByProject(context, project.id),
+    services.trustDocuments.findByProject(context, project.id),
+    services.trustRequests.findByProject(context, project.id),
+    services.questionnaires.findTemplates(context),
+    services.questionnaires.findSubmissions(context, project.id),
+    services.complianceStatus.getComplianceCenter(context),
+    services.governance.calculateScore(context, project.id),
+    services.risks.getVendorRiskSummary(context),
+  ]);
+  const analytics = await services.trustAnalytics.getAnalytics(context, project.id);
+
+  return {
+    project,
+    profile,
+    documents,
+    requests,
+    templates,
+    submissions,
+    complianceCenter,
+    governance,
+    vendorRisk,
+    analytics,
+  };
+}
+
+/**
+ * Public Trust Portal loader — the only data path that does not call requireTenantContext().
+ * Resolves tenant scope exclusively via the published slug lookup, then composes the same
+ * read-only services the internal dashboard uses (display results directly, never duplicate
+ * the underlying calculation).
+ */
+export async function loadPublicTrustPortal(slug: string) {
+  const profile = await findPublishedTrustProfileBySlug(slug);
+  if (!profile) {
+    return null;
+  }
+
+  const context = { tenantId: profile.tenantId };
+  const services = getZigServices();
+  const [documents, complianceCenter, governance, vendorRisk] = await Promise.all([
+    services.trustDocuments.findPublic(context, profile.projectId),
+    services.complianceStatus.getComplianceCenter(context),
+    services.governance.calculateScore(context, profile.projectId),
+    services.risks.getVendorRiskSummary(context),
+  ]);
+
+  await services.trustAnalytics.logEvent(context, profile.projectId, { eventType: "profile_view" });
+
+  return { profile, documents, complianceCenter, governance, vendorRisk };
 }
 
 export async function loadCertifications() {

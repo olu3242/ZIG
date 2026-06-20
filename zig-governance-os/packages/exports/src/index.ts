@@ -1,8 +1,8 @@
-export type ExportType = "projects" | "frameworks" | "controls" | "risks" | "issues" | "tasks" | "audits" | "evidence" | "vendors" | "users" | "assets" | "policies" | "compliance_status" | "executive_metrics";
+export type ExportType = "projects" | "frameworks" | "controls" | "risks" | "issues" | "tasks" | "audits" | "evidence" | "vendors" | "users" | "assets" | "policies" | "compliance_status" | "executive_metrics" | "trust_report" | "framework_coverage_report" | "questionnaire_package";
 export type ExportFormat = "csv" | "xlsx" | "json" | "pdf";
 export type ExportStage = "request" | "authorize" | "generate" | "audit" | "download" | "archive";
 
-export const LIVE_EXPORT_TYPES: ExportType[] = ["controls", "risks", "evidence", "vendors", "audits"];
+export const LIVE_EXPORT_TYPES: ExportType[] = ["controls", "risks", "evidence", "vendors", "audits", "compliance_status", "trust_report", "framework_coverage_report", "questionnaire_package"];
 
 export interface ExportRequest {
   tenantId: string;
