@@ -9,6 +9,7 @@ import type {
   ControlRecord,
   EvidenceReviewRecord,
   FrameworkControlRecord,
+  LearnerPortfolioRecord,
   RiskRecord,
   StudentTwinRecord,
   TenantContext,
@@ -39,6 +40,7 @@ export class CoachService extends BaseService<CoachConversationRecord> {
     private readonly controlEvidenceRepository: TenantRepository<ControlEvidenceRecord>,
     private readonly evidenceReviewRepository: TenantRepository<EvidenceReviewRecord>,
     private readonly trustDocumentRepository: TenantRepository<TrustDocumentRecord>,
+    private readonly learnerPortfolioRepository: TenantRepository<LearnerPortfolioRecord>,
   ) {
     super(conversationRepository);
   }
@@ -138,6 +140,11 @@ export class CoachService extends BaseService<CoachConversationRecord> {
     const trustAdvisorReply = await this.tryGenerateTrustAdvisorReply(context, learnerContent, controls);
     if (trustAdvisorReply) {
       return trustAdvisorReply;
+    }
+
+    const careerCoachReply = await this.tryGenerateCareerCoachReply(context, learnerContent, twin);
+    if (careerCoachReply) {
+      return careerCoachReply;
     }
 
     const supportingData: Record<string, unknown> = {
@@ -300,6 +307,71 @@ export class CoachService extends BaseService<CoachConversationRecord> {
       supportingData,
       confidence: coverages.length > 0 ? 0.75 : 0.5,
       frameworkReference: coverages[0]?.frameworkId,
+    };
+  }
+
+  /**
+   * Career OS Coach branch — per the product decision this is a sub-feature of the AI
+   * Command Center, not a new module or a new Coach framework, so it extends the existing
+   * reply pipeline exactly like the Trust Advisor and Framework Gap branches above.
+   * Triggers on career-intent keywords and grounds its reply in the same student_twins
+   * row LearningService.getCareerReadiness already reads plus the learner_portfolios row
+   * PortfolioService.generateCareerMaterials writes — no separate score is invented.
+   * Returns null to fall through when the message doesn't match a career intent.
+   */
+  private async tryGenerateCareerCoachReply(
+    context: TenantContext,
+    learnerContent: string,
+    twin: StudentTwinRecord | undefined,
+  ): Promise<CoachReply | null> {
+    const text = learnerContent.toLowerCase();
+    const isCareerIntent = /career|resume|r[ée]sum[ée]|linkedin|job\b|interview|portfolio readiness|hire/.test(text);
+    if (!text || !isCareerIntent) {
+      return null;
+    }
+
+    if (!twin) {
+      return {
+        content: "No career-readiness signal recorded yet — complete a lesson, assessment, or lab first, then ask me again.",
+        reasoning: "No student_twins row exists yet for this learner, so there is no real readiness data to report.",
+        supportingData: {},
+        confidence: 0.4,
+      };
+    }
+
+    const inputs = [twin.learningScore, twin.knowledgeScore, twin.skillsScore, twin.portfolioScore, twin.certificationScore];
+    const readinessScore = Math.round(inputs.reduce((sum, value) => sum + value, 0) / inputs.length);
+
+    const userId = this.requireActorUserId(context);
+    const portfolios = await this.learnerPortfolioRepository.findMany(context, { filters: { learnerUserId: userId } });
+    const portfolio = portfolios[0];
+
+    const supportingData: Record<string, unknown> = {
+      readinessScore,
+      learningScore: twin.learningScore,
+      knowledgeScore: twin.knowledgeScore,
+      skillsScore: twin.skillsScore,
+      portfolioScore: twin.portfolioScore,
+      certificationScore: twin.certificationScore,
+      hasResumeSummary: Boolean(portfolio?.resumeSummary),
+    };
+
+    if (!portfolio?.resumeSummary) {
+      return {
+        content: `Career readiness is ${readinessScore}/100 (average of learning, knowledge, skills, portfolio, certification scores). You don't have a generated resume/LinkedIn summary yet — visit the Career page to generate one from your real portfolio data.`,
+        reasoning: "readinessScore is the same five-input average LearningService.getCareerReadiness computes; resumeSummary is read directly from learner_portfolios.",
+        supportingData,
+        confidence: 0.7,
+      };
+    }
+
+    return {
+      content: `Career readiness is ${readinessScore}/100. Your current resume summary: "${portfolio.resumeSummary}". ${
+        readinessScore >= 75 ? "You're in a strong position to apply." : "Focus on raising your lowest component score before applying."
+      }`,
+      reasoning: "Combines the real five-input readiness average with the real resumeSummary text generated from this learner's portfolio data.",
+      supportingData,
+      confidence: 0.75,
     };
   }
 

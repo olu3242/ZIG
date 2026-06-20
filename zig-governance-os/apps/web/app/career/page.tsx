@@ -2,9 +2,10 @@ import { EmployerMatchingEngine } from "@zig/employer-matching";
 import { EmploymentOS } from "@zig/employment";
 import { DataTable, PageHeader, Section, StatCard } from "@zig/ui";
 import { loadCareer } from "@/app/lib/data";
+import { generateCareerMaterialsAction } from "@/app/lib/actions";
 
 export default async function CareerRootPage() {
-  const { readiness } = await loadCareer();
+  const { readiness, portfolio } = await loadCareer();
   const twin = readiness.twin;
   const employment = new EmploymentOS();
   const matcher = new EmployerMatchingEngine();
@@ -45,6 +46,23 @@ export default async function CareerRootPage() {
       </Section>
       <Section title="Employment Components">
         <DataTable columns={["Component"]} empty="No components." rows={employment.components().map((component) => [component.replaceAll("_", " ")])} />
+      </Section>
+      <Section title="Resume & LinkedIn">
+        {portfolio?.resumeSummary ? (
+          <div className="space-y-3 text-sm leading-7 text-[var(--zig-ink-muted)]">
+            <p><strong className="text-[var(--zig-ink)]">Resume summary:</strong> {portfolio.resumeSummary}</p>
+            <p><strong className="text-[var(--zig-ink)]">LinkedIn summary:</strong> {portfolio.linkedinSummary}</p>
+          </div>
+        ) : (
+          <p className="text-sm leading-7 text-[var(--zig-ink-muted)]">
+            No resume/LinkedIn summary generated yet — generate one from your real portfolio score, capstone project, and lab artifacts.
+          </p>
+        )}
+        <form action={generateCareerMaterialsAction} className="mt-3">
+          <button type="submit" className="rounded-md bg-[var(--zig-ink)] px-3 py-1.5 text-sm font-medium text-white">
+            {portfolio?.resumeSummary ? "Regenerate from latest portfolio data" : "Generate resume & LinkedIn summary"}
+          </button>
+        </form>
       </Section>
     </>
   );

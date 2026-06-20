@@ -76,8 +76,11 @@ export async function loadVendors() {
 export async function loadCareer() {
   const { context } = await requireTenantContext();
   const services = getZigServices();
-  const readiness = await services.learning.getCareerReadiness(context);
-  return { readiness };
+  const [readiness, portfolio] = await Promise.all([
+    services.learning.getCareerReadiness(context),
+    services.portfolio.getPortfolio(context),
+  ]);
+  return { readiness, portfolio };
 }
 
 export async function loadCoach() {

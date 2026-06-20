@@ -102,6 +102,41 @@ export class PortfolioService extends BaseService<LearnerPortfolioRecord> {
     return existing[0] ?? null;
   }
 
+  /**
+   * Career OS resume/LinkedIn generation, scoped as the AI Command Center's career
+   * sub-feature (not a new module/service key, per the product decision). Writes real
+   * text into the resumeSummary/linkedinSummary columns that have existed on
+   * learner_portfolios since LEARNING_OS_E2E but were never populated — derived from the
+   * same capstone_projects/lab_artifacts/portfolioScore data computePortfolioScore already
+   * reads, not fabricated copy.
+   */
+  async generateCareerMaterials(context: TenantContext): Promise<LearnerPortfolioRecord> {
+    const userId = this.requireActorUserId(context);
+    const existing = await this.repository.findMany(context, { filters: { learnerUserId: userId } });
+    const portfolio = existing[0];
+    if (!portfolio) {
+      throw new Error("Compute a portfolio score before generating career materials.");
+    }
+
+    const capstoneProjects = await this.capstoneProjectRepository.findMany(context, { filters: { learnerUserId: userId } });
+    const labArtifacts = await this.labArtifactRepository.findMany(context);
+    const topCapstone = capstoneProjects.sort((a, b) => b.portfolioScore - a.portfolioScore)[0];
+
+    const resumeSummary = topCapstone
+      ? `Portfolio score ${portfolio.portfolioScore}/100, led by capstone "${topCapstone.title}" (${topCapstone.portfolioScore}/100) across ${labArtifacts.length} validated lab artifacts.`
+      : `Portfolio score ${portfolio.portfolioScore}/100 across ${labArtifacts.length} validated lab artifacts. No capstone project completed yet.`;
+
+    const linkedinSummary = topCapstone
+      ? `Hands-on practitioner with a verified portfolio score of ${portfolio.portfolioScore}/100 — capstone work: ${topCapstone.title}.`
+      : `Hands-on practitioner building a verified portfolio (currently ${portfolio.portfolioScore}/100).`;
+
+    const updated = await this.repository.update(context, portfolio.id, { resumeSummary, linkedinSummary });
+    if (!updated) {
+      throw new Error(`Failed to update portfolio ${portfolio.id}.`);
+    }
+    return updated;
+  }
+
   private async savePortfolio(context: TenantContext, userId: string, portfolioScore: number): Promise<LearnerPortfolioRecord> {
     const existing = await this.repository.findMany(context, { filters: { learnerUserId: userId } });
     const existingPortfolio = existing[0];

@@ -308,6 +308,16 @@ export async function runHealthAdvisorAction(formData: FormData): Promise<void> 
   redirect(`/projects/${projectId}`);
 }
 
+export async function generateCareerMaterialsAction(): Promise<void> {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+
+  await services.portfolio.computePortfolioScore(context);
+  const portfolio = await services.portfolio.generateCareerMaterials(context);
+  await services.audit.recordAction(context, "generate", "learner_portfolios", portfolio.id, "Resume/LinkedIn summary generated");
+  redirect("/career");
+}
+
 export async function awardCertificationAction(formData: FormData): Promise<void> {
   const { context } = await requireTenantContext();
   const learningPathId = requireString(formData, "learningPathId");

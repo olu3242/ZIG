@@ -61,7 +61,6 @@ export const moduleConfig: ModuleConfig[] = [
       { href: "/certifications", label: "Certifications", kicker: "Award" },
       { href: "/learning", label: "Learning", kicker: "Grow" },
       { href: "/learning/practice-lab", label: "Practice Lab", kicker: "Sim" },
-      { href: "/learning/career", label: "Career OS", kicker: "Job" },
       { href: "/learning/community", label: "Community", kicker: "Mentor" },
       { href: "/learning/instructor", label: "Instructor", kicker: "Teach" },
       { href: "/learning/marketplace", label: "Learning Market", kicker: "Assets" },

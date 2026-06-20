@@ -155,6 +155,7 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.controlEvidence,
       repositories.evidenceReviews,
       repositories.trustDocuments,
+      repositories.learnerPortfolios,
     ),
     exports: new ExportsService(
       repositories.controls,
