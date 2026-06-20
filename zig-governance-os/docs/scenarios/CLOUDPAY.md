@@ -34,3 +34,32 @@ CloudPay's Controls to NIST CSF").
 
 Seeding these rows is a follow-up to this doc, not included here (doc-first per
 `CLAUDE.md`).
+
+## Organization Chart
+See `docs/learning/ORG_CHART_LIBRARY.md` → "CloudPay Organization Chart". Depicts: CEO →
+CTO/CISO (dual-hatted, small security team) → Engineering Lead → 2 security engineers;
+GRC function does not yet exist as a separate reporting line, a gap the Security
+Governance track's lab makes the learner address.
+
+## Technology Architecture Diagram
+See `docs/learning/DIAGRAM_LIBRARY.md` → "CloudPay Technology Architecture". Depicts:
+Production Payments API → Customer PII Database, plus the third-party processors and
+encryption boundary around the Customer PII Database (the asset tied to the "Encryption
+at Rest" control above).
+
+## Vendor Ecosystem Map
+CloudPay's vendor surface is limited to payment-rail and cloud-infrastructure providers;
+no formal vendor risk program exists yet (unlike RetailNova, this is not the focus
+scenario for Vendor Risk track exercises, so this map stays minimal: 2-3 nodes, not a
+full tiered ecosystem).
+
+## Risk Landscape Map
+See `docs/learning/HEATMAP_LIBRARY.md` → "CloudPay Risk Landscape Map". Plots the
+"Unencrypted Backup Snapshots" risk (open) against likelihood/impact, the seed risk a
+learner expands into a full register in the Security Governance lab.
+
+## Compliance Coverage Map
+See `docs/learning/TABLE_LIBRARY.md` → "CloudPay Compliance Coverage Map". Rows: SOC 2
+(Type II in progress), ISO 27001 (pursuing certification) — both showing CloudPay's two
+existing controls as "control, evidence needed" rather than "no control," consistent with
+the maturity-30 narrative above.
