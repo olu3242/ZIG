@@ -31,3 +31,16 @@ Compliance gap closure plan section of the Control Matrix — see `docs/artifact
 ## Visual Assets Required
 - Gap Prioritization Matrix
 - Gap Closure Plan Timeline
+
+## Required Diagram
+- Not applicable for this lesson — no indexed diagram entry exists yet for gap-analysis content; see Required Table instead
+
+## Required Workflow
+- Not applicable for this lesson — see Required Table instead
+
+## Required Table
+- Framework Crosswalk Table (general) (see `FRAMEWORK_MAP_LIBRARY.md`)
+- RetailNova Compliance Coverage Map (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Use RetailNova's Compliance Coverage Map to identify its unscoped PCI DSS boundary gap, rank it against its other gaps by audit risk and remediation cost, and draft a closure plan with owners and target dates.

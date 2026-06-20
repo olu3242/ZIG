@@ -32,4 +32,19 @@ field into the schema is a separate, not-yet-scheduled change.
 
 ## Visual Assets Required
 - Explicit diagram/asset list, named, so design work has a concrete backlog
+
+## Required Diagram
+- Named entry from docs/learning/DIAGRAM_LIBRARY.md
+
+## Required Workflow
+- Named entry from docs/learning/WORKFLOW_LIBRARY.md (if applicable to this lesson)
+
+## Required Table
+- Named entry from docs/learning/TABLE_LIBRARY.md, FRAMEWORK_MAP_LIBRARY.md,
+  ORG_CHART_LIBRARY.md, HEATMAP_LIBRARY.md, or DECISION_TREE_LIBRARY.md (whichever applies)
+
+## Required Visual Exercise
+- An interactive task the learner performs using the Required Diagram/Workflow/Table —
+  not a passive read. Target mix per docs/learning/VISUAL_LEARNING_STANDARD.md: 70%
+  visual, 20% interactive, 10% text.
 ```

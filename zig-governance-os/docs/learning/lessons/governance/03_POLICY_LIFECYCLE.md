@@ -31,3 +31,15 @@ None directly; feeds the Control Matrix artifact in 04_DECISION_RIGHTS.
 ## Visual Assets Required
 - Policy Lifecycle State Diagram
 - Policy-to-Control Linkage Diagram
+
+## Required Diagram
+- Policy Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for policy-to-control linkage; see Required Diagram instead
+
+## Required Visual Exercise
+- Walk CloudPay's "Encryption at Rest" control through each stage of the Policy Lifecycle diagram and mark the stage it is currently stuck in given its "needs_evidence" status.

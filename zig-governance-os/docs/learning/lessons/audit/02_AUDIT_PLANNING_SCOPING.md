@@ -30,3 +30,15 @@ Audit Plan — see `docs/artifacts/` Audit Plan template.
 ## Visual Assets Required
 - Audit Scoping Decision Tree
 - Scope Boundary Diagram
+
+## Required Diagram
+- Audit Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Audit Timeline (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Using the Audit Lifecycle diagram's "Plan → Scope" stages, build an Audit Timeline for HealthBridge's ISO 27001 internal audit and mark which controls are in-scope vs. out-of-scope ahead of its external HIPAA assessment.

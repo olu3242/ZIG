@@ -31,3 +31,15 @@ Board Report draft (score decomposition section) — see `docs/artifacts/` Board
 ## Visual Assets Required
 - Governance Score Decomposition Diagram
 - Score Improvement Priority Matrix
+
+## Required Diagram
+- Governance Dashboard (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for score-decomposition content; see Required Diagram instead
+
+## Required Visual Exercise
+- Using the Governance Dashboard diagram, identify which of GovSec's four score inputs (controlsImplemented, evidenceCoverage, riskTreatment, assessmentCompletion) is lowest and propose the single highest-leverage action to raise it.

@@ -29,3 +29,15 @@ Risk Register (treatment column populated) — see `docs/artifacts/` Risk Regist
 ## Visual Assets Required
 - Risk Treatment Flow Diagram
 - Treatment-by-Severity Authority Matrix
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow/Table instead
+
+## Required Workflow
+- Risk Treatment Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Risk Treatment Decision Tree (see `DECISION_TREE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Run ManufacturX's top-scored risks through the Risk Treatment Workflow and the Risk Treatment Decision Tree to select accept/mitigate/transfer/avoid for each, then name the decision-rights holder who must approve any "accept" outcome.

@@ -33,3 +33,15 @@ None (foundational lesson; first artifact appears in 02_GOVERNANCE_STRUCTURES).
 ## Visual Assets Required
 - Governance Model Chain Diagram
 - Framework-as-Metadata Overlay Diagram
+
+## Required Diagram
+- Governance Hierarchy (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for foundational chain content; see Required Diagram instead
+
+## Required Visual Exercise
+- Using the Governance Hierarchy diagram, trace GovSec's reporting line from a frontline control owner up to the Board and identify which entity in the Universal Governance Model chain each layer corresponds to.

@@ -31,3 +31,15 @@ Audit Report (final) — see `docs/artifacts/` Audit Report template.
 ## Visual Assets Required
 - Audit Report Structure Diagram
 - Audit-Closure-to-Governance-Score Linkage Diagram
+
+## Required Diagram
+- Audit Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Audit Timeline (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Assemble HealthBridge's final audit report by walking the Audit Lifecycle diagram from "Report" through "Remediate," using the Audit Timeline to show actual vs. planned milestones, and explain how closure updates `GovernanceScore.assessmentCompletion`.

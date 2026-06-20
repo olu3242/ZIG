@@ -30,3 +30,15 @@ Control Matrix (requirement-coverage columns) — see `docs/artifacts/` Control 
 ## Visual Assets Required
 - Requirement-to-Control Coverage Matrix
 - Gap Highlighting Diagram
+
+## Required Diagram
+- Control Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- ISO ↔ NIST ↔ SOC 2 Crosswalk (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Locate CloudPay's "Encryption at Rest" control on the ISO ↔ NIST ↔ SOC 2 Crosswalk and identify any requirement row where it has zero coverage, then trace where in the Control Lifecycle that gap would surface.

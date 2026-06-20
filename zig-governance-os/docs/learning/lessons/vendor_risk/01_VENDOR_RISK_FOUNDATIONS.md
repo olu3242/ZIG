@@ -29,3 +29,15 @@ None (foundational); first Vendor Assessment appears in 03_VENDOR_QUESTIONNAIRES
 ## Visual Assets Required
 - Vendor Lifecycle Diagram
 - Vendor-as-Asset Modeling Diagram
+
+## Required Diagram
+- Vendor Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for vendor-as-asset modeling; see Required Diagram instead
+
+## Required Visual Exercise
+- Place RetailNova's two payment-processor vendor assets on the Vendor Lifecycle diagram at their current stage and identify what triggers their move to the next stage.

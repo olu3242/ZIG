@@ -30,3 +30,15 @@ Risk Register (initial entries) — see `docs/artifacts/` Risk Register template
 ## Visual Assets Required
 - Risk Identification Workshop Flow
 - Risk Statement Quality Checklist Diagram
+
+## Required Diagram
+- Risk Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for risk-statement quality content; see Required Diagram instead
+
+## Required Visual Exercise
+- Using the Risk Lifecycle diagram's "Identify" stage, draft three well-formed risk statements (asset + threat + consequence) for ManufacturX's two SCADA network assets, then flag any duplicate/overlapping entries.

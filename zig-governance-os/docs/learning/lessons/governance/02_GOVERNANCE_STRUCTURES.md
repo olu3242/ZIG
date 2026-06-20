@@ -32,3 +32,16 @@ Governance Charter draft (see `docs/artifacts/` — Governance Charter template)
 ## Visual Assets Required
 - Governance Committee Org Chart
 - Recommendation Escalation Flow Diagram
+
+## Required Diagram
+- Governance Hierarchy (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- RACI Chart (see `TABLE_LIBRARY.md`)
+- Committee Structure (see `ORG_CHART_LIBRARY.md`)
+
+## Required Visual Exercise
+- Build a RACI Chart for GovSec's citizen services program, then map each Responsible/Accountable role onto the Committee Structure org chart to confirm no decision lacks an owner.

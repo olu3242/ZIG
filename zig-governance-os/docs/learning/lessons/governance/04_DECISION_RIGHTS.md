@@ -31,3 +31,16 @@ Control Matrix (decision-rights column populated) — see `docs/artifacts/` Cont
 ## Visual Assets Required
 - RACI Decision Rights Matrix
 - Decision Escalation Path Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow/Table instead
+
+## Required Workflow
+- Decision Escalation Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Decision-Rights Reporting Line (see `ORG_CHART_LIBRARY.md`)
+- Decision Escalation Tree (see `DECISION_TREE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Route GovSec's "Respond Function Controls (NIST CSF)" risk-acceptance decision through the Decision Escalation Workflow and the Decision Escalation Tree, then justify whether a Risk Analyst or Tenant Admin holds final approval authority.

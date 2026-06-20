@@ -30,3 +30,15 @@ None directly; due-diligence output feeds the Vendor Assessment in Lesson 03.
 ## Visual Assets Required
 - Due Diligence Workflow Diagram
 - Diligence-Depth-by-Criticality Decision Tree
+
+## Required Diagram
+- Vendor Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Vendor Tier Matrix (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Use the Vendor Tier Matrix to determine the required diligence depth for one of RetailNova's vendors based on its Data Access Level and Tier, then place that vendor at the "Onboard" stage of the Vendor Lifecycle diagram and list two red flags that would block its progression.

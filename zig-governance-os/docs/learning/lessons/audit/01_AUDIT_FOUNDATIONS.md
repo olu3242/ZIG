@@ -31,3 +31,15 @@ None (foundational); first Audit Plan appears in 02_AUDIT_PLANNING_SCOPING.
 ## Visual Assets Required
 - Audit Lifecycle Diagram
 - Audit Trail Data Flow Diagram
+
+## Required Diagram
+- Audit Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Audit Timeline (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Place HealthBridge's incomplete PHI access logging gap onto the Audit Lifecycle diagram at the stage it would first surface, then sketch an Audit Timeline row (Phase, Start, End, Owner, Milestone) for remediating it.

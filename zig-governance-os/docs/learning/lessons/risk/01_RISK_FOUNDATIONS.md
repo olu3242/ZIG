@@ -30,3 +30,15 @@ None (foundational); first Risk Register entry appears in 02_RISK_IDENTIFICATION
 ## Visual Assets Required
 - Risk Lifecycle Diagram
 - Asset-to-Risk Linkage Diagram
+
+## Required Diagram
+- Risk Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for asset-to-risk linkage; see Required Diagram instead
+
+## Required Visual Exercise
+- Trace ManufacturX's "Flat OT/IT Network Segmentation" risk through every stage of the Risk Lifecycle diagram and identify which Plant 1/Plant 2 SCADA Network asset it is tied to at each stage.

@@ -31,3 +31,15 @@ Compliance status section feeding into the Board Report — see `docs/artifacts/
 ## Visual Assets Required
 - Compliance Status Report Layout
 - Auditor-View vs. Executive-View Comparison Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Table instead
+
+## Required Workflow
+- Not applicable for this lesson — no indexed workflow entry exists yet for compliance reporting; see Required Table instead
+
+## Required Table
+- RetailNova Compliance Coverage Map (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Build a compliance status report from RetailNova's Compliance Coverage Map after its gap-closure plan is partially executed, then produce two versions of the same data — one auditor-facing, one executive-facing — and explain what each omits.
