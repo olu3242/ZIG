@@ -1,6 +1,8 @@
-export type ExportType = "projects" | "frameworks" | "controls" | "risks" | "issues" | "tasks" | "audits" | "evidence" | "vendors" | "users" | "assets" | "policies" | "compliance_status" | "executive_metrics";
+export type ExportType = "projects" | "frameworks" | "controls" | "risks" | "issues" | "tasks" | "audits" | "evidence" | "vendors" | "users" | "assets" | "policies" | "compliance_status" | "executive_metrics" | "trust_report" | "framework_coverage_report" | "questionnaire_package";
 export type ExportFormat = "csv" | "xlsx" | "json" | "pdf";
 export type ExportStage = "request" | "authorize" | "generate" | "audit" | "download" | "archive";
+
+export const LIVE_EXPORT_TYPES: ExportType[] = ["controls", "risks", "evidence", "vendors", "audits", "compliance_status", "trust_report", "framework_coverage_report", "questionnaire_package"];
 
 export interface ExportRequest {
   tenantId: string;
@@ -35,4 +37,23 @@ export class ExportPipeline {
       auditRequired: true,
     };
   }
+}
+
+export function toCsv(rows: Array<Record<string, unknown>>): string {
+  if (rows.length === 0) {
+    return "";
+  }
+
+  const columns = Object.keys(rows[0]);
+  const escape = (value: unknown): string => {
+    if (value === null || value === undefined) return "";
+    const text = value instanceof Date ? value.toISOString() : String(value);
+    return /[",\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+  };
+
+  const lines = [columns.join(",")];
+  for (const row of rows) {
+    lines.push(columns.map((column) => escape(row[column])).join(","));
+  }
+  return lines.join("\n");
 }

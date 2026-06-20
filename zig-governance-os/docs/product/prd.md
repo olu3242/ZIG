@@ -131,6 +131,39 @@ code is written, per the Documentation-OS rule in `CLAUDE.md`.
 
 The current enterprise-platform gap analysis lives in `docs/product/gap-analysis.md`.
 
+## 11. Documented module-surface gap: Third-Party / Vendor Risk
+
+Per the "Do not add additional modules unless a clear gap is documented and justified in
+`docs/product/prd.md` first" rule in `CLAUDE.md`, this section is that justification,
+written before any vendor schema/service/route work begins (`docs/certification/
+E2E_GAP_REPORT.md` #7 Vendor — FAIL, `WORKFLOW_TRACEABILITY_MATRIX.md` #10 Vendor
+Assessment — OPEN, "no schema, no service, no route").
+
+**Decision: Third-Party/Vendor Risk is NOT a 12th top-level module.** It is justified and
+scoped as an **extension of the existing Risk Workspace and Evidence Workspace**, using the
+exact same shape Risk Workspace already uses for its own sub-entities
+(`risk_assessments`, `risk_acceptances`, `risk_reviews` all hang off `risks` without being
+separate modules). Concretely:
+
+- A vendor is a governance object that gets **assessed** (producing a risk posture) and
+  **reviewed periodically** (producing evidence) — i.e. it is a specialization of the
+  existing Asset → Risk → Evidence chain in the Universal Governance Model, not a new chain.
+  `lab_artifacts.artifact_type` already anticipates this with its `'vendor_review'` value
+  (added in the Lab Workflow closure, Phase 3).
+- New tables (`vendors`, `vendor_assessments`, `vendor_findings`) are scoped under the
+  **Risk Workspace** product surface area (module #5), the same way `risk_acceptances` and
+  `risk_reviews` are — they do not introduce a new top-level navigation item, a new module
+  doc under `docs/modules/`, or a new top-level service key beyond what `RiskService` (or a
+  narrowly-scoped sibling reusing its repositories) already owns.
+- This does not contradict the 11-module list: the list constrains **top-level product
+  surface**, not every sub-entity a workspace manages. Risk Workspace already manages four
+  distinct entity types under one module; Vendor Risk becomes a fifth.
+
+This decision applies only to Vendor. It does not retroactively resolve the separate,
+still-open Learning/Labs/Career/Academy-vs-11-modules conflict flagged in
+`docs/academy/HARMONIZATION_REPORT.md` Section 4, which remains a blocking, undecided
+question for those workflows.
+
 It identifies ten foundational capabilities that must be represented in future planning:
 
 - Workflow OS
@@ -148,3 +181,35 @@ These are not approved for immediate unordered implementation. They are document
 platform gaps that require architecture, data, security, acceptance, and module
 documentation before coding. Some will remain platform services; some may become
 first-class product modules after this PRD is expanded with clear justification.
+
+## 12. Documented module-surface gap: Career Readiness
+
+Per the same `CLAUDE.md` rule invoked in Section 11, this is the justification for Career
+Readiness, written before any career-engine code changes (`docs/certification/
+E2E_GAP_REPORT.md` #9 Career — FAIL: `CareerReadinessEngine` scores hardcoded literals, no
+DB I/O; `WORKFLOW_TRACEABILITY_MATRIX.md` #12 Career Progression — OPEN).
+
+**Decision: Career Readiness is NOT a 12th/13th top-level module.** It is scoped as a
+**real-data view under Executive Reporting** (module #11) — it reports a learner's
+governance-skill readiness computed from real platform signals, the same way Executive
+Reporting already "generates ... Readiness Report, Governance Summary" (Section 6.7) from
+live data rather than manually compiled documents. Concretely:
+
+- `apps/web/app/career/page.tsx` is rewritten to compute its readiness score from real,
+  persisted `student_twins` columns (`learningScore`, `knowledgeScore`, `skillsScore`,
+  already written by the Learning/Assessment/Lab workflow closures) rather than the
+  hardcoded `{portfolio: 72, projects: 76, labs: 81, ...}` literals the audit flagged.
+  `portfolioScore`/`certificationScore` remain `0`/unset until a future Portfolio Engine
+  (already scoped, not built, in `docs/academy/PORTFOLIO_ENGINE_ARCHITECTURE.md`) writes
+  them — this is an honest partial rollup, not a fabricated complete one.
+- No new top-level navigation item, module doc, or top-level service key is introduced.
+  The existing `LearningService`/`AssessmentService`/`ScenarioService` read paths
+  (already real, from Phases 1–3) are reused as-is; no `CareerService` is created.
+- `behaviorScore`/`confidenceScore` are excluded from the rollup, consistent with
+  `docs/academy/CAREER_PATH_CROSSWALK.md`'s finding that no plausible data source for
+  either exists anywhere in the codebase — inventing one was explicitly rejected there and
+  is not done here either.
+
+This decision applies only to Career Readiness's existing `/career` route. It does not
+resolve the separate, still-open Learning/Labs/Academy-vs-11-modules conflict in
+`docs/academy/HARMONIZATION_REPORT.md` Section 4, which remains undecided.

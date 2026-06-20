@@ -9,7 +9,7 @@ const publicRoutes = new Set(["/", "/login", "/signup", "/forgot-password"]);
 export function ShellGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
 
-  if (publicRoutes.has(pathname)) {
+  if (publicRoutes.has(pathname) || pathname.startsWith("/trust/")) {
     return <>{children}</>;
   }
 

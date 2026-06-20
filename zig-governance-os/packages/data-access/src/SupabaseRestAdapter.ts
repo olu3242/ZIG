@@ -141,6 +141,10 @@ export class SupabaseAuditSink implements AuditSink {
       createdAt: new Date(),
     });
   }
+
+  findByTenant(tenantId: string): Promise<AuditEvent[]> {
+    return this.adapter.findMany("audit_events", { tenantId });
+  }
 }
 
 export function toSnakeRecord(record: Record<string, unknown>): Record<string, unknown> {
