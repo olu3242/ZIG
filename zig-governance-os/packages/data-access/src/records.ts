@@ -3,6 +3,7 @@ import type {
   Assessment,
   Audit,
   CapstoneProject,
+  CertificationAward,
   CoachConversation,
   CoachMessage,
   Control,
@@ -77,3 +78,4 @@ export type CoachMessageRecord = CoachMessage & { createdAt: Date; updatedAt: Da
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };
 export type CapstoneProjectRecord = CapstoneProject & { createdAt: Date; updatedAt: Date };
 export type LearnerPortfolioRecord = LearnerPortfolio & { createdAt: Date; updatedAt: Date };
+export type CertificationAwardRecord = CertificationAward & { createdAt: Date; updatedAt: Date };

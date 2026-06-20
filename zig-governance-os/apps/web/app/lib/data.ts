@@ -1,5 +1,6 @@
 import { getZigServices } from "./supabase";
 import { requireTenantContext } from "./auth";
+import { trackForLearningPath } from "./certificationTracks";
 
 export async function loadDashboard() {
   const { context, persona } = await requireTenantContext();
@@ -122,4 +123,23 @@ export async function loadProjects() {
 export async function loadFrameworks() {
   const { context } = await requireTenantContext();
   return getZigServices().frameworks.findAvailableFrameworks(context);
+}
+
+export async function loadCertifications() {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+  const [paths, awards] = await Promise.all([
+    services.learning.findMany(context),
+    services.certificationAwards.getAwards(context),
+  ]);
+
+  const tracks = paths.map(trackForLearningPath);
+  const eligibilityByTrackKey = new Map<string, Awaited<ReturnType<typeof services.certificationEligibility.evaluateEligibility>>>();
+  const progressByTrackKey = new Map<string, Awaited<ReturnType<typeof services.certificationProgress.getProgress>>>();
+  for (const track of tracks) {
+    eligibilityByTrackKey.set(track.key, await services.certificationEligibility.evaluateEligibility(context, track));
+    progressByTrackKey.set(track.key, await services.certificationProgress.getProgress(context, track));
+  }
+
+  return { tracks, awards, eligibilityByTrackKey, progressByTrackKey };
 }

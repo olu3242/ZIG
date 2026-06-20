@@ -50,7 +50,7 @@ export const moduleConfig: ModuleConfig[] = [
     id: "policy",
     label: "Policy",
     description: "Policies, learning, settings, and operating governance.",
-    match: (pathname) => ["/policies", "/learning", "/academy", "/apprenticeship", "/skills", "/career", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/policies", "/learning", "/academy", "/apprenticeship", "/skills", "/career", "/certifications", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
     links: [
       { href: "/policies", label: "Policies", kicker: "Govern" },
       { href: "/learning-command-center", label: "Learning Command", kicker: "Kernel" },
@@ -58,6 +58,7 @@ export const moduleConfig: ModuleConfig[] = [
       { href: "/apprenticeship", label: "Apprenticeship", kicker: "Live" },
       { href: "/skills", label: "Skills", kicker: "Graph" },
       { href: "/career", label: "Career", kicker: "Jobs" },
+      { href: "/certifications", label: "Certifications", kicker: "Award" },
       { href: "/learning", label: "Learning", kicker: "Grow" },
       { href: "/learning/practice-lab", label: "Practice Lab", kicker: "Sim" },
       { href: "/learning/career", label: "Career OS", kicker: "Job" },

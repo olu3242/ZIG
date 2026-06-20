@@ -7,6 +7,7 @@ import type {
   AssessmentRecord,
   AuditRecord,
   CapstoneProjectRecord,
+  CertificationAwardRecord,
   CoachConversationRecord,
   CoachMessageRecord,
   ControlEvidenceRecord,
@@ -83,6 +84,7 @@ export interface ZigRepositories {
   coachMessages: TenantRepository<CoachMessageRecord>;
   capstoneProjects: TenantRepository<CapstoneProjectRecord>;
   learnerPortfolios: TenantRepository<LearnerPortfolioRecord>;
+  certificationAwards: TenantRepository<CertificationAwardRecord>;
 }
 
 export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
@@ -128,6 +130,7 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     coachMessages: new TenantRepository("coach_messages", new SupabaseRestAdapter<CoachMessageRecord>(config), auditEvents),
     capstoneProjects: new TenantRepository("capstone_projects", new SupabaseRestAdapter<CapstoneProjectRecord>(config), auditEvents),
     learnerPortfolios: new TenantRepository("learner_portfolios", new SupabaseRestAdapter<LearnerPortfolioRecord>(config), auditEvents),
+    certificationAwards: new TenantRepository("certification_awards", new SupabaseRestAdapter<CertificationAwardRecord>(config), auditEvents),
   };
 }
 
@@ -174,5 +177,6 @@ export function createInMemoryRepositories(): ZigRepositories {
     coachMessages: new TenantRepository("coach_messages", new InMemoryDatabaseAdapter<CoachMessageRecord>(), auditEvents),
     capstoneProjects: new TenantRepository("capstone_projects", new InMemoryDatabaseAdapter<CapstoneProjectRecord>(), auditEvents),
     learnerPortfolios: new TenantRepository("learner_portfolios", new InMemoryDatabaseAdapter<LearnerPortfolioRecord>(), auditEvents),
+    certificationAwards: new TenantRepository("certification_awards", new InMemoryDatabaseAdapter<CertificationAwardRecord>(), auditEvents),
   };
 }

@@ -2,6 +2,9 @@ import type { ZigRepositories } from "@zig/data-access";
 import { AuditService } from "./AuditService";
 import { AssessmentService } from "./AssessmentService";
 import { AssetService } from "./AssetService";
+import { CertificationAwardService } from "./CertificationAwardService";
+import { CertificationEligibilityService } from "./CertificationEligibilityService";
+import { CertificationProgressService } from "./CertificationProgressService";
 import { CoachService } from "./CoachService";
 import { ControlService } from "./ControlService";
 import { EvidenceService } from "./EvidenceService";
@@ -30,6 +33,9 @@ export interface ZigServices {
   assessments: AssessmentService;
   scenarios: ScenarioService;
   portfolio: PortfolioService;
+  certificationEligibility: CertificationEligibilityService;
+  certificationProgress: CertificationProgressService;
+  certificationAwards: CertificationAwardService;
   governance: GovernanceService;
   coach: CoachService;
   exports: ExportsService;
@@ -85,6 +91,25 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.labArtifacts,
       repositories.capstoneProjects,
       repositories.studentTwins,
+    ),
+    certificationEligibility: new CertificationEligibilityService(
+      repositories.studentTwins,
+      repositories.userProgress,
+      repositories.learningModules,
+      repositories.capstoneProjects,
+    ),
+    certificationProgress: new CertificationProgressService(
+      repositories.studentTwins,
+      repositories.userProgress,
+      repositories.learningModules,
+      repositories.capstoneProjects,
+    ),
+    certificationAwards: new CertificationAwardService(
+      repositories.certificationAwards,
+      repositories.studentTwins,
+      repositories.userProgress,
+      repositories.learningModules,
+      repositories.capstoneProjects,
     ),
     governance: new GovernanceService(
       repositories.governanceScores,

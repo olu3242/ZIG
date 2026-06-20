@@ -478,6 +478,16 @@ export interface LearnerPortfolio {
   linkedinSummary: string;
 }
 
+export interface CertificationAward {
+  id: string;
+  tenantId: string;
+  learnerUserId?: string;
+  certificationKey: string;
+  badgeKey: string;
+  scoreSnapshot: Record<string, unknown>;
+  awardedAt: Date;
+}
+
 export interface Recommendation {
   id: string;
   tenantId: string;

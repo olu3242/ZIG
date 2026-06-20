@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { FrameworkRegistry } from "@zig/framework-engine";
 import { auditAuth, clearSession, requireSession, requireTenantContext, setSession, setTenantProfile } from "./auth";
 import { findTenantProfileByAuthUserId, getZigServices, loginWithEmail, requestPasswordReset, signUpWithEmail } from "./supabase";
+import { trackForLearningPath } from "./certificationTracks";
 
 export async function signupAction(formData: FormData): Promise<void> {
   const email = requireString(formData, "email");
@@ -304,6 +305,21 @@ export async function runHealthAdvisorAction(formData: FormData): Promise<void> 
   await services.governance.recordScoreSnapshot(context, projectId);
   await services.audit.recordAction(context, "generate", "recommendations", projectId, "Health Advisor run");
   redirect(`/projects/${projectId}`);
+}
+
+export async function awardCertificationAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const learningPathId = requireString(formData, "learningPathId");
+  const services = getZigServices();
+
+  const learningPath = await services.learning.findById(context, learningPathId);
+  if (!learningPath) {
+    throw new Error(`Learning path "${learningPathId}" was not found.`);
+  }
+  const track = trackForLearningPath(learningPath);
+  const award = await services.certificationAwards.awardCertification(context, track);
+  await services.audit.recordAction(context, "create", "certification_awards", award.id, `Certification awarded: ${track.title}`);
+  redirect("/certifications");
 }
 
 function requireString(formData: FormData, key: string): string {
