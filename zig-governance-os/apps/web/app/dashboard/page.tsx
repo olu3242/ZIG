@@ -13,7 +13,7 @@ const quickActions = [
 ] as const;
 
 export default async function DashboardPage() {
-  const { tenant, persona, projects, frameworks, stats } = await loadDashboard();
+  const { tenant, persona, projects, frameworks, governance, stats } = await loadDashboard();
 
   return (
     <>
@@ -24,11 +24,26 @@ export default async function DashboardPage() {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <GovernanceScoreWidget score={stats.governanceScore} detail="Initial score is generated once the first project and framework assignment exist." />
+        <GovernanceScoreWidget
+          score={stats.governanceScore}
+          detail={governance ? `${governance.healthState} — ${governance.explanation}` : "Create a project to generate a governance score from live data."}
+        />
         <StatCard label="Projects" value={stats.projectCount} detail={`${stats.activeProjects} active governance project(s).`} tone="healthy" />
         <StatCard label="Frameworks" value={stats.frameworkCount} detail="Tenant framework registry rows available for selection." />
         <StatCard label="Onboarding" value={stats.onboardingState} detail="Vertical slice readiness for the current tenant." />
       </div>
+
+      {governance && (
+        <div className="grid gap-4 md:grid-cols-4 xl:grid-cols-7">
+          <StatCard label="Control Coverage" value={`${governance.controlCoverage}%`} detail="Implemented controls / total controls." />
+          <StatCard label="Risk Assessment" value={`${governance.riskAssessmentCoverage}%`} detail="Risks with ≥1 risk_assessments row." />
+          <StatCard label="Evidence Complete" value={`${governance.evidenceCompleteness}%`} detail="Evidence with an approved review." />
+          <StatCard label="Framework Coverage" value={`${governance.frameworkCoverage}%`} detail="Controls mapped to an assigned framework." />
+          <StatCard label="Ownership" value={`${governance.ownershipCompleteness}%`} detail="Controls with a non-null owner." />
+          <StatCard label="Review Completion" value={`${governance.reviewCompletion}%`} detail="Evidence reviews no longer pending." />
+          <StatCard label="Vendor Assessment" value={`${governance.vendorAssessmentCoverage}%`} detail="Vendors with a completed vendor_assessments row." />
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Learning Paths Enrolled" value={stats.enrolledPathCount} detail="Distinct learning paths with a user_progress row for this user." />

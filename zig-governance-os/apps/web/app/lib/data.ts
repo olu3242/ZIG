@@ -17,14 +17,16 @@ export async function loadDashboard() {
   ]);
   const activeProjects = projects.filter((project) => project.status === "active").length;
   const latestProject = projects[0];
+  const governance = latestProject ? await services.governance.calculateScore(context, latestProject.id) : null;
 
   return {
     tenant,
     persona,
     projects,
     frameworks,
+    governance,
     stats: {
-      governanceScore: latestProject ? 25 : 0,
+      governanceScore: governance ? governance.score : 0,
       projectCount: projects.length,
       activeProjects,
       frameworkCount: frameworks.length,
