@@ -65,15 +65,35 @@ assessment (`docs/product/prd.md` Section 11).
   renders all seven raw input percentages when a governance breakdown exists, satisfying
   CLAUDE.md's "every score states why it exists, what affects it, and how to improve it."
 
+## Mission Control recent activity (also closed in this pass)
+
+`E2E_GAP_REPORT.md` line 89 flagged Mission Control's recent-activity stat as a static
+`"0"` despite `audit_events` being populated by `AuditService` on every tenant repository
+write. Closed by:
+
+- **`packages/data-access/src/types.ts`** — `AuditSink` interface gained `findByTenant`.
+- **`packages/data-access/src/AuditRepository.ts`** (in-memory) already had `findByTenant`;
+  **`packages/data-access/src/SupabaseRestAdapter.ts`**'s `SupabaseAuditSink` gained a real
+  implementation backed by the same `SupabaseRestAdapter.findMany` every other repository
+  uses.
+- **`packages/services/src/AuditService.ts`** — new `findRecentActivity(context, limit=10)`
+  reads real, tenant-scoped `audit_events` rows sorted by `createdAt` descending.
+- **`apps/web/app/lib/data.ts`** — `loadDashboard()` now fetches
+  `services.audit.findRecentActivity(context)`, returned as `recentActivity` and
+  `stats.recentActivityCount`.
+- **`apps/web/app/mission-control/page.tsx`** — the stat card now shows the real count, and
+  a new "Recent Activity" table renders each event's action, entity, and timestamp.
+- **Test added:** `packages/services/src/tests/mission-control-activity.test.ts` — asserts
+  zero activity before any action, then asserts `findRecentActivity` returns only the
+  current tenant's events after a cross-tenant write (tenant isolation), confirming the
+  count is real and not a constant. **Exited 0.**
+
 ## What is honestly NOT closed in this pass
 
-1. **Mission Control's recent-activity stat is still a static `"0"`** despite
-   `audit_events` being populated by `AuditService` (`E2E_GAP_REPORT.md` line 89) — not
-   touched in this pass.
-2. **Executive Reporting / `/exports` is still FAIL** — `ExportPipeline.createManifest()`
+1. **Executive Reporting / `/exports` is still FAIL** — `ExportPipeline.createManifest()`
    remains defined but never invoked from any route; no PDF/CSV generation exists. Not
    addressed in this pass; tracked as the remainder of Phase 9.
-3. **`governanceScore` is not persisted to the `governance_scores` table** — it is
+2. **`governanceScore` is not persisted to the `governance_scores` table** — it is
    recomputed from live data on every read (by design, per the scoring-engine doc's
    "why it exists" explainability requirement: a stored score can go stale, a live
    computation cannot). The `governance_scores` table and its repository remain available
@@ -98,6 +118,8 @@ assessment (`docs/product/prd.md` Section 11).
   **exited 0**.
 - **Regression check:** all 9 prior workflow tests (`learning-workflow`,
   `assessment-workflow`, `lab-workflow`, `evidence-workflow`, `vendor-risk-workflow`,
-  `career-readiness-workflow`, `ai-coach-workflow`, `service-layer`, `vertical-slice`) were
-  re-run the same way — all **exited 0**, confirming this change did not break any prior
-  workflow.
+  `career-readiness-workflow`, `ai-coach-workflow`, `service-layer`, `vertical-slice`), plus
+  `mission-control-activity` (new, see above), were re-run the same way — all **exited 0**,
+  confirming this change did not break any prior workflow. `packages/data-access`'s own
+  test suite (`supabase-adapter`, `tenant-isolation`) was also re-run after the `AuditSink`
+  interface change — both **exited 0**.

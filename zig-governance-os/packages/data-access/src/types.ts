@@ -63,4 +63,5 @@ export interface DatabaseAdapter<T extends TenantScopedRecord> {
 
 export interface AuditSink {
   record(event: Omit<AuditEvent, "id" | "createdAt">): Promise<AuditEvent>;
+  findByTenant(tenantId: string): Promise<AuditEvent[]>;
 }

@@ -1,4 +1,4 @@
-import type { AuditAction, AuditSink, TenantContext } from "@zig/data-access";
+import type { AuditAction, AuditEvent, AuditSink, TenantContext } from "@zig/data-access";
 
 export class AuditService {
   constructor(private readonly auditSink: AuditSink) {}
@@ -12,5 +12,10 @@ export class AuditService {
       entityId,
       reason,
     });
+  }
+
+  async findRecentActivity(context: TenantContext, limit = 10): Promise<AuditEvent[]> {
+    const events = await this.auditSink.findByTenant(context.tenantId);
+    return events.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()).slice(0, limit);
   }
 }
