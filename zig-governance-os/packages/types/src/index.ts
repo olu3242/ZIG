@@ -403,6 +403,31 @@ export interface VendorFinding {
   remediationDueAt?: Date;
 }
 
+export type CoachContextType = "learning_path" | "lesson" | "assessment" | "lab" | "general";
+
+export interface CoachConversation {
+  id: string;
+  tenantId: string;
+  learnerUserId: string;
+  contextType: CoachContextType;
+  contextId?: string;
+  startedAt: Date;
+}
+
+export type CoachMessageRole = "learner" | "coach";
+
+export interface CoachMessage {
+  id: string;
+  tenantId: string;
+  conversationId: string;
+  role: CoachMessageRole;
+  content: string;
+  reasoning?: string;
+  supportingData: Record<string, unknown>;
+  confidence?: number;
+  frameworkReference?: string;
+}
+
 export interface GovernanceScore {
   tenantId: string;
   projectId: string;

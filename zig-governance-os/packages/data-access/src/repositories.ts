@@ -6,6 +6,8 @@ import type {
   AssetRecord,
   AssessmentRecord,
   AuditRecord,
+  CoachConversationRecord,
+  CoachMessageRecord,
   ControlEvidenceRecord,
   ControlMappingRecord,
   ControlRecord,
@@ -75,6 +77,8 @@ export interface ZigRepositories {
   vendorFindings: TenantRepository<VendorFindingRecord>;
   governanceScores: TenantRepository<GovernanceScoreRecord>;
   recommendations: TenantRepository<RecommendationRecord>;
+  coachConversations: TenantRepository<CoachConversationRecord>;
+  coachMessages: TenantRepository<CoachMessageRecord>;
 }
 
 export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
@@ -116,6 +120,8 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     vendorFindings: new TenantRepository("vendor_findings", new SupabaseRestAdapter<VendorFindingRecord>(config), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
     recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
+    coachConversations: new TenantRepository("coach_conversations", new SupabaseRestAdapter<CoachConversationRecord>(config), auditEvents),
+    coachMessages: new TenantRepository("coach_messages", new SupabaseRestAdapter<CoachMessageRecord>(config), auditEvents),
   };
 }
 
@@ -158,5 +164,7 @@ export function createInMemoryRepositories(): ZigRepositories {
     vendorFindings: new TenantRepository("vendor_findings", new InMemoryDatabaseAdapter<VendorFindingRecord>(), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new InMemoryDatabaseAdapter<GovernanceScoreRecord>(), auditEvents),
     recommendations: new TenantRepository("recommendations", new InMemoryDatabaseAdapter<RecommendationRecord>(), auditEvents),
+    coachConversations: new TenantRepository("coach_conversations", new InMemoryDatabaseAdapter<CoachConversationRecord>(), auditEvents),
+    coachMessages: new TenantRepository("coach_messages", new InMemoryDatabaseAdapter<CoachMessageRecord>(), auditEvents),
   };
 }

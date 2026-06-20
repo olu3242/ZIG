@@ -269,6 +269,32 @@ export async function completeVendorAssessmentAction(formData: FormData): Promis
   redirect("/vendors");
 }
 
+export async function startCoachConversationAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const contextType = (formData.get("contextType")?.toString().trim() || "general") as
+    | "learning_path"
+    | "lesson"
+    | "assessment"
+    | "lab"
+    | "general";
+  const services = getZigServices();
+
+  const { conversation } = await services.coach.startConversation(context, contextType);
+  await services.audit.recordAction(context, "create", "coach_conversations", conversation.id, "AI Coach conversation started");
+  redirect("/ai-command");
+}
+
+export async function sendCoachMessageAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const conversationId = requireString(formData, "conversationId");
+  const content = requireString(formData, "content");
+  const services = getZigServices();
+
+  const outcome = await services.coach.sendMessage(context, conversationId, content);
+  await services.audit.recordAction(context, "create", "coach_messages", outcome.coachMessage.id, "AI Coach replied");
+  redirect("/ai-command");
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

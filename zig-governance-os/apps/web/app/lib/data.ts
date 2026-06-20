@@ -4,7 +4,7 @@ import { requireTenantContext } from "./auth";
 export async function loadDashboard() {
   const { context, persona } = await requireTenantContext();
   const services = getZigServices();
-  const [tenant, projects, frameworks, learning, assessments, labs, evidence, vendorRisk] = await Promise.all([
+  const [tenant, projects, frameworks, learning, assessments, labs, evidence, vendorRisk, coachConversations] = await Promise.all([
     services.tenants.findProfileTenant(context),
     services.projects.findMany(context),
     services.frameworks.findAvailableFrameworks(context),
@@ -13,6 +13,7 @@ export async function loadDashboard() {
     services.scenarios.getLearnerLabSummary(context),
     services.evidence.getEvidenceSummary(context),
     services.risks.getVendorRiskSummary(context),
+    services.coach.findConversations(context),
   ]);
   const activeProjects = projects.filter((project) => project.status === "active").length;
   const latestProject = projects[0];
@@ -40,6 +41,7 @@ export async function loadDashboard() {
       vendorCount: vendorRisk.vendorCount,
       vendorOpenFindingCount: vendorRisk.openFindingCount,
       vendorAverageRiskScore: vendorRisk.averageRiskScore,
+      coachConversationCount: coachConversations.length,
     },
   };
 }
@@ -70,6 +72,19 @@ export async function loadCareer() {
   const services = getZigServices();
   const readiness = await services.learning.getCareerReadiness(context);
   return { readiness };
+}
+
+export async function loadCoach() {
+  const { context } = await requireTenantContext();
+  const services = getZigServices();
+  const conversations = await services.coach.findConversations(context);
+
+  const messagesByConversationId = new Map<string, Awaited<ReturnType<typeof services.coach.findMessages>>>();
+  for (const conversation of conversations) {
+    messagesByConversationId.set(conversation.id, await services.coach.findMessages(context, conversation.id));
+  }
+
+  return { conversations, messagesByConversationId };
 }
 
 export async function loadEvidence() {

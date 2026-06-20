@@ -2,6 +2,8 @@ import type {
   Asset,
   Assessment,
   Audit,
+  CoachConversation,
+  CoachMessage,
   Control,
   ControlEvidence,
   ControlMapping,
@@ -68,4 +70,6 @@ export type VendorRecord = Vendor & { createdAt: Date; updatedAt: Date };
 export type VendorAssessmentRecord = VendorAssessment & { createdAt: Date; updatedAt: Date };
 export type VendorFindingRecord = VendorFinding & { createdAt: Date; updatedAt: Date };
 export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: Date; updatedAt: Date };
+export type CoachConversationRecord = CoachConversation & { createdAt: Date; updatedAt: Date };
+export type CoachMessageRecord = CoachMessage & { createdAt: Date; updatedAt: Date };
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };

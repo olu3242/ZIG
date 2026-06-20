@@ -48,10 +48,11 @@ export default async function DashboardPage() {
         <StatCard label="Evidence Approved" value={stats.evidenceApprovedCount} detail="evidence_reviews status = approved." tone="healthy" />
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-4">
         <StatCard label="Vendors" value={stats.vendorCount} detail="Rows persisted to the vendors table." />
         <StatCard label="Open Vendor Findings" value={stats.vendorOpenFindingCount} detail="vendor_findings status open or remediating." tone={stats.vendorOpenFindingCount > 0 ? "attention" : "healthy"} />
         <StatCard label="Avg. Vendor Risk Score" value={stats.vendorAverageRiskScore} detail="Across completed vendor_assessments." />
+        <StatCard label="AI Coach Conversations" value={stats.coachConversationCount} detail="Rows persisted to coach_conversations." />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[1.4fr_1fr]">
