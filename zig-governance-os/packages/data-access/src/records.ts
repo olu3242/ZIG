@@ -1,7 +1,11 @@
 import type {
+  ArtifactTemplate,
+  ArtifactVersion,
   Asset,
   Assessment,
   Audit,
+  Competency,
+  CompetencyAssessment,
   Control,
   ControlMapping,
   Evidence,
@@ -9,6 +13,7 @@ import type {
   GovernanceScore,
   LearningModule,
   LearningPath,
+  PortfolioArtifact,
   Project,
   ProjectFramework,
   Recommendation,
@@ -16,10 +21,16 @@ import type {
   RiskAssessment,
   Role,
   Scenario,
+  ScenarioAttempt,
+  ScenarioDecision,
+  ScenarioOutcome,
   ScenarioRun,
+  ScenarioTemplate,
+  SimulatedCompanyObject,
   Task,
   Tenant,
   User,
+  UserCompetency,
 } from "@zig/types";
 
 export type TenantRecord = Tenant;
@@ -43,3 +54,28 @@ export type ScenarioRecord = Scenario & { createdAt: Date; updatedAt: Date };
 export type ScenarioRunRecord = ScenarioRun & { createdAt: Date; updatedAt: Date };
 export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: Date; updatedAt: Date };
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };
+
+// --- Governance Competency OS: Competency Engine ---
+export type CompetencyRecord = Competency & { createdAt: Date; updatedAt: Date };
+export type UserCompetencyRecord = UserCompetency & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type CompetencyAssessmentRecord = CompetencyAssessment & {
+  tenantId: string;
+  projectId: string | null;
+  status: "draft" | "submitted" | "scored" | "disputed";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// --- Governance Competency OS: Scenario Engine ---
+export type ScenarioTemplateRecord = ScenarioTemplate & { createdAt: Date; updatedAt: Date };
+export type ScenarioAttemptRecord = ScenarioAttempt & { createdAt: Date; updatedAt: Date };
+export type ScenarioDecisionRecord = ScenarioDecision & { createdAt: Date; updatedAt: Date };
+export type ScenarioOutcomeRecord = ScenarioOutcome & { createdAt: Date; updatedAt: Date };
+
+// --- Governance Competency OS: Portfolio Artifact Engine ---
+export type PortfolioArtifactRecord = PortfolioArtifact & { createdAt: Date; updatedAt: Date };
+export type ArtifactVersionRecord = ArtifactVersion & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type ArtifactTemplateRecord = Omit<ArtifactTemplate, "tenantId"> & { tenantId: string; createdAt: Date; updatedAt: Date };
+
+// --- Learning↔Operational Bridge ---
+export type SimulatedCompanyObjectRecord = SimulatedCompanyObject & { createdAt: Date; updatedAt: Date };

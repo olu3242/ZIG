@@ -38,6 +38,7 @@ export type TaskStatus = "todo" | "in_progress" | "blocked" | "done";
 export type EvidenceStatus = "missing" | "requested" | "submitted" | "approved";
 export type RecommendationSeverity = "info" | "medium" | "high" | "critical";
 export type ScenarioRunStatus = "not_started" | "running" | "paused" | "completed";
+export type RecordSourceType = "operational" | "learning_import";
 
 export interface Tenant {
   id: string;
@@ -146,6 +147,12 @@ export interface Control {
   description: string;
   status: ControlStatus;
   ownerId?: string;
+  sourceType: RecordSourceType;
+  importedFromScenarioId?: string;
+  importedFromObjectId?: string;
+  importedByUserId?: string;
+  importedAt?: Date;
+  reportingCleared?: boolean;
 }
 
 export interface ControlMapping {
@@ -166,6 +173,12 @@ export interface Asset {
   category: string;
   ownerId?: string;
   criticality: RiskSeverity;
+  sourceType: RecordSourceType;
+  importedFromScenarioId?: string;
+  importedFromObjectId?: string;
+  importedByUserId?: string;
+  importedAt?: Date;
+  reportingCleared?: boolean;
 }
 
 export interface Risk {
@@ -177,6 +190,12 @@ export interface Risk {
   description: string;
   severity: RiskSeverity;
   treatment: RiskTreatment;
+  sourceType: RecordSourceType;
+  importedFromScenarioId?: string;
+  importedFromObjectId?: string;
+  importedByUserId?: string;
+  importedAt?: Date;
+  reportingCleared?: boolean;
 }
 
 export interface RiskAssessment {
@@ -200,6 +219,12 @@ export interface Evidence {
   status: EvidenceStatus;
   submittedById?: string;
   submittedAt?: Date;
+  sourceType: RecordSourceType;
+  importedFromScenarioId?: string;
+  importedFromObjectId?: string;
+  importedByUserId?: string;
+  importedAt?: Date;
+  reportingCleared?: boolean;
 }
 
 export interface Task {
@@ -252,6 +277,7 @@ export interface Scenario {
   name: string;
   description: string;
   frameworkIds: string[];
+  templateId?: string;
 }
 
 export interface ScenarioRun {
@@ -287,4 +313,236 @@ export interface Recommendation {
   action: string;
   confidence: number;
   frameworkReference?: string;
+}
+
+// --- Governance Competency OS: Competency Engine (docs/architecture/competency-engine.md) ---
+
+export type CompetencyCode =
+  | "asset_management"
+  | "risk_assessment"
+  | "control_design"
+  | "evidence_management"
+  | "framework_mapping"
+  | "audit_readiness"
+  | "vendor_risk"
+  | "governance_reporting";
+
+export type CompetencyLevel = "novice" | "developing" | "proficient" | "advanced";
+
+export type CompetencyAssessmentSource =
+  | "learning_module"
+  | "scenario"
+  | "portfolio_artifact"
+  | "manual";
+
+export interface Competency {
+  id: string;
+  tenantId: string;
+  code: CompetencyCode;
+  name: string;
+  description: string;
+  category: "core" | "specialist";
+  isActive: boolean;
+  sortOrder: number;
+}
+
+export interface UserCompetency {
+  id: string;
+  tenantId: string;
+  learnerId: string;
+  competencyId: string;
+  proficiencyLevel: CompetencyLevel;
+  currentScore: number;
+  assessmentCount: number;
+  lastAssessedAt: Date | null;
+  latestAssessmentId: string | null;
+}
+
+export interface CompetencyRubricCriterionScore {
+  criterionKey: string;
+  label: string;
+  weight: number;
+  rawScore: number;
+  weightedScore: number;
+  feedback: string | null;
+}
+
+export interface CompetencyRubricScore {
+  competencyCode: CompetencyCode;
+  criteria: CompetencyRubricCriterionScore[];
+  rubricVersion: string;
+}
+
+export interface CompetencyAssessment {
+  id: string;
+  learnerId: string;
+  competencyId: string;
+  sourceType: CompetencyAssessmentSource;
+  sourceRefId: string | null;
+  rubric: CompetencyRubricScore;
+  overallScore: number;
+  proficiencyLevel: CompetencyLevel;
+  assessedAt: Date;
+  assessorType: "system" | "ai_coach" | "instructor";
+  assessorId: string | null;
+  notes: string | null;
+}
+
+// --- Governance Competency OS: Scenario Engine (docs/architecture/scenario-engine.md) ---
+
+export interface ScenarioTemplate {
+  id: string;
+  tenantId: string;
+  key: string;
+  name: string;
+  simulatedCompany: string;
+  description: string;
+  frameworkIds: string[];
+  competencyIds: string[];
+  difficulty: "foundation" | "intermediate" | "advanced";
+  decisionPointIds: string[];
+  startingScores: {
+    riskScore: number;
+    healthScore: number;
+    readinessScore: number;
+  };
+  status: "draft" | "published" | "retired";
+}
+
+export interface ScenarioAttempt {
+  id: string;
+  tenantId: string;
+  projectId: string;
+  scenarioId: string;
+  templateId: string;
+  learnerId: string;
+  status: "in_progress" | "completed" | "abandoned";
+  currentDecisionPointId: string | null;
+  riskScore: number;
+  healthScore: number;
+  readinessScore: number;
+  startedAt: Date;
+  completedAt?: Date;
+}
+
+export interface ScenarioDecisionOption {
+  id: string;
+  label: string;
+  scoreDeltas: {
+    riskScore: number;
+    healthScore: number;
+    readinessScore: number;
+  };
+}
+
+export interface ScenarioDecision {
+  id: string;
+  tenantId: string;
+  attemptId: string;
+  decisionPointId: string;
+  prompt: string;
+  optionsPresented: ScenarioDecisionOption[];
+  optionChosen: string;
+  scoreDeltas: {
+    riskScore: number;
+    healthScore: number;
+    readinessScore: number;
+  };
+  rationale: string;
+  decidedAt: Date;
+}
+
+export interface ScenarioOutcome {
+  id: string;
+  tenantId: string;
+  attemptId: string;
+  learnerId: string;
+  scenarioId: string;
+  templateId: string;
+  finalRiskScore: number;
+  finalHealthScore: number;
+  readinessScoreDelta: number;
+  decisionsCount: number;
+  competenciesDemonstrated: string[];
+  grade: "strong" | "adequate" | "weak";
+  summary: string;
+  completedAt: Date;
+}
+
+// --- Governance Competency OS: Portfolio Artifact Engine (docs/architecture/portfolio-artifact-engine.md) ---
+
+export type PortfolioArtifactType =
+  | "riskRegister"
+  | "assetRegister"
+  | "controlMatrix"
+  | "auditPlan"
+  | "vendorAssessment"
+  | "bia"
+  | "boardReport";
+
+export type PortfolioArtifactExportFormat = "pdf" | "excel" | "markdown";
+
+export type PortfolioArtifactStatus = "draft" | "generated" | "exported" | "archived";
+
+export interface PortfolioArtifact {
+  id: string;
+  tenantId: string;
+  learnerId: string;
+  projectId: string;
+  scenarioRunId?: string;
+  artifactType: PortfolioArtifactType;
+  templateId?: string;
+  currentVersionId: string;
+  exportFormat: PortfolioArtifactExportFormat;
+  status: PortfolioArtifactStatus;
+  title: string;
+}
+
+export interface ArtifactVersion {
+  id: string;
+  tenantId: string;
+  portfolioArtifactId: string;
+  versionNumber: number;
+  content: Record<string, unknown>;
+  contentRef?: string;
+  sourceSnapshot: {
+    projectId: string;
+    capturedAt: Date;
+    recordCounts: Record<string, number>;
+  };
+  generationReason: "initial" | "regeneration" | "feedback_revision" | "manual_edit";
+  feedbackNoteRef?: string;
+  exportFormat: PortfolioArtifactExportFormat;
+  createdByUserId?: string;
+}
+
+export interface ArtifactTemplateSection {
+  key: string;
+  label: string;
+  contentSource: "static" | "service_read" | "learner_input";
+  staticContentRef?: string;
+}
+
+// --- Learning↔Operational Bridge read-only source (existing table, typed for the first time here) ---
+
+export type SimulatedCompanyObjectType = "asset" | "control" | "risk" | "evidence";
+
+export interface SimulatedCompanyObject {
+  id: string;
+  tenantId: string;
+  simulatedCompanyId: string;
+  objectType: SimulatedCompanyObjectType;
+  name: string;
+  status: string;
+  payload: Record<string, unknown>;
+}
+
+export interface ArtifactTemplate {
+  id: string;
+  tenantId?: string;
+  artifactType: PortfolioArtifactType;
+  name: string;
+  description: string;
+  sectionSchema: ArtifactTemplateSection[];
+  isDefault: boolean;
 }

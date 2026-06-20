@@ -3,9 +3,13 @@ import { InMemoryDatabaseAdapter } from "./InMemoryDatabaseAdapter";
 import { TenantRepository } from "./TenantRepository";
 import { SupabaseAuditSink, SupabaseRestAdapter, type SupabaseRestConfig } from "./SupabaseRestAdapter";
 import type {
+  ArtifactTemplateRecord,
+  ArtifactVersionRecord,
   AssetRecord,
   AssessmentRecord,
   AuditRecord,
+  CompetencyAssessmentRecord,
+  CompetencyRecord,
   ControlMappingRecord,
   ControlRecord,
   EvidenceRecord,
@@ -13,16 +17,23 @@ import type {
   GovernanceScoreRecord,
   LearningModuleRecord,
   LearningPathRecord,
+  PortfolioArtifactRecord,
   ProjectRecord,
   ProjectFrameworkRecord,
   RecommendationRecord,
   RiskAssessmentRecord,
   RiskRecord,
   RoleRecord,
+  ScenarioAttemptRecord,
+  ScenarioDecisionRecord,
+  ScenarioOutcomeRecord,
   ScenarioRecord,
   ScenarioRunRecord,
+  ScenarioTemplateRecord,
+  SimulatedCompanyObjectRecord,
   TaskRecord,
   TenantRecord,
+  UserCompetencyRecord,
   UserRecord,
 } from "./records";
 
@@ -49,6 +60,17 @@ export interface ZigRepositories {
   scenarioRuns: TenantRepository<ScenarioRunRecord>;
   governanceScores: TenantRepository<GovernanceScoreRecord>;
   recommendations: TenantRepository<RecommendationRecord>;
+  competencies: TenantRepository<CompetencyRecord>;
+  userCompetencies: TenantRepository<UserCompetencyRecord>;
+  competencyAssessments: TenantRepository<CompetencyAssessmentRecord>;
+  scenarioTemplates: TenantRepository<ScenarioTemplateRecord>;
+  scenarioAttempts: TenantRepository<ScenarioAttemptRecord>;
+  scenarioDecisions: TenantRepository<ScenarioDecisionRecord>;
+  scenarioOutcomes: TenantRepository<ScenarioOutcomeRecord>;
+  portfolioArtifacts: TenantRepository<PortfolioArtifactRecord>;
+  artifactVersions: TenantRepository<ArtifactVersionRecord>;
+  artifactTemplates: TenantRepository<ArtifactTemplateRecord>;
+  simulatedCompanyObjects: TenantRepository<SimulatedCompanyObjectRecord>;
 }
 
 export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
@@ -77,6 +99,17 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     scenarioRuns: new TenantRepository("scenario_runs", new SupabaseRestAdapter<ScenarioRunRecord>(config), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new SupabaseRestAdapter<GovernanceScoreRecord>(config), auditEvents),
     recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
+    competencies: new TenantRepository("competencies", new SupabaseRestAdapter<CompetencyRecord>(config), auditEvents),
+    userCompetencies: new TenantRepository("user_competencies", new SupabaseRestAdapter<UserCompetencyRecord>(config), auditEvents),
+    competencyAssessments: new TenantRepository("competency_assessments", new SupabaseRestAdapter<CompetencyAssessmentRecord>(config), auditEvents),
+    scenarioTemplates: new TenantRepository("scenario_templates", new SupabaseRestAdapter<ScenarioTemplateRecord>(config), auditEvents),
+    scenarioAttempts: new TenantRepository("scenario_attempts", new SupabaseRestAdapter<ScenarioAttemptRecord>(config), auditEvents),
+    scenarioDecisions: new TenantRepository("scenario_decisions", new SupabaseRestAdapter<ScenarioDecisionRecord>(config), auditEvents),
+    scenarioOutcomes: new TenantRepository("scenario_outcomes", new SupabaseRestAdapter<ScenarioOutcomeRecord>(config), auditEvents),
+    portfolioArtifacts: new TenantRepository("portfolio_artifacts", new SupabaseRestAdapter<PortfolioArtifactRecord>(config), auditEvents),
+    artifactVersions: new TenantRepository("artifact_versions", new SupabaseRestAdapter<ArtifactVersionRecord>(config), auditEvents),
+    artifactTemplates: new TenantRepository("artifact_templates", new SupabaseRestAdapter<ArtifactTemplateRecord>(config), auditEvents),
+    simulatedCompanyObjects: new TenantRepository("simulated_company_objects", new SupabaseRestAdapter<SimulatedCompanyObjectRecord>(config), auditEvents),
   };
 }
 
@@ -106,5 +139,16 @@ export function createInMemoryRepositories(): ZigRepositories {
     scenarioRuns: new TenantRepository("scenario_runs", new InMemoryDatabaseAdapter<ScenarioRunRecord>(), auditEvents),
     governanceScores: new TenantRepository("governance_scores", new InMemoryDatabaseAdapter<GovernanceScoreRecord>(), auditEvents),
     recommendations: new TenantRepository("recommendations", new InMemoryDatabaseAdapter<RecommendationRecord>(), auditEvents),
+    competencies: new TenantRepository("competencies", new InMemoryDatabaseAdapter<CompetencyRecord>(), auditEvents),
+    userCompetencies: new TenantRepository("user_competencies", new InMemoryDatabaseAdapter<UserCompetencyRecord>(), auditEvents),
+    competencyAssessments: new TenantRepository("competency_assessments", new InMemoryDatabaseAdapter<CompetencyAssessmentRecord>(), auditEvents),
+    scenarioTemplates: new TenantRepository("scenario_templates", new InMemoryDatabaseAdapter<ScenarioTemplateRecord>(), auditEvents),
+    scenarioAttempts: new TenantRepository("scenario_attempts", new InMemoryDatabaseAdapter<ScenarioAttemptRecord>(), auditEvents),
+    scenarioDecisions: new TenantRepository("scenario_decisions", new InMemoryDatabaseAdapter<ScenarioDecisionRecord>(), auditEvents),
+    scenarioOutcomes: new TenantRepository("scenario_outcomes", new InMemoryDatabaseAdapter<ScenarioOutcomeRecord>(), auditEvents),
+    portfolioArtifacts: new TenantRepository("portfolio_artifacts", new InMemoryDatabaseAdapter<PortfolioArtifactRecord>(), auditEvents),
+    artifactVersions: new TenantRepository("artifact_versions", new InMemoryDatabaseAdapter<ArtifactVersionRecord>(), auditEvents),
+    artifactTemplates: new TenantRepository("artifact_templates", new InMemoryDatabaseAdapter<ArtifactTemplateRecord>(), auditEvents),
+    simulatedCompanyObjects: new TenantRepository("simulated_company_objects", new InMemoryDatabaseAdapter<SimulatedCompanyObjectRecord>(), auditEvents),
   };
 }
