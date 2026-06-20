@@ -59,3 +59,20 @@ See `docs/learning/TABLE_LIBRARY.md` → "GovSec Compliance Coverage Map". Row: 
 Identify Function Controls shown as "control, evidence present" (`implemented`), Respond
 Function Controls shown as "control, evidence needed" (`needs_evidence`), the exact gap
 the Governance track's program-build module asks the learner to close.
+
+## Control Coverage Map
+Pivots the Compliance Coverage Map by control: "Identify Function Controls" → NIST CSF
+Identify function only (implemented); "Respond Function Controls" → NIST CSF Respond
+function only (evidence needed) — GovSec is single-framework (NIST CSF-aligned per the
+Profile), so this map has no cross-framework rows, unlike CloudPay's.
+
+## Incident Flow
+No `incident` object exists in GovSec's seeded objects above — no Incident Flow exists
+for this scenario. GovSec's narrative is reporting-maturity-driven (governance data exists
+but isn't board-reported), not incident-driven.
+
+## Audit History Timeline
+GovSec has no seeded audit history in its objects above — the timeline starts empty by
+design, consistent with the Narrative's framing that GovSec's governance program "has
+never turned [its data] into a board-ready report," implying no formal audit cadence has
+been established yet either.

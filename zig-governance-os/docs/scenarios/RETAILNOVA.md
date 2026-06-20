@@ -60,3 +60,21 @@ See `docs/learning/TABLE_LIBRARY.md` → "RetailNova Compliance Coverage Map". R
 — shown as "no control" for formal scope documentation (matches the open
 "Unscoped PCI DSS Boundary" risk), "planned" for the Vendor Security Questionnaire
 control.
+
+## Control Coverage Map
+Pivots the Compliance Coverage Map by control: "Vendor Security Questionnaire" (planned)
+→ no PCI DSS requirement mapping yet, since the questionnaire itself hasn't been designed
+— the Vendor Risk lab's "design and send a vendor security questionnaire scoped to each"
+task is the step that would populate this mapping.
+
+## Incident Flow
+No `incident` object type exists in RetailNova's seeded objects above — no Incident Flow
+exists for this scenario. RetailNova's narrative is pre-incident (ad hoc vendor risk
+process, unscoped PCI boundary), making it a prevention-focused anchor rather than a
+response-focused one.
+
+## Audit History Timeline
+RetailNova has no recorded PCI DSS audit history per the Narrative ("PCI DSS scope was
+never formally documented") — the timeline starts empty by design. The first milestone a
+learner would add is "PCI DSS scope documentation — not started," the prerequisite to any
+audit being scheduled.

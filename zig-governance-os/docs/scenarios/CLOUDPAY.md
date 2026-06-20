@@ -63,3 +63,21 @@ See `docs/learning/TABLE_LIBRARY.md` → "CloudPay Compliance Coverage Map". Row
 (Type II in progress), ISO 27001 (pursuing certification) — both showing CloudPay's two
 existing controls as "control, evidence needed" rather than "no control," consistent with
 the maturity-30 narrative above.
+
+## Control Coverage Map
+Uses the same `ControlMapping` data as the Compliance Coverage Map above, pivoted by
+control instead of by framework: "Encryption at Rest" → maps to both SOC 2 and ISO 27001;
+"Access Review Quarterly" (planned) → no framework mapping yet, the gap the Security
+Governance lab's "Design Cross-Framework Controls" exercise closes.
+
+## Incident Flow
+CloudPay has no recorded incident history in its seeded objects (`simulated_company_objects`
+above lists only assets/controls/risk, no `incident` rows) — no Incident Flow exists for
+this scenario yet. This is a documented gap, not an invented incident; HealthBridge and
+ManufacturX are better anchors for incident-flow exercises given their narratives.
+
+## Audit History Timeline
+CloudPay is "preparing for its first SOC 2 Type II audit" per the Narrative above — it has
+no audit history yet. The Audit History Timeline for this scenario starts empty by design:
+one milestone ("First SOC 2 Type II audit — scheduled, not yet conducted"), reflecting the
+early-stage maturity-35 profile rather than a fabricated audit record.

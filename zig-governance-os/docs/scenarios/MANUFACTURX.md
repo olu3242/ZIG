@@ -60,3 +60,21 @@ ManufacturX has no formal framework certification target in this scenario (its n
 is OT/security-maturity-driven, not audit-driven) — no Compliance Coverage Map entry
 exists for this scenario, consistent with its track anchors (Risk, BCM/DR, Security
 Governance) rather than Compliance.
+
+## Control Coverage Map
+"Network Segmentation Project" (planned) → no framework mapping, since ManufacturX has no
+compliance target per the Compliance Coverage Map above. This control exists purely to
+mitigate the "Flat OT/IT Network Segmentation" risk, the cleanest example in the curriculum
+of a control justified by risk treatment alone rather than framework-requirement mapping.
+
+## Incident Flow
+The Narrative references "a single ransomware incident at a peer manufacturer" as the
+trigger for ManufacturX's continuity-planning request — that incident happened to a peer,
+not to ManufacturX itself, so no `incident` object exists in ManufacturX's own seeded
+objects above. No Incident Flow exists for this scenario; it is the cautionary external
+event motivating the BCM/DR lab, not an internal incident to flow-map.
+
+## Audit History Timeline
+ManufacturX has no audit history (no compliance target, per Compliance Coverage Map
+above) — no Audit History Timeline exists for this scenario, consistent with its
+Risk/BCM-DR/Security-Governance anchoring rather than Audit.

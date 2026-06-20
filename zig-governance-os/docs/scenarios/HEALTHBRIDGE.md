@@ -57,3 +57,21 @@ Audit track's internal audit plan is built to surface and remediate.
 See `docs/learning/TABLE_LIBRARY.md` → "HealthBridge Compliance Coverage Map". Row: HIPAA
 Security Rule — "Audit Log Retention Policy" shown as "control, evidence needed" (matches
 the `needs_evidence` status above), the gap the failed internal risk assessment exposed.
+
+## Control Coverage Map
+Pivots the Compliance Coverage Map by control: "Audit Log Retention Policy" → maps to
+HIPAA Security Rule §164.312(b) (audit controls) only — single-framework coverage,
+contrasting with CloudPay's multi-framework control reuse case.
+
+## Incident Flow
+HealthBridge's narrative is a failed internal risk assessment, not a declared incident —
+no `incident` object type exists in its seeded objects above. No Incident Flow exists for
+this scenario; the gap (inconsistent audit logging) is pre-incident, which is precisely
+why the Audit track uses this scenario for proactive internal-audit planning rather than
+post-incident response.
+
+## Audit History Timeline
+One milestone so far: "Internal HIPAA risk assessment — failed, [date]," per the Narrative
+above. The Audit track's exercise ("Plan an ISO 27001 Internal Audit for HealthBridge")
+adds the next timeline milestone the learner must plan: the upcoming internal audit
+itself, not yet conducted.
