@@ -2,6 +2,7 @@ import type {
   Asset,
   Assessment,
   Audit,
+  CapstoneProject,
   CoachConversation,
   CoachMessage,
   Control,
@@ -19,6 +20,7 @@ import type {
   LearningAssessmentResult,
   LearningModule,
   LearningPath,
+  LearnerPortfolio,
   Project,
   ProjectFramework,
   Recommendation,
@@ -73,3 +75,5 @@ export type GovernanceScoreRecord = GovernanceScore & { id: string; createdAt: D
 export type CoachConversationRecord = CoachConversation & { createdAt: Date; updatedAt: Date };
 export type CoachMessageRecord = CoachMessage & { createdAt: Date; updatedAt: Date };
 export type RecommendationRecord = Recommendation & { createdAt: Date; updatedAt: Date };
+export type CapstoneProjectRecord = CapstoneProject & { createdAt: Date; updatedAt: Date };
+export type LearnerPortfolioRecord = LearnerPortfolio & { createdAt: Date; updatedAt: Date };

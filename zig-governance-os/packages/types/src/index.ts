@@ -459,6 +459,25 @@ export interface StudentTwin {
   learningScore: number;
 }
 
+export interface CapstoneProject {
+  id: string;
+  tenantId: string;
+  learnerUserId?: string;
+  title: string;
+  status: string;
+  portfolioScore: number;
+}
+
+export interface LearnerPortfolio {
+  id: string;
+  tenantId: string;
+  learnerUserId?: string;
+  validationStatus: string;
+  portfolioScore: number;
+  resumeSummary: string;
+  linkedinSummary: string;
+}
+
 export interface Recommendation {
   id: string;
   tenantId: string;

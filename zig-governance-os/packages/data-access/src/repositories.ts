@@ -6,6 +6,7 @@ import type {
   AssetRecord,
   AssessmentRecord,
   AuditRecord,
+  CapstoneProjectRecord,
   CoachConversationRecord,
   CoachMessageRecord,
   ControlEvidenceRecord,
@@ -23,6 +24,7 @@ import type {
   LearningAssessmentResultRecord,
   LearningModuleRecord,
   LearningPathRecord,
+  LearnerPortfolioRecord,
   ProjectRecord,
   ProjectFrameworkRecord,
   RecommendationRecord,
@@ -79,6 +81,8 @@ export interface ZigRepositories {
   recommendations: TenantRepository<RecommendationRecord>;
   coachConversations: TenantRepository<CoachConversationRecord>;
   coachMessages: TenantRepository<CoachMessageRecord>;
+  capstoneProjects: TenantRepository<CapstoneProjectRecord>;
+  learnerPortfolios: TenantRepository<LearnerPortfolioRecord>;
 }
 
 export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepositories {
@@ -122,6 +126,8 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     recommendations: new TenantRepository("recommendations", new SupabaseRestAdapter<RecommendationRecord>(config), auditEvents),
     coachConversations: new TenantRepository("coach_conversations", new SupabaseRestAdapter<CoachConversationRecord>(config), auditEvents),
     coachMessages: new TenantRepository("coach_messages", new SupabaseRestAdapter<CoachMessageRecord>(config), auditEvents),
+    capstoneProjects: new TenantRepository("capstone_projects", new SupabaseRestAdapter<CapstoneProjectRecord>(config), auditEvents),
+    learnerPortfolios: new TenantRepository("learner_portfolios", new SupabaseRestAdapter<LearnerPortfolioRecord>(config), auditEvents),
   };
 }
 
@@ -166,5 +172,7 @@ export function createInMemoryRepositories(): ZigRepositories {
     recommendations: new TenantRepository("recommendations", new InMemoryDatabaseAdapter<RecommendationRecord>(), auditEvents),
     coachConversations: new TenantRepository("coach_conversations", new InMemoryDatabaseAdapter<CoachConversationRecord>(), auditEvents),
     coachMessages: new TenantRepository("coach_messages", new InMemoryDatabaseAdapter<CoachMessageRecord>(), auditEvents),
+    capstoneProjects: new TenantRepository("capstone_projects", new InMemoryDatabaseAdapter<CapstoneProjectRecord>(), auditEvents),
+    learnerPortfolios: new TenantRepository("learner_portfolios", new InMemoryDatabaseAdapter<LearnerPortfolioRecord>(), auditEvents),
   };
 }

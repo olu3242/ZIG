@@ -9,6 +9,7 @@ import { ExportsService } from "./exports";
 import { FrameworkService } from "./FrameworkService";
 import { GovernanceService } from "./GovernanceService";
 import { LearningService } from "./LearningService";
+import { PortfolioService } from "./PortfolioService";
 import { ProjectService } from "./ProjectService";
 import { RiskService } from "./RiskService";
 import { ScenarioService } from "./ScenarioService";
@@ -28,6 +29,7 @@ export interface ZigServices {
   learning: LearningService;
   assessments: AssessmentService;
   scenarios: ScenarioService;
+  portfolio: PortfolioService;
   governance: GovernanceService;
   coach: CoachService;
   exports: ExportsService;
@@ -73,6 +75,15 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.labTasks,
       repositories.labTaskSubmissions,
       repositories.labArtifacts,
+      repositories.studentTwins,
+    ),
+    portfolio: new PortfolioService(
+      repositories.learnerPortfolios,
+      repositories.userProgress,
+      repositories.learningModules,
+      repositories.learningAssessmentResults,
+      repositories.labArtifacts,
+      repositories.capstoneProjects,
       repositories.studentTwins,
     ),
     governance: new GovernanceService(
