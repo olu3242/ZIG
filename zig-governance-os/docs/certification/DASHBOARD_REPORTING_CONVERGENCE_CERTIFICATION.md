@@ -88,12 +88,52 @@ write. Closed by:
   current tenant's events after a cross-tenant write (tenant isolation), confirming the
   count is real and not a constant. **Exited 0.**
 
+## Executive Reporting / Exports (also closed, partially, in this pass)
+
+`ExportPipeline.createManifest()` existed but was never invoked from any route, and
+`/exports` rendered a static, hardcoded catalog. Closed for the five entity types most
+central to the Universal Governance Model — `controls`, `risks`, `evidence`, `vendors`,
+`audits` — with the remaining nine types left honestly cataloged-only rather than faked:
+
+- **`packages/exports/src/index.ts`** — added `LIVE_EXPORT_TYPES` (the five real types) and
+  a real `toCsv()` serializer (RFC-4180-style quoting/escaping, header row from the first
+  record's keys).
+- **`packages/services/src/exports/index.ts`** (`ExportsService`, rewritten) —
+  `generateExport(context, type)` creates a real manifest via the existing
+  `ExportPipeline`, reads the live tenant-scoped repository rows for the requested type,
+  and serializes them to CSV. Calling it for a non-live type throws explicitly rather than
+  returning empty/fabricated content — an honest failure, not a silent stub.
+- **`packages/services/src/factory.ts`** — `exports: new ExportsService(...)` added as a
+  new top-level service key, reading `controls`, `risks`, `evidence`, `vendors`, `audits`.
+- **`apps/web/app/exports/download/[type]/route.ts`** (new route handler) — `GET` calls
+  `services.exports.generateExport`, records a real `audit_events` row via
+  `services.audit.recordAction`, and streams the CSV back with a `Content-Disposition:
+  attachment` header — a real, downloadable file, not a manifest object that's discarded.
+- **`apps/web/app/exports/page.tsx`** — the catalog table now marks each type "live"
+  (with a working "Download CSV" link) or "catalog only" (with "Not yet wired") instead of
+  claiming all 14 types are uniformly "enabled."
+
+### What is honestly NOT closed in Exports
+
+- **9 of 14 `ExportType`s remain catalog-only**: `projects`, `frameworks`, `issues`,
+  `tasks`, `users`, `assets`, `policies`, `compliance_status`, `executive_metrics`. Most of
+  these map to entities that exist in the schema (`projects`, `tasks`, `users`, `assets`)
+  but were not wired to `ExportsService` in this pass to keep this change reviewable; a
+  couple (`issues`, `compliance_status`, `executive_metrics`) have no single backing table
+  and would need a real definition before they could be wired honestly.
+- **Only CSV is implemented.** `xlsx` and `pdf` formats remain unimplemented — no
+  spreadsheet/PDF library exists in this repo, and adding one was out of scope for this
+  pass. `json` would be trivial to add (the rows are already in memory) but was not added
+  since the cert doc's job is to report what's real, not pad the type list.
+- **No download-tracking/archive stage.** The manifest's `stages` field
+  (`request/authorize/generate/audit/download/archive`) is returned but only `request` and
+  `generate` are meaningfully exercised by `generateExport`; `authorize`/`download`/
+  `archive` remain conceptual, matching the same "stages declared, not all individually
+  enforced" honesty pattern used elsewhere in this build.
+
 ## What is honestly NOT closed in this pass
 
-1. **Executive Reporting / `/exports` is still FAIL** — `ExportPipeline.createManifest()`
-   remains defined but never invoked from any route; no PDF/CSV generation exists. Not
-   addressed in this pass; tracked as the remainder of Phase 9.
-2. **`governanceScore` is not persisted to the `governance_scores` table** — it is
+1. **`governanceScore` is not persisted to the `governance_scores` table** — it is
    recomputed from live data on every read (by design, per the scoring-engine doc's
    "why it exists" explainability requirement: a stored score can go stale, a live
    computation cannot). The `governance_scores` table and its repository remain available
@@ -116,10 +156,15 @@ write. Closed by:
   `explanation` names the lowest input with its percentage). Run via
   `npx tsx src/tests/governance-scoring-workflow.test.ts` from `packages/services/` —
   **exited 0**.
+- **Another unit test added and executed:**
+  `packages/services/src/tests/exports-workflow.test.ts` — asserts `generateExport`
+  produces a CSV containing the real, just-created control row (not a fixture/constant),
+  asserts the CSV has a header row, and asserts requesting a catalog-only type
+  (`policies`) throws rather than returning fabricated content. **Exited 0.**
 - **Regression check:** all 9 prior workflow tests (`learning-workflow`,
   `assessment-workflow`, `lab-workflow`, `evidence-workflow`, `vendor-risk-workflow`,
   `career-readiness-workflow`, `ai-coach-workflow`, `service-layer`, `vertical-slice`), plus
-  `mission-control-activity` (new, see above), were re-run the same way — all **exited 0**,
-  confirming this change did not break any prior workflow. `packages/data-access`'s own
-  test suite (`supabase-adapter`, `tenant-isolation`) was also re-run after the `AuditSink`
-  interface change — both **exited 0**.
+  `mission-control-activity` and `exports-workflow` (new, see above), were re-run the same
+  way — all **exited 0**, confirming this change did not break any prior workflow.
+  `packages/data-access`'s own test suite (`supabase-adapter`, `tenant-isolation`) was also
+  re-run after the `AuditSink` interface change — both **exited 0**.

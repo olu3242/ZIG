@@ -5,6 +5,7 @@ import { AssetService } from "./AssetService";
 import { CoachService } from "./CoachService";
 import { ControlService } from "./ControlService";
 import { EvidenceService } from "./EvidenceService";
+import { ExportsService } from "./exports";
 import { FrameworkService } from "./FrameworkService";
 import { GovernanceService } from "./GovernanceService";
 import { LearningService } from "./LearningService";
@@ -29,6 +30,7 @@ export interface ZigServices {
   scenarios: ScenarioService;
   governance: GovernanceService;
   coach: CoachService;
+  exports: ExportsService;
 }
 
 export function createServices(repositories: ZigRepositories): ZigServices {
@@ -91,6 +93,13 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.risks,
       repositories.controls,
       repositories.studentTwins,
+    ),
+    exports: new ExportsService(
+      repositories.controls,
+      repositories.risks,
+      repositories.evidence,
+      repositories.vendors,
+      repositories.audits,
     ),
   };
 }
