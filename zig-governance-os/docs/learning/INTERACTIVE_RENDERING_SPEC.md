@@ -16,7 +16,7 @@ component below is implemented in this wave, per "never implement before documen
 | `<RiskHeatmap />` | `HEATMAP_LIBRARY.md` risk heatmaps, scenario Risk Landscape Maps | `RiskService.findAssessments` → `RiskAssessment[]` |
 | `<FrameworkCrosswalk />` | `FRAMEWORK_MAP_LIBRARY.md` crosswalks, scenario Compliance/Control Coverage Maps | `ControlService.findMappings` → `ControlMapping[]`, `FrameworkService` records |
 | `<ControlMatrix />` | `FRAMEWORK_MAP_LIBRARY.md` Control Coverage Matrix | `ControlService.findMappings` → `ControlMapping[]` |
-| `<AuditTimeline />` | `TABLE_LIBRARY.md` Audit Timeline, scenario Audit History Timelines | `AuditService` |
+| `<AuditTimeline />` | `TABLE_LIBRARY.md` Audit Timeline, scenario Audit History Timelines | **Gap.** `AuditService` only exposes `recordAction` against an activity-log sink — it has no read path for `Audit` records (phases, starts/ends, owners, milestones). Renders as static config only until an audit-engagement read service/repository exists; do not wire to `AuditService`. |
 | `<DecisionTree />` | Any entry from `DECISION_TREE_LIBRARY.md` | Static config (branch labels + conditions) — no live data |
 | `<OrgChart />` | `ORG_CHART_LIBRARY.md` entries, scenario Organization Charts | Static config (role hierarchy) — no live data; future integration point is `UserService` for real role assignment |
 | `<ArchitectureViewer />` | Scenario Technology Architecture Diagrams | Static config (node/edge list) — no live data |
