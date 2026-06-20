@@ -85,6 +85,7 @@ export const moduleConfig: ModuleConfig[] = [
       { href: "/automation", label: "Automation", kicker: "Flow" },
       { href: "/imports", label: "Imports", kicker: "Load" },
       { href: "/exports", label: "Exports", kicker: "Share" },
+      { href: "/trust-center", label: "Trust Center", kicker: "Assure" },
       { href: "/developer", label: "Developer", kicker: "API" },
       { href: "/developers", label: "Developers", kicker: "SDK" },
       { href: "/marketplace", label: "Marketplace", kicker: "Store" },
