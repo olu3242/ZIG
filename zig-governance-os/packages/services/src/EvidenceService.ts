@@ -70,6 +70,7 @@ export class EvidenceService extends BaseService<EvidenceRecord> {
       status: "submitted",
       sourceUri: input.sourceUri,
       submittedAt: new Date(),
+      sourceType: "operational",
     });
 
     await this.linkToControl(context, evidence.id, input.controlId);

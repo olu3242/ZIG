@@ -14,6 +14,7 @@ async function assertEvidenceWorkflowPersistsLinksAndReviews(): Promise<void> {
     title: "Access provisioning review",
     description: "Quarterly access review for privileged accounts",
     status: "needs_evidence",
+    sourceType: "operational",
   });
 
   // --- createEvidence persists a real evidence row and a real control_evidence link. ---

@@ -31,6 +31,7 @@ async function assertFrameworkIntelligenceIsRealAndExplainable(): Promise<void> 
     title: "Access control policy",
     description: "",
     status: "implemented",
+    sourceType: "operational",
   });
   await repositories.controls.create(context, {
     id: "control_2",
@@ -40,9 +41,10 @@ async function assertFrameworkIntelligenceIsRealAndExplainable(): Promise<void> 
     title: "Operational procedures",
     description: "",
     status: "implemented",
+    sourceType: "operational",
   });
 
-  await repositories.evidence.create(context, { id: "evidence_1", projectId: "proj_fw", controlId: "control_1", title: "Access policy doc", status: "approved", submittedById: "user_fw", submittedAt: new Date() });
+  await repositories.evidence.create(context, { id: "evidence_1", projectId: "proj_fw", controlId: "control_1", title: "Access policy doc", status: "approved", submittedById: "user_fw", submittedAt: new Date(), sourceType: "operational" });
   await repositories.controlEvidence.create(context, { id: "ce_1", controlId: "control_1", evidenceId: "evidence_1", coverage: "primary" });
   await repositories.evidenceReviews.create(context, { id: "review_1", evidenceId: "evidence_1", reviewerUserId: "user_fw", status: "approved", reviewedAt: new Date() });
 

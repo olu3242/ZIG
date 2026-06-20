@@ -1,4 +1,6 @@
 import type {
+  ArtifactTemplate,
+  ArtifactVersion,
   Asset,
   Assessment,
   Audit,
@@ -6,6 +8,8 @@ import type {
   CertificationAward,
   CoachConversation,
   CoachMessage,
+  Competency,
+  CompetencyAssessment,
   Control,
   ControlEvidence,
   ControlMapping,
@@ -27,6 +31,7 @@ import type {
   LearningModule,
   LearningPath,
   LearnerPortfolio,
+  PortfolioArtifact,
   Project,
   ProjectFramework,
   QuestionnaireAnswer,
@@ -37,8 +42,13 @@ import type {
   RiskAssessment,
   Role,
   Scenario,
+  ScenarioAttempt,
+  ScenarioDecision,
+  ScenarioOutcome,
   ScenarioRun,
   StudentTwin,
+  ScenarioTemplate,
+  SimulatedCompanyObject,
   Task,
   Tenant,
   TrustAccessLog,
@@ -50,6 +60,7 @@ import type {
   Vendor,
   VendorAssessment,
   VendorFinding,
+  UserCompetency,
 } from "@zig/types";
 
 export type TenantRecord = Tenant;
@@ -103,3 +114,28 @@ export type QuestionnaireTemplateRecord = QuestionnaireTemplate & { createdAt: D
 export type QuestionnaireSubmissionRecord = QuestionnaireSubmission & { createdAt: Date; updatedAt: Date };
 export type QuestionnaireAnswerRecord = QuestionnaireAnswer & { createdAt: Date; updatedAt: Date };
 export type TrustAccessLogRecord = TrustAccessLog & { createdAt: Date; updatedAt: Date };
+
+// --- Governance Competency OS: Competency Engine ---
+export type CompetencyRecord = Competency & { createdAt: Date; updatedAt: Date };
+export type UserCompetencyRecord = UserCompetency & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type CompetencyAssessmentRecord = CompetencyAssessment & {
+  tenantId: string;
+  projectId: string | null;
+  status: "draft" | "submitted" | "scored" | "disputed";
+  createdAt: Date;
+  updatedAt: Date;
+};
+
+// --- Governance Competency OS: Scenario Engine ---
+export type ScenarioTemplateRecord = ScenarioTemplate & { createdAt: Date; updatedAt: Date };
+export type ScenarioAttemptRecord = ScenarioAttempt & { createdAt: Date; updatedAt: Date };
+export type ScenarioDecisionRecord = ScenarioDecision & { createdAt: Date; updatedAt: Date };
+export type ScenarioOutcomeRecord = ScenarioOutcome & { createdAt: Date; updatedAt: Date };
+
+// --- Governance Competency OS: Portfolio Artifact Engine ---
+export type PortfolioArtifactRecord = PortfolioArtifact & { createdAt: Date; updatedAt: Date };
+export type ArtifactVersionRecord = ArtifactVersion & { tenantId: string; createdAt: Date; updatedAt: Date };
+export type ArtifactTemplateRecord = Omit<ArtifactTemplate, "tenantId"> & { tenantId: string; createdAt: Date; updatedAt: Date };
+
+// --- Learning↔Operational Bridge ---
+export type SimulatedCompanyObjectRecord = SimulatedCompanyObject & { createdAt: Date; updatedAt: Date };

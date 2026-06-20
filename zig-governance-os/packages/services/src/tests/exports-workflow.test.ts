@@ -22,6 +22,7 @@ async function assertExportsGenerateRealCsvFromLiveData(): Promise<void> {
     description: "Backups must be encrypted using a managed key.",
     status: "implemented",
     ownerId: "user_export",
+    sourceType: "operational",
   });
 
   const generated = await services.exports.generateExport(context, "controls");

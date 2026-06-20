@@ -36,3 +36,7 @@ export * from "./TrustDocumentService";
 export * from "./TrustRequestService";
 export * from "./QuestionnaireService";
 export * from "./TrustAnalyticsService";
+export * from "./CompetencyService";
+export * from "./ScenarioAttemptService";
+export * from "./PortfolioArtifactService";
+export * from "./LearningImportService";

@@ -56,6 +56,7 @@ async function assertHealthAdvisorGeneratesRealRecommendationsAndHistory(): Prom
     description: "Backups must be encrypted using a managed key.",
     status: "implemented",
     ownerId: "user_advisor",
+    sourceType: "operational",
   });
   const risk = await repositories.risks.create(context, {
     id: "risk_advisor",
@@ -65,6 +66,7 @@ async function assertHealthAdvisorGeneratesRealRecommendationsAndHistory(): Prom
     description: "Backups are not encrypted at rest",
     severity: "high",
     treatment: "mitigate",
+    sourceType: "operational",
   });
   await repositories.riskAssessments.create(context, {
     id: "assessment_advisor",
@@ -100,6 +102,7 @@ async function assertHealthAdvisorGeneratesRealRecommendationsAndHistory(): Prom
     title: "Rotate access keys",
     description: "Access keys must be rotated quarterly.",
     status: "planned",
+    sourceType: "operational",
   });
   const secondSnapshot = await services.governance.recordScoreSnapshot(context, project.id);
 

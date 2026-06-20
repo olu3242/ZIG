@@ -36,6 +36,7 @@ async function assertCoachGroundsRepliesInRealRiskAndControlData(): Promise<void
     description: "Backups are not encrypted at rest",
     severity: "high",
     treatment: "avoid",
+    sourceType: "operational",
   });
 
   const reply = await services.coach.sendMessage(context, started.conversation.id, "What should I prioritize?");

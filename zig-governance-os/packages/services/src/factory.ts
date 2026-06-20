@@ -7,6 +7,7 @@ import { CertificationEligibilityService } from "./CertificationEligibilityServi
 import { CertificationProgressService } from "./CertificationProgressService";
 import { CoachService } from "./CoachService";
 import { ComplianceStatusService } from "./ComplianceStatusService";
+import { CompetencyService } from "./CompetencyService";
 import { ControlService } from "./ControlService";
 import { EvidenceReuseService } from "./EvidenceReuseService";
 import { EvidenceService } from "./EvidenceService";
@@ -17,11 +18,14 @@ import { FrameworkMappingService } from "./FrameworkMappingService";
 import { FrameworkRoadmapService } from "./FrameworkRoadmapService";
 import { FrameworkService } from "./FrameworkService";
 import { GovernanceService } from "./GovernanceService";
+import { LearningImportService } from "./LearningImportService";
 import { LearningService } from "./LearningService";
 import { PortfolioService } from "./PortfolioService";
+import { PortfolioArtifactService } from "./PortfolioArtifactService";
 import { ProjectService } from "./ProjectService";
 import { QuestionnaireService } from "./QuestionnaireService";
 import { RiskService } from "./RiskService";
+import { ScenarioAttemptService } from "./ScenarioAttemptService";
 import { ScenarioService } from "./ScenarioService";
 import { TenantService } from "./TenantService";
 import { TrustAnalyticsService } from "./TrustAnalyticsService";
@@ -61,30 +65,61 @@ export interface ZigServices {
   trustRequests: TrustRequestService;
   questionnaires: QuestionnaireService;
   trustAnalytics: TrustAnalyticsService;
+  competencies: CompetencyService;
+  scenarioAttempts: ScenarioAttemptService;
+  portfolioArtifacts: PortfolioArtifactService;
+  learningImport: LearningImportService;
 }
 
 export function createServices(repositories: ZigRepositories): ZigServices {
+  const projects = new ProjectService(repositories.projects, repositories.projectFrameworks);
+  const assets = new AssetService(repositories.assets);
+  const risks = new RiskService(
+    repositories.risks,
+    repositories.riskAssessments,
+    repositories.vendors,
+    repositories.vendorAssessments,
+    repositories.vendorFindings,
+  );
+  const controls = new ControlService(repositories.controls, repositories.controlMappings);
+  const evidence = new EvidenceService(
+    repositories.evidence,
+    repositories.controlEvidence,
+    repositories.evidenceReviews,
+    repositories.controls,
+  );
+  const audit = new AuditService(repositories.auditEvents);
+  const scenarios = new ScenarioService(
+    repositories.scenarios,
+    repositories.scenarioRuns,
+    repositories.labTasks,
+    repositories.labTaskSubmissions,
+    repositories.labArtifacts,
+    repositories.studentTwins,
+  );
+  const governance = new GovernanceService(
+    repositories.governanceScores,
+    repositories.recommendations,
+    repositories.controls,
+    repositories.risks,
+    repositories.riskAssessments,
+    repositories.evidence,
+    repositories.evidenceReviews,
+    repositories.projectFrameworks,
+    repositories.vendors,
+    repositories.vendorAssessments,
+  );
+
   return {
     tenants: new TenantService(repositories.tenants, repositories.users),
     users: new UserService(repositories.users),
-    audit: new AuditService(repositories.auditEvents),
+    audit,
     frameworks: new FrameworkService(repositories.frameworks),
-    projects: new ProjectService(repositories.projects, repositories.projectFrameworks),
-    assets: new AssetService(repositories.assets),
-    risks: new RiskService(
-      repositories.risks,
-      repositories.riskAssessments,
-      repositories.vendors,
-      repositories.vendorAssessments,
-      repositories.vendorFindings,
-    ),
-    controls: new ControlService(repositories.controls, repositories.controlMappings),
-    evidence: new EvidenceService(
-      repositories.evidence,
-      repositories.controlEvidence,
-      repositories.evidenceReviews,
-      repositories.controls,
-    ),
+    projects,
+    assets,
+    risks,
+    controls,
+    evidence,
     learning: new LearningService(
       repositories.learningPaths,
       repositories.learningModules,
@@ -97,14 +132,7 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.learningAssessmentResults,
       repositories.studentTwins,
     ),
-    scenarios: new ScenarioService(
-      repositories.scenarios,
-      repositories.scenarioRuns,
-      repositories.labTasks,
-      repositories.labTaskSubmissions,
-      repositories.labArtifacts,
-      repositories.studentTwins,
-    ),
+    scenarios,
     portfolio: new PortfolioService(
       repositories.learnerPortfolios,
       repositories.userProgress,
@@ -133,18 +161,7 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.learningModules,
       repositories.capstoneProjects,
     ),
-    governance: new GovernanceService(
-      repositories.governanceScores,
-      repositories.recommendations,
-      repositories.controls,
-      repositories.risks,
-      repositories.riskAssessments,
-      repositories.evidence,
-      repositories.evidenceReviews,
-      repositories.projectFrameworks,
-      repositories.vendors,
-      repositories.vendorAssessments,
-    ),
+    governance,
     coach: new CoachService(
       repositories.coachConversations,
       repositories.coachMessages,
@@ -224,5 +241,38 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.governanceScores,
     ),
     trustAnalytics: new TrustAnalyticsService(repositories.trustAccessLogs),
+    competencies: new CompetencyService(
+      repositories.competencies,
+      repositories.userCompetencies,
+      repositories.competencyAssessments,
+    ),
+    scenarioAttempts: new ScenarioAttemptService(
+      repositories.scenarioAttempts,
+      repositories.scenarioDecisions,
+      repositories.scenarioOutcomes,
+      repositories.scenarioRuns,
+      repositories.scenarioTemplates,
+      scenarios,
+      governance,
+    ),
+    portfolioArtifacts: new PortfolioArtifactService(
+      repositories.portfolioArtifacts,
+      repositories.artifactVersions,
+      repositories.artifactTemplates,
+      risks,
+      controls,
+      assets,
+      evidence,
+      audit,
+      governance,
+    ),
+    learningImport: new LearningImportService(
+      assets,
+      risks,
+      controls,
+      evidence,
+      repositories.simulatedCompanyObjects,
+      projects,
+    ),
   };
 }

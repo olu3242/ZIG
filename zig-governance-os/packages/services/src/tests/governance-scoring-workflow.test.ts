@@ -51,6 +51,7 @@ async function assertGovernanceScoreIsRealAndExplainable(): Promise<void> {
     description: "Backups must be encrypted using a managed key.",
     status: "implemented",
     ownerId: "user_gov",
+    sourceType: "operational",
   });
 
   const risk = await repositories.risks.create(context, {
@@ -61,6 +62,7 @@ async function assertGovernanceScoreIsRealAndExplainable(): Promise<void> {
     description: "Backups are not encrypted at rest",
     severity: "high",
     treatment: "mitigate",
+    sourceType: "operational",
   });
 
   await repositories.riskAssessments.create(context, {
@@ -109,6 +111,7 @@ async function assertGovernanceScoreIsRealAndExplainable(): Promise<void> {
     title: "Rotate access keys",
     description: "Access keys must be rotated quarterly.",
     status: "planned",
+    sourceType: "operational",
   });
 
   const degraded = await services.governance.calculateScore(context, project.id);
