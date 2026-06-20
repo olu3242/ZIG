@@ -295,6 +295,17 @@ export async function sendCoachMessageAction(formData: FormData): Promise<void> 
   redirect("/ai-command");
 }
 
+export async function runHealthAdvisorAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  const services = getZigServices();
+
+  await services.governance.runHealthAdvisor(context, projectId);
+  await services.governance.recordScoreSnapshot(context, projectId);
+  await services.audit.recordAction(context, "generate", "recommendations", projectId, "Health Advisor run");
+  redirect(`/projects/${projectId}`);
+}
+
 function requireString(formData: FormData, key: string): string {
   const value = formData.get(key)?.toString().trim();
   if (!value) {

@@ -13,6 +13,7 @@ import type {
   VendorAssessmentRecord,
   VendorRecord,
 } from "@zig/data-access";
+import type { RecommendationSeverity } from "@zig/types";
 
 export interface GovernanceScoreBreakdown {
   score: number;
@@ -47,6 +48,62 @@ export class GovernanceService extends BaseService<GovernanceScoreRecord> {
 
   findRecommendations(context: TenantContext, projectId: string): Promise<RecommendationRecord[]> {
     return this.recommendationRepository.findMany(context, { filters: { projectId } });
+  }
+
+  // docs/architecture/health-advisor-engine.md Sections 2-3: one recommendation per input
+  // strictly below 100%, persisted (not just computed), sorted by severity.
+  async runHealthAdvisor(context: TenantContext, projectId: string): Promise<RecommendationRecord[]> {
+    const breakdown = await this.calculateScore(context, projectId);
+
+    const gaps = (Object.keys(RECOMMENDATION_RULES) as Array<keyof typeof RECOMMENDATION_RULES>).filter(
+      (input) => breakdown[input] < 100,
+    );
+
+    const created = await Promise.all(
+      gaps.map((input) => {
+        const value = breakdown[input];
+        const rule = RECOMMENDATION_RULES[input];
+        return this.recommendationRepository.create(context, {
+          id: crypto.randomUUID(),
+          projectId,
+          severity: rule.severity(value),
+          title: `${labelFor(input)} is ${value}%`,
+          explanation: `${labelFor(input)} is at ${value}%, below the 100% target for this input.`,
+          action: rule.action,
+          confidence: 1,
+          frameworkReference: rule.frameworkReference,
+        });
+      }),
+    );
+
+    return created.sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
+  }
+
+  // docs/architecture/health-advisor-engine.md Section 5: persists the live score as a
+  // queryable history row instead of only the current, recomputed-on-read value.
+  async recordScoreSnapshot(context: TenantContext, projectId: string): Promise<GovernanceScoreRecord> {
+    const breakdown = await this.calculateScore(context, projectId);
+
+    return this.repository.create(context, {
+      id: crypto.randomUUID(),
+      projectId,
+      score: breakdown.score,
+      healthState: breakdown.healthState,
+      controlCoverage: breakdown.controlCoverage,
+      riskAssessmentCoverage: breakdown.riskAssessmentCoverage,
+      evidenceCompleteness: breakdown.evidenceCompleteness,
+      frameworkCoverage: breakdown.frameworkCoverage,
+      ownershipCompleteness: breakdown.ownershipCompleteness,
+      reviewCompletion: breakdown.reviewCompletion,
+      vendorAssessmentCoverage: breakdown.vendorAssessmentCoverage,
+      explanation: breakdown.explanation,
+      calculatedAt: new Date(),
+    });
+  }
+
+  async getScoreHistory(context: TenantContext, projectId: string): Promise<GovernanceScoreRecord[]> {
+    const snapshots = await this.repository.findMany(context, { filters: { projectId } });
+    return snapshots.sort((a, b) => a.calculatedAt.getTime() - b.calculatedAt.getTime());
   }
 
   async calculateScore(context: TenantContext, projectId: string): Promise<GovernanceScoreBreakdown> {
@@ -127,6 +184,49 @@ function healthStateFor(score: number): GovernanceScoreBreakdown["healthState"] 
   if (score >= 25) return "Visibility";
   return "Foundation";
 }
+
+type ScoreInput = keyof Omit<GovernanceScoreBreakdown, "score" | "healthState" | "explanation">;
+
+const SEVERITY_RANK: Record<RecommendationSeverity, number> = { critical: 0, high: 1, medium: 2, info: 3 };
+
+// docs/architecture/health-advisor-engine.md Section 3 mapping table.
+const RECOMMENDATION_RULES: Record<ScoreInput, { severity: (value: number) => RecommendationSeverity; action: string; frameworkReference: string }> = {
+  controlCoverage: {
+    severity: (value) => (value === 0 ? "critical" : value < 50 ? "high" : "medium"),
+    action: "Implement the remaining unimplemented controls.",
+    frameworkReference: "ISO 27001 Annex A",
+  },
+  riskAssessmentCoverage: {
+    severity: (value) => (value === 0 ? "critical" : value < 50 ? "high" : "medium"),
+    action: "Run a risk assessment for every identified risk.",
+    frameworkReference: "NIST CSF ID.RA",
+  },
+  evidenceCompleteness: {
+    severity: (value) => (value === 0 ? "critical" : value < 50 ? "high" : "medium"),
+    action: "Submit and get approval on outstanding evidence.",
+    frameworkReference: "SOC 2 CC7",
+  },
+  frameworkCoverage: {
+    severity: () => "medium",
+    action: "Map remaining controls to the project's assigned framework.",
+    frameworkReference: "Project's assigned framework",
+  },
+  ownershipCompleteness: {
+    severity: () => "medium",
+    action: "Assign an owner to every control.",
+    frameworkReference: "ISO 27001 A.5.2",
+  },
+  reviewCompletion: {
+    severity: () => "medium",
+    action: "Resolve pending evidence reviews (approve or reject).",
+    frameworkReference: "SOC 2 CC7",
+  },
+  vendorAssessmentCoverage: {
+    severity: (value) => (value < 50 ? "high" : "medium"),
+    action: "Complete a risk assessment for every active vendor.",
+    frameworkReference: "NIST CSF ID.SC",
+  },
+};
 
 function labelFor(key: keyof Omit<GovernanceScoreBreakdown, "score" | "healthState" | "explanation">): string {
   const labels: Record<string, string> = {

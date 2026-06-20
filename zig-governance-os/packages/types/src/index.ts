@@ -432,10 +432,14 @@ export interface GovernanceScore {
   tenantId: string;
   projectId: string;
   score: number;
-  controlsImplemented: number;
-  evidenceCoverage: number;
-  riskTreatment: number;
-  assessmentCompletion: number;
+  healthState: "Foundation" | "Visibility" | "Control" | "Managed" | "Optimized";
+  controlCoverage: number;
+  riskAssessmentCoverage: number;
+  evidenceCompleteness: number;
+  frameworkCoverage: number;
+  ownershipCompleteness: number;
+  reviewCompletion: number;
+  vendorAssessmentCoverage: number;
   explanation: string;
   calculatedAt: Date;
 }
