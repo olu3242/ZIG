@@ -16,6 +16,11 @@ import type {
   EvidenceRecord,
   EvidenceReviewRecord,
   FrameworkRecord,
+  FrameworkControlRecord,
+  FrameworkCrosswalkRecord,
+  FrameworkDomainRecord,
+  FrameworkMappingRecord,
+  FrameworkRequirementRecord,
   GovernanceScoreRecord,
   LabArtifactRecord,
   LabTaskRecord,
@@ -54,6 +59,11 @@ export interface ZigRepositories {
   frameworks: TenantRepository<FrameworkRecord>;
   controls: TenantRepository<ControlRecord>;
   controlMappings: TenantRepository<ControlMappingRecord>;
+  frameworkDomains: TenantRepository<FrameworkDomainRecord>;
+  frameworkControls: TenantRepository<FrameworkControlRecord>;
+  frameworkRequirements: TenantRepository<FrameworkRequirementRecord>;
+  frameworkMappings: TenantRepository<FrameworkMappingRecord>;
+  frameworkCrosswalks: TenantRepository<FrameworkCrosswalkRecord>;
   assets: TenantRepository<AssetRecord>;
   risks: TenantRepository<RiskRecord>;
   riskAssessments: TenantRepository<RiskAssessmentRecord>;
@@ -100,6 +110,11 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     frameworks: new TenantRepository("frameworks", new SupabaseRestAdapter<FrameworkRecord>(config), auditEvents),
     controls: new TenantRepository("controls", new SupabaseRestAdapter<ControlRecord>(config), auditEvents),
     controlMappings: new TenantRepository("control_mappings", new SupabaseRestAdapter<ControlMappingRecord>(config), auditEvents),
+    frameworkDomains: new TenantRepository("framework_domains", new SupabaseRestAdapter<FrameworkDomainRecord>(config), auditEvents),
+    frameworkControls: new TenantRepository("framework_controls", new SupabaseRestAdapter<FrameworkControlRecord>(config), auditEvents),
+    frameworkRequirements: new TenantRepository("framework_requirements", new SupabaseRestAdapter<FrameworkRequirementRecord>(config), auditEvents),
+    frameworkMappings: new TenantRepository("framework_mappings", new SupabaseRestAdapter<FrameworkMappingRecord>(config), auditEvents),
+    frameworkCrosswalks: new TenantRepository("framework_crosswalks", new SupabaseRestAdapter<FrameworkCrosswalkRecord>(config), auditEvents),
     assets: new TenantRepository("assets", new SupabaseRestAdapter<AssetRecord>(config), auditEvents),
     risks: new TenantRepository("risks", new SupabaseRestAdapter<RiskRecord>(config), auditEvents),
     riskAssessments: new TenantRepository("risk_assessments", new SupabaseRestAdapter<RiskAssessmentRecord>(config), auditEvents),
@@ -147,6 +162,11 @@ export function createInMemoryRepositories(): ZigRepositories {
     frameworks: new TenantRepository("frameworks", new InMemoryDatabaseAdapter<FrameworkRecord>(), auditEvents),
     controls: new TenantRepository("controls", new InMemoryDatabaseAdapter<ControlRecord>(), auditEvents),
     controlMappings: new TenantRepository("control_mappings", new InMemoryDatabaseAdapter<ControlMappingRecord>(), auditEvents),
+    frameworkDomains: new TenantRepository("framework_domains", new InMemoryDatabaseAdapter<FrameworkDomainRecord>(), auditEvents),
+    frameworkControls: new TenantRepository("framework_controls", new InMemoryDatabaseAdapter<FrameworkControlRecord>(), auditEvents),
+    frameworkRequirements: new TenantRepository("framework_requirements", new InMemoryDatabaseAdapter<FrameworkRequirementRecord>(), auditEvents),
+    frameworkMappings: new TenantRepository("framework_mappings", new InMemoryDatabaseAdapter<FrameworkMappingRecord>(), auditEvents),
+    frameworkCrosswalks: new TenantRepository("framework_crosswalks", new InMemoryDatabaseAdapter<FrameworkCrosswalkRecord>(), auditEvents),
     assets: new TenantRepository("assets", new InMemoryDatabaseAdapter<AssetRecord>(), auditEvents),
     risks: new TenantRepository("risks", new InMemoryDatabaseAdapter<RiskRecord>(), auditEvents),
     riskAssessments: new TenantRepository("risk_assessments", new InMemoryDatabaseAdapter<RiskAssessmentRecord>(), auditEvents),

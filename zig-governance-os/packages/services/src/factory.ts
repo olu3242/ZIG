@@ -7,8 +7,13 @@ import { CertificationEligibilityService } from "./CertificationEligibilityServi
 import { CertificationProgressService } from "./CertificationProgressService";
 import { CoachService } from "./CoachService";
 import { ControlService } from "./ControlService";
+import { EvidenceReuseService } from "./EvidenceReuseService";
 import { EvidenceService } from "./EvidenceService";
 import { ExportsService } from "./exports";
+import { FrameworkCoverageService } from "./FrameworkCoverageService";
+import { FrameworkGapService } from "./FrameworkGapService";
+import { FrameworkMappingService } from "./FrameworkMappingService";
+import { FrameworkRoadmapService } from "./FrameworkRoadmapService";
 import { FrameworkService } from "./FrameworkService";
 import { GovernanceService } from "./GovernanceService";
 import { LearningService } from "./LearningService";
@@ -39,6 +44,11 @@ export interface ZigServices {
   governance: GovernanceService;
   coach: CoachService;
   exports: ExportsService;
+  frameworkCoverage: FrameworkCoverageService;
+  frameworkGaps: FrameworkGapService;
+  frameworkMappings: FrameworkMappingService;
+  frameworkRoadmaps: FrameworkRoadmapService;
+  evidenceReuse: EvidenceReuseService;
 }
 
 export function createServices(repositories: ZigRepositories): ZigServices {
@@ -129,6 +139,9 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.risks,
       repositories.controls,
       repositories.studentTwins,
+      repositories.frameworkControls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
     ),
     exports: new ExportsService(
       repositories.controls,
@@ -136,6 +149,35 @@ export function createServices(repositories: ZigRepositories): ZigServices {
       repositories.evidence,
       repositories.vendors,
       repositories.audits,
+    ),
+    frameworkCoverage: new FrameworkCoverageService(
+      repositories.frameworkControls,
+      repositories.controls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+    ),
+    frameworkGaps: new FrameworkGapService(
+      repositories.frameworkControls,
+      repositories.controls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+    ),
+    frameworkMappings: new FrameworkMappingService(
+      repositories.frameworkMappings,
+      repositories.frameworkControls,
+    ),
+    frameworkRoadmaps: new FrameworkRoadmapService(
+      repositories.frameworkControls,
+      repositories.frameworkMappings,
+      repositories.controls,
+      repositories.controlEvidence,
+      repositories.evidenceReviews,
+    ),
+    evidenceReuse: new EvidenceReuseService(
+      repositories.controlEvidence,
+      repositories.controls,
+      repositories.frameworkControls,
+      repositories.frameworkMappings,
     ),
   };
 }

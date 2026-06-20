@@ -26,6 +26,13 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
   const scoreHistory = await services.governance.getScoreHistory(context, id);
   const rankedRecommendations = [...recommendations].sort((a, b) => SEVERITY_RANK[a.severity] - SEVERITY_RANK[b.severity]);
 
+  const [coverage, gaps, evidenceReuse] = await Promise.all([
+    services.frameworkCoverage.getCoverage(context, id, project.frameworkId),
+    services.frameworkGaps.getGaps(context, id, project.frameworkId),
+    services.evidenceReuse.getReuse(context, id),
+  ]);
+  const reusableEvidenceCount = evidenceReuse.filter((row) => row.reuseCount > 0).length;
+
   return (
     <>
       <PageHeader
@@ -77,6 +84,24 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
             snapshot.explanation,
           ])}
         />
+      </Section>
+      <Section title="Framework Intelligence">
+        <dl className="grid gap-3 text-sm md:grid-cols-3">
+          <div><dt className="font-medium">Coverage</dt><dd className="text-[var(--zig-ink-muted)]">{coverage.coveragePercent}% ({coverage.implementedControlCount}/{coverage.totalControlCount} controls)</dd></div>
+          <div><dt className="font-medium">Health Score</dt><dd className="text-[var(--zig-ink-muted)]">{coverage.healthScore}</dd></div>
+          <div><dt className="font-medium">Reusable Evidence</dt><dd className="text-[var(--zig-ink-muted)]">{reusableEvidenceCount} item(s) already satisfy another framework</dd></div>
+        </dl>
+        <div className="mt-4">
+          <DataTable
+            columns={["Control", "Status", "Recommendation"]}
+            empty="No framework control gaps — every catalogued control is implemented and evidenced, or this framework has no control catalogue yet."
+            rows={gaps.map((gap) => [
+              `${gap.controlCode} — ${gap.title}`,
+              <StatusBadge key={`${gap.frameworkControlId}-status`} tone={gap.severity === "high" ? "warning" : "neutral"}>{gap.kind.replaceAll("_", " ")}</StatusBadge>,
+              gap.recommendation,
+            ])}
+          />
+        </div>
       </Section>
     </>
   );

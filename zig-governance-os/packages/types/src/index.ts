@@ -158,6 +158,51 @@ export interface ControlMapping {
   mappingRationale: string;
 }
 
+export interface FrameworkDomain {
+  id: string;
+  tenantId: string;
+  frameworkId: string;
+  code: string;
+  name: string;
+  description: string;
+}
+
+export interface FrameworkControl {
+  id: string;
+  tenantId: string;
+  frameworkId: string;
+  domainId?: string;
+  controlCode: string;
+  title: string;
+  description: string;
+}
+
+export interface FrameworkRequirement {
+  id: string;
+  tenantId: string;
+  frameworkControlId: string;
+  requirementCode: string;
+  requirementText: string;
+}
+
+export interface FrameworkMapping {
+  id: string;
+  tenantId: string;
+  sourceFrameworkControlId: string;
+  targetFrameworkControlId: string;
+  mappingStrength: "equivalent" | "partial" | "related";
+  rationale: string;
+}
+
+export interface FrameworkCrosswalk {
+  id: string;
+  tenantId: string;
+  sourceFrameworkId: string;
+  targetFrameworkId: string;
+  name: string;
+  status: "draft" | "published";
+}
+
 export interface Asset {
   id: string;
   tenantId: string;

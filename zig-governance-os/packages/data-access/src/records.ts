@@ -12,6 +12,11 @@ import type {
   Evidence,
   EvidenceReview,
   Framework,
+  FrameworkControl,
+  FrameworkCrosswalk,
+  FrameworkDomain,
+  FrameworkMapping,
+  FrameworkRequirement,
   GovernanceScore,
   LabArtifact,
   LabTask,
@@ -48,6 +53,11 @@ export type ProjectFrameworkRecord = ProjectFramework & { createdAt: Date; updat
 export type FrameworkRecord = Framework & { tenantId: string; createdAt: Date; updatedAt: Date };
 export type ControlRecord = Control & { createdAt: Date; updatedAt: Date };
 export type ControlMappingRecord = ControlMapping & { createdAt: Date; updatedAt: Date };
+export type FrameworkDomainRecord = FrameworkDomain & { createdAt: Date; updatedAt: Date };
+export type FrameworkControlRecord = FrameworkControl & { createdAt: Date; updatedAt: Date };
+export type FrameworkRequirementRecord = FrameworkRequirement & { createdAt: Date; updatedAt: Date };
+export type FrameworkMappingRecord = FrameworkMapping & { createdAt: Date; updatedAt: Date };
+export type FrameworkCrosswalkRecord = FrameworkCrosswalk & { createdAt: Date; updatedAt: Date };
 export type AssetRecord = Asset & { createdAt: Date; updatedAt: Date };
 export type RiskRecord = Risk & { createdAt: Date; updatedAt: Date };
 export type RiskAssessmentRecord = RiskAssessment & { createdAt: Date; updatedAt: Date };
