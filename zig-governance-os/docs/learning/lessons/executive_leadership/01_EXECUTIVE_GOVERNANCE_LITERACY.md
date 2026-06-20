@@ -30,3 +30,15 @@ None (foundational); first Board Report draft appears in 03_BOARD_REPORTING_STRU
 ## Visual Assets Required
 - Governance Score Executive-Reading Guide Diagram
 - Real-vs-Cosmetic Score Improvement Comparison Diagram
+
+## Required Diagram
+- Governance Dashboard (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for real-vs-cosmetic score comparison; see Required Diagram instead
+
+## Required Visual Exercise
+- Read GovSec's governance score off the Governance Dashboard diagram and identify, from its four explainable inputs, which one signals whether a rising score is real or cosmetic.

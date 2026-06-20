@@ -31,3 +31,15 @@ Vendor Assessment — see `docs/artifacts/` Vendor Assessment template.
 ## Visual Assets Required
 - Vendor Questionnaire Structure Diagram
 - Questionnaire-vs-Evidence Contradiction Flow
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow/Table instead
+
+## Required Workflow
+- Vendor Assessment Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Vendor Tier Matrix (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Run RetailNova's top 3 payment processors through the Vendor Assessment Workflow, scoring each questionnaire response, applying the data-access multiplier, and assigning the resulting tier per the Vendor Tier Matrix.

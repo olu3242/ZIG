@@ -30,3 +30,15 @@ Control Matrix (ownership column populated) — see `docs/artifacts/` Control Ma
 ## Visual Assets Required
 - Control Ownership Transition Diagram
 - Ownership-Gap Escalation Flow Diagram
+
+## Required Diagram
+- Control Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Control Coverage Matrix (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Move one of CloudPay's controls through each Control Lifecycle stage (planned → implemented → needs_evidence → accepted), then use the Control Coverage Matrix to identify which framework obligations would lapse if its owner left without a replacement assigned.

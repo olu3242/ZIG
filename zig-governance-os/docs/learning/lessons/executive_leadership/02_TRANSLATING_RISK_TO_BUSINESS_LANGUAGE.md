@@ -30,3 +30,15 @@ None directly; feeds the Board Report in Lesson 03.
 ## Visual Assets Required
 - Technical-Severity-to-Business-Impact Translation Table
 - Over-Alarm vs. Under-State Risk Framing Comparison Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow instead
+
+## Required Workflow
+- Strategic Risk Reporting Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for severity-to-business-impact translation; see Required Workflow instead
+
+## Required Visual Exercise
+- Run GovSec's open "Formalize Quarterly Board Reporting" recommendation through the Strategic Risk Reporting Workflow, re-framing its severity in business terms a board member with no technical background would act on.

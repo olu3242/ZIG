@@ -30,3 +30,15 @@ Board Report (security control posture section) — see `docs/artifacts/` Board 
 ## Visual Assets Required
 - Control Posture Metrics Dashboard Mockup
 - Security-Team-View vs. Executive-View Comparison Diagram
+
+## Required Diagram
+- Governance Dashboard (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Control Coverage Matrix (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Build CloudPay's control posture report by reading control-implementation rates off the Governance Dashboard and cross-referencing the Control Coverage Matrix, then produce two summaries of the same data for a security-team audience and an executive audience ahead of its SOC 2 Type II audit.

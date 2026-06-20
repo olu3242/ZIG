@@ -30,3 +30,15 @@ Vendor Assessment (lifecycle/monitoring section, final) — see `docs/artifacts/
 ## Visual Assets Required
 - Vendor Monitoring Cadence Diagram
 - Vendor Offboarding Checklist Diagram
+
+## Required Diagram
+- Vendor Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Vendor Tier Matrix (see `TABLE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Using the Vendor Tier Matrix's Reassessment Cadence column, set a monitoring cadence for RetailNova's highest-risk payment processor, then walk it through the "Reassess → Offboard" stages of the Vendor Lifecycle diagram to define a data-access cleanup checklist.

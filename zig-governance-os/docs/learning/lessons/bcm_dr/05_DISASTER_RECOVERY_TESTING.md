@@ -29,3 +29,15 @@ BIA/continuity plan updated with test results — see `docs/artifacts/` BIA temp
 ## Visual Assets Required
 - DR Test Execution Flow Diagram
 - Test-Result-to-Plan-Improvement Feedback Loop Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow instead
+
+## Required Workflow
+- Recovery Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for DR test feedback content; see Required Workflow instead
+
+## Required Visual Exercise
+- Run ManufacturX's first tested DR failover for Plant 1 through the Recovery Workflow, score the result against the RTO/RPO targets from Lesson 03, and note one improvement to feed back into the continuity plan.

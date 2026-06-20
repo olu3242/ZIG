@@ -29,3 +29,15 @@ BIA (Business Impact Analysis) — see `docs/artifacts/` BIA template.
 ## Visual Assets Required
 - BIA Downtime-Cost Curve Diagram
 - Asset Dependency Map
+
+## Required Diagram
+- Dependency Map (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- BIA Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for BIA downtime-cost data; see Required Diagram/Workflow instead
+
+## Required Visual Exercise
+- Run ManufacturX's Plant 1 SCADA Network asset through the BIA Workflow, then use the Dependency Map to identify which upstream/downstream assets would compound the impact if Plant 1 went down.

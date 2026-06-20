@@ -30,3 +30,15 @@ Control Matrix (cross-framework mapping section) — see `docs/artifacts/` Contr
 ## Visual Assets Required
 - Cross-Framework Control Reuse Diagram
 - Duplicate-Control Anti-Pattern Diagram
+
+## Required Diagram
+- Incident Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- ISO ↔ NIST ↔ SOC 2 Crosswalk (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Map CloudPay's single encryption control onto the ISO ↔ NIST ↔ SOC 2 Crosswalk to show it satisfies all three frameworks at once, then identify where in the Incident Lifecycle a failure of that control would first be detected.
