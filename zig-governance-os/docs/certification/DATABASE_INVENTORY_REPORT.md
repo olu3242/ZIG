@@ -1,8 +1,12 @@
 # Database Inventory Report
 
-Status: **COMPLETE**
+Status: **UNKNOWN (NOT INDEPENDENTLY VERIFIED) — prior session reported COMPLETE**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+The table-existence inventory below is carried-forward evidence from a prior session, not independently reproduced here. Outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy in the current execution environment, so direct database inspection could not be repeated. Table-existence status is therefore `UNKNOWN` pending direct verification by someone with network access. Findings below are preserved as the original evidence trail.
 
 ## Direct Database Inventory
 
@@ -37,8 +41,7 @@ Remote database inspection confirmed these tables exist in `public`:
 ## Database Decision
 
 ```text
-Required CREATE tables exist in public.
+RUNTIME STATUS = UNKNOWN
+Prior session reported required CREATE tables exist in public; not independently verified.
 ```
-
-The root cause is not missing tables, wrong schema, or migration absence.
 

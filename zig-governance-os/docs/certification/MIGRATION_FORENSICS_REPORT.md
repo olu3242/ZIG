@@ -1,8 +1,14 @@
 # Migration Forensics Report
 
-Status: **COMPLETE**
+Status: **PARTIALLY VERIFIED — migration files confirmed present locally; remote-applied state UNKNOWN**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+Independently confirmed this session: all four migration files referenced below exist in `supabase/migrations/` in this branch's working tree (`202606200001_auth_foundation.sql`, `202606200002_onboarding_experience.sql`, `202606200003_governance_lifecycle_create.sql`, `202606200004_create_lifecycle_certification.sql`).
+
+**Not independently verified**: whether these migrations were actually applied to the remote database (the "Remote migration state" table below) and the "Direct DB inspection" table listing. Both require Supabase CLI/database access, which is unavailable from this environment (outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy). Those claims remain carried-forward evidence from a prior session.
 
 ## Migration History
 
@@ -40,11 +46,8 @@ public.frameworks
 ## Decision
 
 ```text
-No missing CREATE migration.
-No failed CREATE migration.
-No partial CREATE migration detected.
-No wrong migration target detected.
+Migration files present locally = CONFIRMED
+Remote-applied migration state = UNKNOWN (not independently verified)
+RUNTIME STATUS = UNKNOWN
 ```
-
-The prior 404 responses were not caused by migration failure.
 

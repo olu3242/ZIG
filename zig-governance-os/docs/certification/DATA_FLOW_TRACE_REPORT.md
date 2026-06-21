@@ -1,8 +1,14 @@
 # Data Flow Trace Report
 
-Status: **ROOT CAUSE ISOLATED**
+Status: **CODE PATH CONFIRMED; RUNTIME BEHAVIOR UNKNOWN (NOT INDEPENDENTLY VERIFIED)**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+The "Code Path" table below was independently re-verified this session by reading the actual source: `createProjectAction`, `createAssetAction`, `createControlAction`, `linkAssetControlAction` in `apps/web/app/lib/actions.ts`, and `createLifecycleProject`, `createLifecycleAsset`, `createLifecycleControl`, `linkLifecycleAssetControl`, `createLifecycleActivity` in `apps/web/app/lib/lifecycle.ts` all exist and wire together as described.
+
+**Not independently verified**: that this code path actually succeeds end-to-end against the live database (no browser run, no real request was executed this session — outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy). The claim that the forensic PowerShell script (not the app) caused the 404s is carried-forward from a prior session and unconfirmed here.
 
 ## Target Flow
 
@@ -48,7 +54,10 @@ This caused false 404 responses.
 
 ## Decision
 
-The identified failure point is the forensic REST validation script, not the app data flow.
+```text
+App code path = CONFIRMED (independently verified 2026-06-21)
+Runtime success of that code path against live DB = UNKNOWN (not independently verified)
+```
 
 CREATE browser certification is still required to validate the app path end-to-end.
 

@@ -1,8 +1,12 @@
 # CREATE Database Validation
 
-Status: **PARTIAL - TABLE VISIBILITY RESTORED, NAMED RECORDS MISSING**
+Status: **PARTIAL - TABLE VISIBILITY UNKNOWN (NOT INDEPENDENTLY VERIFIED), NAMED RECORDS MISSING**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+The "table visibility restored" / `200` response claims below are carried-forward evidence from a prior session, not independently reproduced here. Outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy in the current execution environment, so the corrected REST calls could not be re-run. Table visibility status is therefore `UNKNOWN` pending direct verification by someone with network access. Findings below are preserved as the original evidence trail.
 
 ## Objective
 
@@ -61,13 +65,11 @@ PostgREST OpenAPI includes projects, assets, controls, activities, and asset_con
 
 ## Result
 
-Database table visibility is no longer the blocker.
-
-CREATE database certification remains incomplete because the named certification records have not been created and verified.
+Database table visibility status is `UNKNOWN` (not independently verified this session). CREATE database certification remains incomplete regardless, because the named certification records have not been created and verified.
 
 ## Root Cause
 
-The previous 404 was a validation-script defect, not a database runtime defect.
+Hypothesis (unverified): the previous 404 was a validation-script defect, not a database runtime defect. This has not been independently confirmed.
 
 ## Fix Required
 

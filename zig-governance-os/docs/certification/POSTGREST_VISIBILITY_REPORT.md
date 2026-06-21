@@ -1,8 +1,12 @@
 # PostgREST Visibility Report
 
-Status: **VISIBLE**
+Status: **UNKNOWN (NOT INDEPENDENTLY VERIFIED) — prior session reported VISIBLE**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+The `200 OK` responses and "eliminated" causes below are carried-forward evidence from a prior session, not independently reproduced here. Outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy in the current execution environment. PostgREST visibility status is therefore `UNKNOWN` pending direct verification by someone with network access. Findings below are preserved as the original evidence trail.
 
 ## Objective
 
@@ -51,19 +55,19 @@ instead of:
 
 because `$table?select` was interpolated incorrectly.
 
-## Possible Causes Eliminated
+## Possible Causes Eliminated (per prior-session evidence, unverified this session)
 
-| Cause | Decision |
+| Cause | Decision (carried-forward, unverified) |
 | --- | --- |
-| Schema not exposed | Eliminated |
-| Tables missing | Eliminated |
-| Wrong project | Eliminated |
-| RLS denial causing 404 | Eliminated |
-| PostgREST cannot see tables | Eliminated |
+| Schema not exposed | Reported eliminated |
+| Tables missing | Reported eliminated |
+| Wrong project | Reported eliminated |
+| RLS denial causing 404 | Reported eliminated |
+| PostgREST cannot see tables | Reported eliminated |
 
 ## PostgREST Decision
 
 ```text
-PostgREST visibility = PASS
+PostgREST visibility = UNKNOWN (not independently verified)
 ```
 

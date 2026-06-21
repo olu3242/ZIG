@@ -1,8 +1,14 @@
 # Environment Alignment Report
 
-Status: **MATCH**
+Status: **PARTIALLY VERIFIED — JWT ref MATCH confirmed independently; CLI/REST gateway claims UNKNOWN**
 
-Date: 2026-06-20
+Date: 2026-06-20 (original analysis); reviewed 2026-06-21
+
+## Verification Note (2026-06-21)
+
+The JWT-decode claim below was independently re-verified this session: decoding the actual anon key supplied for `lmscairdgavntgnwztfk.supabase.co` confirms `ref=lmscairdgavntgnwztfk`, matching the project URL. This part of the report is confirmed.
+
+The "Supabase CLI linked project" and "REST gateway response: `sb-project-ref`" claims were **not** independently verified — they require Supabase CLI access and a live REST round trip, both unavailable from this environment (outbound access to `lmscairdgavntgnwztfk.supabase.co` is blocked by sandbox network egress policy). Those specific claims remain carried-forward evidence from a prior session, not confirmed here.
 
 ## Objective
 
@@ -47,10 +53,11 @@ sb-project-ref: lmscairdgavntgnwztfk
 ## Decision
 
 ```text
-MATCH
+JWT ref MATCH = CONFIRMED (independently verified 2026-06-21)
+CLI / REST gateway alignment = UNKNOWN (not independently verified)
 ```
 
-The app runtime credentials, REST gateway, and migration target all point to the same Supabase project ref.
+The app runtime credentials (anon key) are confirmed to reference the same Supabase project ref as the configured URL. CLI-linked-project and REST-gateway-header claims remain unverified pending network access.
 
 ## Remaining Scope
 
