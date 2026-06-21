@@ -112,17 +112,17 @@ export async function requestPasswordReset(email: string): Promise<void> {
 
 export async function createAuthProfile(input: { id: string; email: string; fullName?: string; role?: string }): Promise<void> {
   const config = getSupabaseConfig();
-  const response = await fetch(`${config.url}/rest/v1/profiles?on_conflict=id`, {
+  const response = await fetch(`${config.url}/rest/v1/profiles?on_conflict=user_id`, {
     method: "POST",
     headers: {
       ...authHeaders(config.serviceRoleKey),
       Prefer: "resolution=merge-duplicates,return=minimal",
     },
     body: JSON.stringify({
-      id: input.id,
+      user_id: input.id,
       email: input.email,
       full_name: input.fullName ?? input.email,
-      role: input.role ?? "practitioner",
+      status: "active",
     }),
     cache: "no-store",
   });

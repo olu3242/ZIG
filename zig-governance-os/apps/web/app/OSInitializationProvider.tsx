@@ -9,6 +9,7 @@ import Logo from "./Logo";
 interface OSInitializationContextValue {
   isInitializing: boolean;
   beginInitialization: () => void;
+  endInitialization: () => void;
 }
 
 const OSInitializationContext = createContext<OSInitializationContextValue | null>(null);
@@ -31,6 +32,7 @@ export function OSInitializationProvider({ children }: { children: ReactNode }) 
     () => ({
       isInitializing,
       beginInitialization: () => setIsInitializing(true),
+      endInitialization: () => setIsInitializing(false),
     }),
     [isInitializing],
   );

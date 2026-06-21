@@ -4,6 +4,19 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { FrameworkRegistry } from "@zig/framework-engine";
 import { startGoogleOAuth } from "@zig/auth";
+import { bootstrapAuthenticatedUser, onboardingRouteForBootstrap } from "@/src/lib/auth/bootstrap";
+import {
+  archiveLifecycleAsset,
+  archiveLifecycleControl,
+  archiveLifecycleProject,
+  createLifecycleAsset,
+  createLifecycleControl,
+  createLifecycleProject,
+  linkLifecycleAssetControl,
+  updateLifecycleAsset,
+  updateLifecycleControl,
+  updateLifecycleProject,
+} from "@/app/lib/lifecycle";
 import { auditAuth, clearSession, requireSession, requireTenantContext, setSession, setTenantProfile } from "./auth";
 import { createAuthProfile, findTenantProfileByAuthUserId, getZigServices, loginWithEmail, recordAuthEvent, requestPasswordReset, signUpWithEmail } from "./supabase";
 
@@ -25,10 +38,16 @@ export async function signupAction(formData: FormData): Promise<void> {
 
   if (session) {
     await setSession(session);
-    await createAuthProfile({ id: session.userId, email: session.email, fullName, role: "practitioner" });
-    await recordAuthEvent({ userId: session.userId, eventType: "signup", metadata: { provider: "email" } });
+    await safeCreateAuthProfile({ id: session.userId, email: session.email, fullName, role: "practitioner" });
+    await safeRecordAuthEvent({ userId: session.userId, eventType: "signup", metadata: { provider: "email" } });
+    const bootstrap = await bootstrapAuthenticatedUser(session);
+    if (bootstrap.status === "complete" && bootstrap.context) {
+      await setTenantProfile(bootstrap.context.tenantId, bootstrap.context.userId, bootstrap.context.persona);
+      await bridgeBootSequence();
+      redirect("/dashboard");
+    }
     await bridgeBootSequence();
-    redirect("/onboarding");
+    redirect(onboardingRouteForBootstrap(bootstrap));
   }
 
   redirect("/login?success=check_email");
@@ -43,39 +62,40 @@ export async function loginAction(formData: FormData): Promise<void> {
     session = await loginWithEmail(email, password);
   } catch (error) {
     console.error("[AUTH ERROR]", error);
-    try {
-      await recordAuthEvent({ eventType: "login_failed", metadata: { email, provider: "email" } });
-    } catch (auditError) {
-      console.error("[AUTH ERROR]", auditError);
-    }
+    await safeRecordAuthEvent({ eventType: "LOGIN_FAILURE", metadata: { email, provider: "email" } });
     redirect("/login?error=invalid_credentials");
   }
 
   await setSession(session);
-  await createAuthProfile({ id: session.userId, email: session.email, role: "practitioner" });
-  await recordAuthEvent({ userId: session.userId, eventType: "login", metadata: { provider: "email" } });
-  const profile = await findTenantProfileByAuthUserId(session.userId);
-
-  if (!profile) {
-    redirect("/onboarding");
+  await safeCreateAuthProfile({ id: session.userId, email: session.email, role: "practitioner" });
+  await safeRecordAuthEvent({ userId: session.userId, eventType: "LOGIN_SUCCESS", metadata: { provider: "email" } });
+  const bootstrap = await bootstrapAuthenticatedUser(session);
+  if (bootstrap.status === "complete" && bootstrap.context) {
+    await setTenantProfile(bootstrap.context.tenantId, bootstrap.context.userId, bootstrap.context.persona);
+    await safeAuditLogin(
+      { tenantId: bootstrap.context.tenantId, actorUserId: bootstrap.context.userId },
+      bootstrap.context.userId,
+    );
+    await bridgeBootSequence();
+    redirect("/dashboard");
   }
 
-  await setTenantProfile(profile.tenantId, profile.userId, profile.persona);
-  await getZigServices().audit.recordAction(
-    { tenantId: profile.tenantId, actorUserId: profile.userId },
-    "login",
-    "users",
-    profile.userId,
-    "User logged in",
-  );
+  const profile = await safeFindTenantProfileByAuthUserId(session.userId);
+  if (profile) {
+    await setTenantProfile(profile.tenantId, profile.userId, profile.persona);
+    await safeAuditLogin({ tenantId: profile.tenantId, actorUserId: profile.userId }, profile.userId);
+    await bridgeBootSequence();
+    redirect("/dashboard");
+  }
+
   await bridgeBootSequence();
-  redirect("/dashboard");
+  redirect(onboardingRouteForBootstrap(bootstrap));
 }
 
 export async function passwordResetAction(formData: FormData): Promise<void> {
   const email = requireString(formData, "email");
   await requestPasswordReset(email);
-  await recordAuthEvent({ eventType: "password_reset_requested", metadata: { email } });
+  await safeRecordAuthEvent({ eventType: "password_reset_requested", metadata: { email } });
   redirect("/login?success=password_reset");
 }
 
@@ -127,22 +147,186 @@ export async function onboardingAction(formData: FormData): Promise<void> {
 
 export async function createProjectAction(formData: FormData): Promise<void> {
   const { context } = await requireTenantContext();
-  const services = getZigServices();
-  const project = await services.projects.createGovernanceProject(context, {
+  const project = await createLifecycleProject({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
     name: requireString(formData, "name"),
-    industry: formData.get("industry")?.toString(),
-    frameworkId: requireString(formData, "frameworkId"),
+    industry: requireString(formData, "industry"),
+    frameworkFocus: requireString(formData, "frameworkId"),
+    description: formData.get("description")?.toString().trim() ?? "",
+    status: formData.get("status")?.toString().trim() || "draft",
   });
-  await services.audit.recordAction(context, "assign", "project_frameworks", project.id, "Framework assigned to project");
-  redirect("/dashboard");
+  redirect(`/projects/${project.projectId}`);
+}
+
+export async function createAssetAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await createLifecycleAsset({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    name: requireString(formData, "name"),
+    assetType: requireString(formData, "assetType"),
+    classification: requireString(formData, "classification"),
+    criticality: requireString(formData, "criticality"),
+    description: formData.get("description")?.toString().trim() ?? "",
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function createControlAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await createLifecycleControl({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    name: requireString(formData, "name"),
+    description: formData.get("description")?.toString().trim() ?? "",
+    status: requireString(formData, "status"),
+    effectiveness: Number(formData.get("effectiveness")?.toString() ?? "0"),
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function linkAssetControlAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await linkLifecycleAssetControl({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    assetId: requireString(formData, "assetId"),
+    controlId: requireString(formData, "controlId"),
+    relationshipType: formData.get("relationshipType")?.toString().trim() || "protects",
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function updateProjectAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await updateLifecycleProject({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    name: requireString(formData, "name"),
+    industry: requireString(formData, "industry"),
+    description: formData.get("description")?.toString().trim() ?? "",
+    status: requireString(formData, "status"),
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function updateAssetAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await updateLifecycleAsset({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    assetId: requireString(formData, "assetId"),
+    name: requireString(formData, "name"),
+    assetType: requireString(formData, "assetType"),
+    classification: requireString(formData, "classification"),
+    criticality: requireString(formData, "criticality"),
+    description: formData.get("description")?.toString().trim() ?? "",
+    status: requireString(formData, "status"),
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function updateControlAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await updateLifecycleControl({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    controlId: requireString(formData, "controlId"),
+    name: requireString(formData, "name"),
+    description: formData.get("description")?.toString().trim() ?? "",
+    status: requireString(formData, "status"),
+    effectiveness: Number(formData.get("effectiveness")?.toString() ?? "0"),
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function archiveProjectAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await archiveLifecycleProject({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+  });
+  redirect("/projects");
+}
+
+export async function archiveAssetAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await archiveLifecycleAsset({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    assetId: requireString(formData, "assetId"),
+  });
+  redirect(`/projects/${projectId}`);
+}
+
+export async function archiveControlAction(formData: FormData): Promise<void> {
+  const { context } = await requireTenantContext();
+  const projectId = requireString(formData, "projectId");
+  await archiveLifecycleControl({
+    organizationId: context.tenantId,
+    actorUserId: context.actorUserId,
+    projectId,
+    controlId: requireString(formData, "controlId"),
+  });
+  redirect(`/projects/${projectId}`);
 }
 
 export async function logoutAction(): Promise<void> {
   await auditAuth("logout", "User logged out");
   const session = await requireSession();
-  await recordAuthEvent({ userId: session.userId, eventType: "logout" });
+  await safeRecordAuthEvent({ userId: session.userId, eventType: "logout" });
   await clearSession();
   redirect("/login");
+}
+
+async function safeCreateAuthProfile(input: { id: string; email: string; fullName?: string; role?: string }): Promise<void> {
+  try {
+    await createAuthProfile(input);
+  } catch (error) {
+    console.error("[AUTH WARN]", "profile bootstrap skipped", error);
+  }
+}
+
+async function safeRecordAuthEvent(input: { userId?: string; eventType: string; ip?: string; metadata?: Record<string, unknown> }): Promise<void> {
+  try {
+    await recordAuthEvent(input);
+  } catch (error) {
+    console.error("[AUTH WARN]", "auth event skipped", error);
+  }
+}
+
+async function safeFindTenantProfileByAuthUserId(authUserId: string) {
+  try {
+    return await findTenantProfileByAuthUserId(authUserId);
+  } catch (error) {
+    console.error("[AUTH WARN]", "tenant profile lookup failed", error);
+    return null;
+  }
+}
+
+async function safeAuditLogin(context: { tenantId: string; actorUserId: string }, profileUserId: string): Promise<void> {
+  try {
+    await getZigServices().audit.recordAction(context, "login", "users", profileUserId, "User logged in");
+  } catch (error) {
+    console.error("[AUTH WARN]", "tenant login audit skipped", error);
+  }
 }
 
 function requireString(formData: FormData, key: string): string {

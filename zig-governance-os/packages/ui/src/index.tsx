@@ -10,6 +10,7 @@ export interface NavItem {
 const defaultNavItems: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", kicker: "Score" },
   { href: "/projects", label: "Projects", kicker: "Build" },
+  { href: "/assets", label: "Assets", kicker: "Scope" },
   { href: "/frameworks", label: "Frameworks", kicker: "Map" },
   { href: "/controls", label: "Controls", kicker: "Test" },
   { href: "/risks", label: "Risks", kicker: "Score" },

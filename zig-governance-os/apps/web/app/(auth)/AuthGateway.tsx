@@ -51,7 +51,7 @@ const successCopy: Record<string, string> = {
 };
 
 export function AuthGateway({ mode, action, googleAction, error, success }: AuthGatewayProps) {
-  const { isInitializing, beginInitialization } = useOSInitialization();
+  const { isInitializing, beginInitialization, endInitialization } = useOSInitialization();
   const content = copy[mode];
   const banner = error ? { type: "error" as const, message: errorCopy[error] ?? "Authentication failed." } :
     success ? { type: "success" as const, message: successCopy[success] ?? "Authentication request completed." } :
@@ -60,6 +60,12 @@ export function AuthGateway({ mode, action, googleAction, error, success }: Auth
   useEffect(() => {
     console.log("[AUTH STEP]", "STEP_04_RENDER", mode);
   }, [mode]);
+
+  useEffect(() => {
+    if (error || success) {
+      endInitialization();
+    }
+  }, [endInitialization, error, success]);
 
   function handleCredentialSubmit() {
     console.log("[AUTH STEP]", "STEP_01_START", mode);

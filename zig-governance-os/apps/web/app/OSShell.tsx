@@ -25,10 +25,12 @@ export const moduleConfig: ModuleConfig[] = [
     id: "governance-command-center",
     label: "Governance Command Center",
     description: "Executive posture, frameworks, controls, evidence, gaps, and command readiness.",
-    match: (pathname) => ["/dashboard", "/frameworks", "/framework-mapper", "/controls", "/evidence", "/gaps", "/command-center", "/reports"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/dashboard", "/projects", "/assets", "/frameworks", "/framework-mapper", "/controls", "/evidence", "/gaps", "/command-center", "/reports"].some((prefix) => pathname.startsWith(prefix)),
     links: [
       { href: "/command-center", label: "Command Center", kicker: "Exec" },
       { href: "/dashboard", label: "Dashboard", kicker: "Score" },
+      { href: "/projects", label: "Projects", kicker: "Build" },
+      { href: "/assets", label: "Assets", kicker: "Scope" },
       { href: "/frameworks", label: "Frameworks", kicker: "Map" },
       { href: "/framework-mapper", label: "Framework Mapper", kicker: "Xwalk" },
       { href: "/controls", label: "Controls", kicker: "Test" },
@@ -55,7 +57,7 @@ export const moduleConfig: ModuleConfig[] = [
     id: "policy",
     label: "Policy",
     description: "Policies, learning, settings, and operating governance.",
-    match: (pathname) => ["/policies", "/learning", "/assessment", "/labs", "/portfolio", "/academy", "/apprenticeship", "/skills", "/career", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/policies", "/learning", "/assessment", "/labs", "/portfolio", "/certifications", "/academy", "/apprenticeship", "/skills", "/career", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
     links: [
       { href: "/policies", label: "Policies", kicker: "Govern" },
       { href: "/learning-command-center", label: "Learning Command", kicker: "Kernel" },
@@ -67,6 +69,7 @@ export const moduleConfig: ModuleConfig[] = [
       { href: "/assessment", label: "Assessment", kicker: "Exam" },
       { href: "/labs", label: "Labs", kicker: "Do" },
       { href: "/portfolio", label: "Portfolio", kicker: "Proof" },
+      { href: "/certifications", label: "Certifications", kicker: "Cert" },
       { href: "/learning/practice-lab", label: "Practice Lab", kicker: "Sim" },
       { href: "/learning/career", label: "Career OS", kicker: "Job" },
       { href: "/learning/community", label: "Community", kicker: "Mentor" },
@@ -82,10 +85,9 @@ export const moduleConfig: ModuleConfig[] = [
   {
     id: "operations",
     label: "Operations",
-    description: "Projects, integrations, automation, data movement, developer APIs, and marketplace operations.",
-    match: (pathname) => ["/projects", "/integrations", "/automation", "/imports", "/exports", "/developer", "/developers", "/marketplace", "/services", "/partners", "/mission-control", "/ai-command", "/coach"].some((prefix) => pathname.startsWith(prefix)),
+    description: "Integrations, automation, data movement, developer APIs, and marketplace operations.",
+    match: (pathname) => ["/integrations", "/automation", "/imports", "/exports", "/developer", "/developers", "/marketplace", "/services", "/partners", "/mission-control", "/ai-command", "/coach"].some((prefix) => pathname.startsWith(prefix)),
     links: [
-      { href: "/projects", label: "Projects", kicker: "Build" },
       { href: "/mission-control", label: "Mission Control", kicker: "Act" },
       { href: "/coach", label: "Coach", kicker: "AI" },
       { href: "/ai-command", label: "AI Command", kicker: "Guide" },
