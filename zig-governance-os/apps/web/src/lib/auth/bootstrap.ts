@@ -135,6 +135,7 @@ export function onboardingRouteForBootstrap(validation: BootstrapValidation): st
 }
 
 export async function ensureUserProfile(client: AuthRepairClient, session: AuthSession): Promise<AuthRepairResult<ProfileRow>> {
+  console.log("[BOOTSTRAP]", "PROFILE_START", session.userId);
   const result = await client.upsert<ProfileRow>("profiles", {
     user_id: session.userId,
     email: session.email,
@@ -144,11 +145,15 @@ export async function ensureUserProfile(client: AuthRepairClient, session: AuthS
 
   if (result.ok) {
     await safeEvent(client, "PROFILE_CREATED", session.userId);
+    console.log("[BOOTSTRAP]", "PROFILE_COMPLETE", session.userId);
+  } else {
+    console.error("[BOOTSTRAP FAILED]", "PROFILE", result.error);
   }
   return result;
 }
 
 export async function ensureOrganization(client: AuthRepairClient, session: AuthSession): Promise<{ organization?: OrganizationRow; repairs: AuthRepairResult[] }> {
+  console.log("[BOOTSTRAP]", "ORGANIZATION_START", session.userId);
   const repairs: AuthRepairResult[] = [];
   const slug = workspaceSlug(session.email, session.userId);
   const name = `${fullNameFromEmail(session.email)} Workspace`;
@@ -169,12 +174,16 @@ export async function ensureOrganization(client: AuthRepairClient, session: Auth
       status: "active",
     }, "user_id"));
     await safeEvent(client, "ORG_CREATED", session.userId, { organization_id: organization.data.organization_id });
+    console.log("[BOOTSTRAP]", "ORGANIZATION_COMPLETE", organization.data.organization_id);
+  } else {
+    console.error("[BOOTSTRAP FAILED]", "ORGANIZATION", organization.error);
   }
 
   return { organization: organization.data, repairs };
 }
 
 export async function ensureDefaultRole(client: AuthRepairClient, organizationId: string, assignedRole: string): Promise<AuthRepairResult<RoleRow>[]> {
+  console.log("[BOOTSTRAP]", "ROLE_PROVISIONING_START", organizationId);
   const repairs: AuthRepairResult<RoleRow>[] = [];
   for (const [name, description] of defaultRoles) {
     const repair = await client.upsert<RoleRow>("roles", {
@@ -182,8 +191,12 @@ export async function ensureDefaultRole(client: AuthRepairClient, organizationId
       description,
     }, "role_name");
     repairs.push(repair);
+    if (!repair.ok) {
+      console.error("[BOOTSTRAP FAILED]", "ROLE_PROVISIONING", name, repair.error);
+    }
   }
   await safeEvent(client, "ROLE_ASSIGNED", undefined, { organization_id: organizationId, role: assignedRole });
+  console.log("[BOOTSTRAP]", "ROLE_PROVISIONING_COMPLETE", organizationId, assignedRole);
   return repairs;
 }
 
@@ -191,6 +204,7 @@ export async function ensureMembership(
   client: AuthRepairClient,
   input: { session: AuthSession; organizationId: string },
 ): Promise<{ membership?: { id: string; organization_id: string; user_id: string; role_name: string }; repairs: AuthRepairResult[] }> {
+  console.log("[BOOTSTRAP]", "MEMBERSHIP_START", input.session.userId, input.organizationId);
   const repairs: AuthRepairResult[] = [];
   const membership = await client.upsert<{ id: string; organization_id: string; user_id: string; role_name: string }>("organization_memberships", {
     organization_id: input.organizationId,
@@ -201,14 +215,19 @@ export async function ensureMembership(
   repairs.push(membership);
   if (membership.ok) {
     await safeEvent(client, "MEMBERSHIP_CREATED", input.session.userId, { organization_id: input.organizationId });
+    console.log("[BOOTSTRAP]", "MEMBERSHIP_COMPLETE", input.session.userId, input.organizationId);
+  } else {
+    console.error("[BOOTSTRAP FAILED]", "MEMBERSHIP", membership.error);
   }
 
   return { membership: membership.data, repairs };
 }
 
 export async function ensureLearningProfile(client: AuthRepairClient, tenantId: string, userId: string): Promise<AuthRepairResult[]> {
+  console.log("[BOOTSTRAP]", "FINALIZATION_START", tenantId, userId);
   const progress: AuthRepairResult = { ok: true, action: "skipped", object: "learning_profiles", data: { tenantId, userId } };
   await safeEvent(client, "LEARNING_PROFILE_READY", undefined, { tenant_id: tenantId, user_id: userId });
+  console.log("[BOOTSTRAP]", "FINALIZATION_COMPLETE", tenantId, userId);
   return [progress];
 }
 

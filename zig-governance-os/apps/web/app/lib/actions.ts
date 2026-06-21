@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { headers } from "next/headers";
 import { FrameworkRegistry } from "@zig/framework-engine";
 import { startGoogleOAuth } from "@zig/auth";
-import { bootstrapAuthenticatedUser, onboardingRouteForBootstrap } from "@/src/lib/auth/bootstrap";
+import { bootstrapAuthenticatedUser, onboardingRouteForBootstrap, type BootstrapValidation } from "@/src/lib/auth/bootstrap";
 import {
   archiveLifecycleAsset,
   archiveLifecycleControl,
@@ -40,7 +40,17 @@ export async function signupAction(formData: FormData): Promise<void> {
     await setSession(session);
     await safeCreateAuthProfile({ id: session.userId, email: session.email, fullName, role: "practitioner" });
     await safeRecordAuthEvent({ userId: session.userId, eventType: "signup", metadata: { provider: "email" } });
-    const bootstrap = await bootstrapAuthenticatedUser(session);
+
+    let bootstrap: BootstrapValidation;
+    try {
+      console.log("[AUTH]", "BOOTSTRAP_START", session.userId);
+      bootstrap = await bootstrapAuthenticatedUser(session);
+      console.log("[AUTH]", "BOOTSTRAP_COMPLETE", bootstrap.status);
+    } catch (error) {
+      console.error("[AUTH BOOTSTRAP ERROR]", error);
+      bootstrap = { status: "degraded", repairs: [], reason: "bootstrap_exception" };
+    }
+
     if (bootstrap.status === "complete" && bootstrap.context) {
       await setTenantProfile(bootstrap.context.tenantId, bootstrap.context.userId, bootstrap.context.persona);
       await bridgeBootSequence();
@@ -69,7 +79,17 @@ export async function loginAction(formData: FormData): Promise<void> {
   await setSession(session);
   await safeCreateAuthProfile({ id: session.userId, email: session.email, role: "practitioner" });
   await safeRecordAuthEvent({ userId: session.userId, eventType: "LOGIN_SUCCESS", metadata: { provider: "email" } });
-  const bootstrap = await bootstrapAuthenticatedUser(session);
+
+  let bootstrap: BootstrapValidation;
+  try {
+    console.log("[AUTH]", "BOOTSTRAP_START", session.userId);
+    bootstrap = await bootstrapAuthenticatedUser(session);
+    console.log("[AUTH]", "BOOTSTRAP_COMPLETE", bootstrap.status);
+  } catch (error) {
+    console.error("[AUTH BOOTSTRAP ERROR]", error);
+    bootstrap = { status: "degraded", repairs: [], reason: "bootstrap_exception" };
+  }
+
   if (bootstrap.status === "complete" && bootstrap.context) {
     await setTenantProfile(bootstrap.context.tenantId, bootstrap.context.userId, bootstrap.context.persona);
     await safeAuditLogin(
