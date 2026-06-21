@@ -2,6 +2,16 @@
 
 Status date: 2026-06-21
 
+> **BRANCH CORRECTION (2026-06-21):** This report describes `bootstrapAuthenticatedUser`,
+> `AuthRepairClient`, and related files (`src/lib/auth/bootstrap.ts`, `src/lib/auth/repair.ts`,
+> `oauth-callback.ts`). **That code does not exist on the `claude/hopeful-bardeen-93edl1`
+> branch this file is committed to** — it was carried over by mistake from a different
+> branch (`release/mvp-convergence`) examined earlier in the same session. Everything below
+> is accurate for that other branch only. For the actual root-cause analysis of this
+> branch's `loginAction`, see `AUTH_EXECUTION_TRACE.md` and `AUTH_HOTFIX_REPORT.md` in this
+> same directory. This file is left in place, uncorrected otherwise, to preserve the audit
+> trail rather than silently deleting prior work.
+
 Incident: `POST /login` returns `500 Internal Server Error` (reported Digest `913217483`) on
 `https://zig-rosy.vercel.app/login` in production. Localhost login reportedly works.
 

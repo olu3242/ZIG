@@ -10,7 +10,16 @@ import type { QuestionnaireTemplateType, TrustDocumentCategory, TrustDocumentVis
 export async function signupAction(formData: FormData): Promise<void> {
   const email = requireString(formData, "email");
   const password = requireString(formData, "password");
-  const session = await signUpWithEmail(email, password);
+
+  let session: Awaited<ReturnType<typeof signUpWithEmail>>;
+  try {
+    console.log("[AUTH]", "SIGNUP_START", email);
+    session = await signUpWithEmail(email, password);
+    console.log("[AUTH]", "SIGNUP_COMPLETE", session ? "session_created" : "confirmation_required");
+  } catch (error) {
+    console.error("[AUTH SIGNUP ERROR]", error);
+    redirect("/signup?error=signup_failed");
+  }
 
   if (session) {
     await setSession(session);
@@ -22,22 +31,50 @@ export async function signupAction(formData: FormData): Promise<void> {
 }
 
 export async function loginAction(formData: FormData): Promise<void> {
-  const session = await loginWithEmail(requireString(formData, "email"), requireString(formData, "password"));
+  const email = requireString(formData, "email");
+  const password = requireString(formData, "password");
+
+  let session: Awaited<ReturnType<typeof loginWithEmail>>;
+  try {
+    console.log("[AUTH]", "LOGIN_START", email);
+    session = await loginWithEmail(email, password);
+    console.log("[AUTH]", "LOGIN_SUCCESS", session.userId);
+  } catch (error) {
+    console.error("[AUTH LOGIN ERROR]", error);
+    redirect("/login?error=invalid_credentials");
+  }
+
   await setSession(session);
-  const profile = await findTenantProfileByAuthUserId(session.userId);
+
+  let profile: Awaited<ReturnType<typeof findTenantProfileByAuthUserId>> = null;
+  try {
+    console.log("[AUTH]", "PROFILE_LOOKUP_START", session.userId);
+    profile = await findTenantProfileByAuthUserId(session.userId);
+    console.log("[AUTH]", "PROFILE_LOOKUP_COMPLETE", profile ? "found" : "not_found");
+  } catch (error) {
+    console.error("[AUTH PROFILE ERROR]", error);
+    profile = null;
+  }
 
   if (!profile) {
+    await bridgeBootSequence();
     redirect("/onboarding");
   }
 
-  await setTenantProfile(profile.tenantId, profile.userId, profile.persona);
-  await getZigServices().audit.recordAction(
-    { tenantId: profile.tenantId, actorUserId: profile.userId },
-    "login",
-    "users",
-    profile.userId,
-    "User logged in",
-  );
+  try {
+    await setTenantProfile(profile.tenantId, profile.userId, profile.persona);
+    await getZigServices().audit.recordAction(
+      { tenantId: profile.tenantId, actorUserId: profile.userId },
+      "login",
+      "users",
+      profile.userId,
+      "User logged in",
+    );
+    console.log("[AUTH]", "AUDIT_RECORDED", profile.userId);
+  } catch (error) {
+    console.error("[AUTH AUDIT ERROR]", error);
+  }
+
   await bridgeBootSequence();
   redirect("/dashboard");
 }

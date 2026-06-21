@@ -2,6 +2,17 @@
 
 Status date: 2026-06-21
 
+> **BRANCH CORRECTION (2026-06-21):** §4 and §5 of this report describe
+> `bootstrapAuthenticatedUser` and `AuthRepairClient`, which **do not exist on the
+> `claude/hopeful-bardeen-93edl1` branch this file is committed to** — they belong to a
+> different branch (`release/mvp-convergence`) examined earlier in the same session by
+> mistake. §1–§3 (the actual `frameworks`/`tenant_id` query audit, the RLS/service-role-key
+> finding, and the `SupabaseRestAdapter.withFilters()` mechanism) describe code that **does**
+> exist on this branch (`packages/data-access/src/SupabaseRestAdapter.ts`,
+> `packages/data-access/src/TenantRepository.ts`) and remain accurate. Treat §4–§5 as
+> not applicable to this branch; see `AUTH_EXECUTION_TRACE.md` for this branch's real
+> post-login call chain.
+
 Scope: every reference to `frameworks.tenant_id`, `.eq("tenant_id"`, `tenant_id=`, and
 `from("frameworks")` across the repository, plus the call chain that ultimately executes
 those queries.
