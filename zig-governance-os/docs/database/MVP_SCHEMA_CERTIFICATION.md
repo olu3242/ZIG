@@ -2,9 +2,17 @@
 
 ## Scope
 
-Verified the MVP data model required for sign up, organization membership, learning, labs, evidence, risk, vendors, AI coaching, auditability, and career progression.
+Audits the MVP data model required for sign up, organization membership, learning, labs, evidence, risk, vendors, AI coaching, auditability, and career progression.
 
-## Existing Tables
+## Current Certification Status
+
+Status: NOT CERTIFIED AGAINST LIVE DATABASE
+
+The previous certification posture assumed local migrations represented the configured Supabase database. That assumption is unsafe. The configured Supabase REST endpoint is reachable, but MVP runtime tables currently return `404`, and SQL-level schema inventory is blocked until the actual ZIG Supabase project can be accessed through CLI, `psql`, or another SQL client.
+
+Do not assume every table belongs in `public`.
+
+## Expected Public/Compatibility Tables
 
 - `tenants`
 - `users`
@@ -19,7 +27,7 @@ Verified the MVP data model required for sign up, organization membership, learn
 - `profiles`
 - `auth_events`
 
-## Added Tables
+## Expected Added Tables
 
 - `organizations`
 - `memberships`
@@ -53,7 +61,10 @@ Tenant-scoped MVP tables include `tenant_id`, indexes, RLS enabled, and policies
 
 ## Certification
 
-MVP schema is certification-ready after applying:
+MVP schema is not certification-ready until:
 
-- `202606190002_mvp_convergence_schema.sql`
-- `supabase/seed/mvp_seed.sql`
+1. `scripts/audit-supabase-schemas.sql` is run against the actual ZIG database.
+2. Existing non-public schemas are inventoried.
+3. Domain schemas are reused or created intentionally.
+4. Recovery migrations are adjusted to avoid duplicate tables and public-schema drift.
+5. `scripts/verify-mvp-schema.ts` passes against the configured Supabase REST endpoint.
