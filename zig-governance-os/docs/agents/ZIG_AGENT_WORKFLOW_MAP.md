@@ -1,4 +1,4 @@
-# ZIG Agent Workflow Map — Phase 2D (Evidence Review Agent)
+# ZIG Agent Workflow Map — Phase 2D / Batch 3 (Domain Intelligence Agents)
 
 ## End-to-end flow
 
@@ -53,4 +53,75 @@ follow-up once more agents are flowing through the same runtime.
 ## Validation
 
 - `npx tsx packages/agent-evidence-review/src/tests/evidence-review.test.ts` — 10 assertions,
+  `[PASS]`.
+
+## Batch 3 — Domain Intelligence Agents
+
+Four agents, one shared orchestration path. All four reuse `orchestrateDomainAgent()` in
+`packages/agent-domain-intelligence/src/shared.ts`, which replicates the exact Phase 2D
+flow above (Event → Registry → Governance Guard → Runtime → Domain Engine → Decision →
+Audit) generically, parameterized by agent id, RBAC resource/action, optional approval
+action, and a pure `produce()`/`toDecision()` pair supplied by each agent module.
+
+```
+domain event (payload.domainEventType, e.g. "control.created", "risk.created")
+  -> orchestrateDomainAgent() (packages/agent-domain-intelligence/src/shared.ts)
+  -> registry resolution (getAgentById(agentId)) — reuses an existing agentRegistry entry,
+     no 13th/14th/... agent is registered
+  -> governance check (AgentGovernanceGuard.evaluate(), with approvalAction when applicable)
+  -> runtime execution (AgentRuntime.execute())
+  -> existing domain engine (unmodified):
+       FrameworkIntelligenceEngine.score()   (@zig/frameworks)
+       RiskManagementEngine.score()          (@zig/risks)
+       ControlManagementEngine.assess()      (@zig/controls)
+       PolicyManagementEngine.coverage()     (@zig/policies)
+  -> decision persistence (AgentRunRecord.decision, audit trail)
+  -> audit trail (AgentGovernanceGuard.listLog() + AgentRuntime.listAuditTrail())
+  -> admin visibility (same existing shapes as Phase 2D — no new UI route added)
+```
+
+### Agent definitions (all reused, none new)
+
+| Agent | Reused `agentId` | RBAC resource | Domain engine called |
+|---|---|---|---|
+| Framework Mapping Agent | `"compliance"` | `frameworks` | `@zig/frameworks` `FrameworkIntelligenceEngine` |
+| Risk Assessment Agent | `"risk"` | `risks` | `@zig/risks` `RiskManagementEngine` |
+| Control Advisor Agent | `"control"` | `controls` | `@zig/controls` `ControlManagementEngine` |
+| Policy Artifact Agent | `"policy"` | `reports` (closest existing approval-bearing resource — `RbacEngine` has no `policies` resource) | `@zig/policies` `PolicyManagementEngine` |
+
+### Handler responsibilities
+
+Each agent module (`packages/agent-domain-intelligence/src/{framework-mapping,
+risk-assessment,control-advisor,policy-artifact}.ts`) exports a pure `recommend*()` function
+that:
+
+1. Calls the existing, unmodified domain engine with the input as-is.
+2. Maps the engine's raw output (readiness/band/score/coverage) to a named recommendation
+   action — never re-deriving the score itself.
+3. Returns rationale, confidence, and references alongside the action, satisfying the
+   explainability requirement.
+
+Two deliberate, documented gap-handling decisions:
+
+- **Framework Mapping Agent**: an unregistered framework code (e.g. `nist_ai_rmf`, which is
+  not yet in `@zig/frameworks`'s `frameworkRegistry`) returns `map_unsupported_framework`
+  rather than a fabricated mapping — an explicit gap, not invented data.
+- **Policy Artifact Agent**: every `draft_policy_artifact` recommendation sets
+  `approvalAction: "policy_finalization"` (already defined in Phase 2C's
+  `APPROVAL_REQUIRED_ACTIONS`), so human approval before publication falls out of the
+  existing governance guard with no new governance code.
+
+### Admin visibility
+
+Same as Phase 2D — reused, not rebuilt. No new admin UI route was added in Batch 3; wiring
+`listAuditTrail()`/`listLog()` for these four agents into a live admin screen remains
+deferred to a later batch, per the explicit "extend later" instruction.
+
+### Validation
+
+- `npx tsc -p packages/agent-domain-intelligence/tsconfig.json --noEmit` — clean.
+- `npm run test --workspace @zig/agent-domain-intelligence` — runs all four suites
+  (framework-mapping, risk-assessment, control-advisor, policy-artifact), each with 7-8
+  assertions (happy path, failure path, tenant isolation, RBAC denial, audit logging,
+  explainability, replay, plus an approval-required check for Policy Artifact) — all
   `[PASS]`.

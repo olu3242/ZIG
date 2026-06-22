@@ -1,4 +1,4 @@
-# ZIG Agent Event Catalog — Phase 2B/2D
+# ZIG Agent Event Catalog — Phase 2B/2D/Batch 3
 
 Two distinct, deliberately separate vocabularies:
 
@@ -55,3 +55,55 @@ None of these mutate evidence state directly — `EvidenceManagementEngine` (exi
 unmodified) only computes health from inputs; it has no mutating approve/reject method for
 the agent to bypass. The agent's output is a recommendation; governance + an approval
 workflow own the final state transition.
+
+## 3. Batch 3 — Domain Intelligence Agents
+
+Each agent in `packages/agent-domain-intelligence` reuses the `domainEventType` payload
+pattern, but each agent's own trigger union is scoped to its own module (`framework-mapping`,
+`risk-assessment`, `control-advisor`, `policy-artifact`), per the "scoped to its own package"
+rule above. `AgentEventType` remains unchanged.
+
+### Framework Mapping Agent (`compliance`)
+
+Domain triggers: `framework.selected`, `risk.created`, `control.created`, `evidence.uploaded`,
+`report.requested` (modeled as `FrameworkMappingSubjectType`: `control`/`evidence`/`risk`/
+`report`/`framework_selection`).
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `map_control_to_framework` | Control crosswalked to a framework requirement | No |
+| `map_evidence_to_framework` | Evidence crosswalked to a framework requirement | No |
+| `map_risk_to_framework` | Risk crosswalked to a framework requirement | No |
+| `map_framework_requirement` | General framework-selection/report mapping | No |
+| `map_unsupported_framework` | Requested framework code is not in `@zig/frameworks`'s registry (e.g. NIST AI RMF today) | No — explicit gap, not a fabricated mapping |
+
+### Risk Assessment Agent (`risk`)
+
+Domain triggers: `risk.created`, `assessment.started`, `evidence.rejected`, `control.failed`.
+
+| Action | Meaning |
+|---|---|
+| `recommend_treatment_mitigate` | Critical/high/medium residual risk band |
+| `recommend_treatment_transfer` | Reserved for future treatment-strategy expansion |
+| `recommend_treatment_accept` | Low/informational residual risk band |
+| `recommend_treatment_avoid` | Reserved for future treatment-strategy expansion |
+
+### Control Advisor Agent (`control`)
+
+Domain triggers: `risk.scored`, `framework.selected`, `control.requested`.
+
+| Action | Meaning |
+|---|---|
+| `recommend_control_strengthening` | Implemented but below the effective threshold |
+| `recommend_control_acceptance` | Effective or optimized |
+| `flag_control_gap` | Not implemented or partially implemented |
+| `flag_control_exception` | Has an open exception regardless of effectiveness |
+
+### Policy Artifact Agent (`policy`)
+
+Domain triggers: `artifact.requested`, `gap.detected`, `control.created`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `draft_policy_artifact` | Coverage supports drafting a new artifact | Yes — `policy_finalization` always required before publication |
+| `flag_policy_coverage_gap` | Coverage too low to productively draft yet | No |

@@ -1,4 +1,4 @@
-# ZIG Agent Implementation Report — Batches 2B–2D
+# ZIG Agent Implementation Report — Batches 2B–2D, 3
 
 ## Scope
 
@@ -53,7 +53,7 @@ event routing, and the generic `AgentEventType` lifecycle remaining unchanged un
   (admin's `agent-control-tower`/`agents` routes still generate against the Phase 2A
   reconciled registry).
 
-## Explicitly deferred (per "stop here")
+## Explicitly deferred as of Batch 2D (now partially resolved by Batch 3)
 
 - Framework Mapping, Risk Assessment, Control Advisor, Policy Artifact, Readiness Scoring,
   Remediation, Reporting, Career Portfolio, and Governance Supervisor agents are not wired to
@@ -63,3 +63,74 @@ event routing, and the generic `AgentEventType` lifecycle remaining unchanged un
 - `readiness_scoring`, `report_generation`, `policy_finalization`, `admin_action`,
   `high_risk_recommendation` approval actions are defined in the permission matrix but have
   no agent wired to trigger them yet.
+
+## Batch 3 — Domain Intelligence Agents
+
+### Scope
+
+Wire the four Domain Intelligence Agents named in the mission (Framework Mapping, Risk
+Assessment, Control Advisor, Policy Artifact) into the same runtime/governance/audit path
+proven in Batch 2D, as orchestration layers only. No domain engine was modified or
+duplicated; no new agent id was registered.
+
+### New package
+
+| Package | Role | Wraps / extends |
+|---|---|---|
+| `@zig/agent-domain-intelligence` | Four agent handlers + shared `orchestrateDomainAgent()` helper | `@zig/frameworks`, `@zig/risks`, `@zig/controls`, `@zig/policies`, `@zig/agent-runtime`, `@zig/agent-governance`, `@zig/agents` |
+
+### Design decisions
+
+- **Reused existing `agentRegistry` entries** — `"compliance"`, `"risk"`, `"control"`,
+  `"policy"` — instead of registering four new agents. The 12-agent registry from Phase 2A
+  is unchanged.
+- **Shared orchestration helper** (`shared.ts`'s `orchestrateDomainAgent()`) extracted so all
+  four agents replicate the exact Event → Registry → Governance Guard → Runtime → Domain
+  Engine → Decision → Audit path with no copy-pasted runtime/governance wiring.
+- **Two pre-existing framework registries exist** (`@zig/frameworks` and
+  `@zig/framework-engine`). The Framework Mapping Agent orchestrates `@zig/frameworks`
+  because it is the richer registry (10 frameworks incl. GDPR/CMMC) and the only one with a
+  scoring method (`FrameworkIntelligenceEngine.score()`). `@zig/framework-engine` was left
+  untouched. This dual-registry situation is a latent duplication risk worth resolving in a
+  future consolidation pass — not addressed in this batch, since doing so was out of scope
+  for "agents are orchestration layers, do not rebuild domain engines."
+- **NIST AI RMF is not registered in either framework registry.** Rather than fabricating an
+  entry, the agent returns an explicit `map_unsupported_framework` action with a rationale —
+  an honest gap, not invented data.
+- **Policy Artifact Agent has no dedicated RBAC resource.** `RbacEngine`'s `RbacResource`
+  union has no `"policies"` entry, so the agent reuses `"reports"` (the closest existing
+  approval-bearing resource), documented in a code comment in `policy-artifact.ts`.
+
+### What was proven end-to-end (×4)
+
+Each agent's `run*Agent()` function exercises the full path:
+
+```
+domain event -> orchestrateDomainAgent() -> registry resolution -> governance check
+  -> runtime execution -> existing domain engine -> decision persistence -> audit trail
+```
+
+28 tests total (7 each for Framework Mapping, Risk Assessment, Control Advisor; 8 for Policy
+Artifact, which adds an approval-required assertion), covering per agent: happy path,
+failure path, tenant isolation, RBAC denial stopping execution, audit logging, explainability
+(reason/dataUsed/confidence present), and replay of a denied/failed run back to `queued`.
+
+### Validation
+
+- `npm run typecheck --workspace @zig/agent-domain-intelligence` (`tsc --noEmit`) — clean.
+- `npm run test --workspace @zig/agent-domain-intelligence` — all four suites `[PASS]`
+  (`framework-mapping`, `risk-assessment`, `control-advisor`, `policy-artifact`).
+- `npm run lint --workspace web` — clean.
+- `npm run build --workspace web` and `npm run build --workspace admin` — both succeed.
+
+### Explicitly deferred (per "STOP. Do not implement Learning, Reporting, Career, or
+Supervisor agents yet.")
+
+- Learning Path, Reporting, Career Portfolio, and Governance Supervisor agents are not
+  implemented.
+- Readiness Scoring and Remediation agents (named in the queued Batch 4 prompt) are not
+  implemented.
+- Admin-tower UI wiring for the four Batch 3 agents' runs/decisions/approvals into a live
+  screen is not done — same deferral as Batch 2D, carried forward.
+- The `@zig/frameworks` / `@zig/framework-engine` dual-registry duplication is flagged above
+  but not resolved.
