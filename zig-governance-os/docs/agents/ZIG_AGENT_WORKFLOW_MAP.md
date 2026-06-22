@@ -1,4 +1,4 @@
-# ZIG Agent Workflow Map — Phase 2D / Batch 3 (Domain Intelligence Agents)
+# ZIG Agent Workflow Map — Phase 2D / Batch 3 / Batch 5
 
 ## End-to-end flow
 
@@ -125,3 +125,69 @@ deferred to a later batch, per the explicit "extend later" instruction.
   assertions (happy path, failure path, tenant isolation, RBAC denial, audit logging,
   explainability, replay, plus an approval-required check for Policy Artifact) — all
   `[PASS]`.
+
+## Batch 5 — Learning + Career Agents
+
+Two agents, same shared orchestration path — reused by import, not reimplemented. Both
+agent modules in `packages/agent-learning-career/src/` import `orchestrateDomainAgent()`
+directly from `@zig/agent-domain-intelligence` rather than defining a second copy of the
+helper, since the helper is already domain-agnostic.
+
+```
+domain event (e.g. "assessment.failed", "portfolio.requested")
+  -> orchestrateDomainAgent() (imported from @zig/agent-domain-intelligence)
+  -> registry resolution (getAgentById("learning") / getAgentById("certification")) —
+     both reuse existing agentRegistry entries, no new agent id registered
+  -> governance check (AgentGovernanceGuard.evaluate(), approvalAction set conditionally
+     by the Career Portfolio Agent based on input.requestPublish)
+  -> runtime execution (AgentRuntime.execute())
+  -> existing domain engines (unmodified):
+       AdaptiveLearningEngine.recommend()/detectWeaknesses()  (@zig/adaptive-learning)
+       AssessmentEngine.grade()                                (@zig/assessment-engine)
+       LearningPathGenerator.outputs()                         (@zig/learning-paths)
+       CareerOS.readiness()/resumeHeadline()                   (@zig/career-os)
+       CredentialingPlatform.credentialTypes()                 (@zig/credentials)
+  -> decision persistence (AgentRunRecord.decision, audit trail)
+  -> audit trail (AgentGovernanceGuard.listLog() + AgentRuntime.listAuditTrail())
+  -> admin visibility (same existing shapes — no new UI route added)
+```
+
+### Agent definitions (both reused, neither new)
+
+| Agent | Reused `agentId` | RBAC resource | Domain engines called |
+|---|---|---|---|
+| Learning Path Agent | `"learning"` | `learning` | `@zig/adaptive-learning`, `@zig/assessment-engine`, `@zig/learning-paths` |
+| Career Portfolio Agent | `"certification"` (no dedicated "career" agent exists) | `learning` (no dedicated "career"/"portfolio" resource exists) | `@zig/career-os`, `@zig/credentials` |
+
+### Handler responsibilities
+
+- **Learning Path Agent** (`learning-path.ts`): on `assessment.failed`, calls
+  `AssessmentEngine.grade()` to confirm the failure and surface `remediationSkillIds`
+  before recommending remediation. Otherwise calls `AdaptiveLearningEngine.recommend()`
+  against the learner's skill signals and maps its `action`/`priority` output to a named
+  agent action. With no weaknesses detected, advances to the next module, optionally citing
+  the learner's selected framework via `frameworkReference`.
+- **Career Portfolio Agent** (`career-portfolio.ts`): always calls `CareerOS.readiness()`
+  to score the learner's portfolio/certification/interview/practical signals and
+  `CareerOS.resumeHeadline()` to draft a headline. When `requestPublish` is set on the
+  input (the caller is asking to publish externally, mark certification readiness
+  official, or export proof-of-work), readiness below 75 is flagged `flag_not_ready`
+  (no approval — nothing to approve), while readiness at or above 75 produces
+  `request_portfolio_publish_approval` and sets `approvalAction: "readiness_scoring"` so
+  the governance guard requires human approval before anything is actually published.
+
+### Admin / user experience
+
+No new AI-only screens were added, per the mission's "do not create disconnected AI
+screens" rule. The agents' outputs (`recommendedSkillId`, `frameworkReference`,
+`nextSteps`, `resumeHeadline`, `readinessScore`) are shaped to slot directly into the
+existing learning dashboard, module pages, assessment review, and career portfolio/readiness
+pages once those screens are wired to read from `AgentRuntime`'s decision/audit records —
+that wiring itself remains deferred, consistent with every prior batch's "no new admin UI
+route" deferral.
+
+### Validation
+
+- `npm run typecheck --workspace @zig/agent-learning-career` (`tsc --noEmit`) — clean.
+- `npm run test --workspace @zig/agent-learning-career` — both suites `[PASS]`
+  (`learning-path`: 9 assertions; `career-portfolio`: 10 assertions).

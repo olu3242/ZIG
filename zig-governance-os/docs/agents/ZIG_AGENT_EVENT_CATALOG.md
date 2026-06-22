@@ -1,4 +1,4 @@
-# ZIG Agent Event Catalog — Phase 2B/2D/Batch 3
+# ZIG Agent Event Catalog — Phase 2B/2D/Batch 3/Batch 5
 
 Two distinct, deliberately separate vocabularies:
 
@@ -107,3 +107,45 @@ Domain triggers: `artifact.requested`, `gap.detected`, `control.created`.
 |---|---|---|
 | `draft_policy_artifact` | Coverage supports drafting a new artifact | Yes — `policy_finalization` always required before publication |
 | `flag_policy_coverage_gap` | Coverage too low to productively draft yet | No |
+
+## 4. Batch 5 — Learning + Career Agents
+
+Both agents live in `packages/agent-learning-career`, reusing the shared
+`orchestrateDomainAgent()` helper from `packages/agent-domain-intelligence` rather than
+duplicating it — the orchestration path itself is domain-agnostic, so it is imported, not
+re-implemented.
+
+### Learning Path Agent (`learning`)
+
+Domain triggers: `user.onboarded`, `learning.started`, `lesson.completed`,
+`assessment.failed`, `assessment.passed`, `module.completed`, `framework.selected`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `recommend_next_module` | No weaknesses detected; advance to the next module | No |
+| `recommend_module_review` | A weak skill needs a review activity | No |
+| `recommend_practice_lab` | A weak (or high-priority) skill needs hands-on lab practice | No |
+| `recommend_scenario` | A weak skill needs a scenario exercise | No |
+| `recommend_remediation` | A failed assessment needs remediation before retrying | No |
+| `flag_no_signal` | No skill signals exist yet for this learner | No |
+
+This agent never requires approval — every action is a draft recommendation, never a
+finalization or publication, consistent with the existing `"learning"` agent definition
+holding no `execute:*` permission.
+
+### Career Portfolio Agent (`certification`)
+
+Domain triggers: `module.completed`, `lab.completed`, `artifact.approved`,
+`assessment.passed`, `readiness.updated`, `portfolio.requested`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `draft_portfolio_summary` | Readiness below threshold; draft a summary while it builds | No |
+| `recommend_certification_readiness` | Readiness above threshold; recommend a readiness review | No |
+| `flag_not_ready` | Publish was requested but readiness is below threshold | No |
+| `request_portfolio_publish_approval` | Publish was requested and readiness supports it | Yes — `readiness_scoring`, set only when the caller requests publish/official-certification-readiness/export |
+
+This agent reuses the existing `"certification"` agent id (no dedicated "career"/"portfolio"
+agent exists) and the existing `"learning"` RBAC resource (no dedicated "career"/"portfolio"
+resource exists in `RbacResource`) — both are documented reuse decisions, not new
+registrations.

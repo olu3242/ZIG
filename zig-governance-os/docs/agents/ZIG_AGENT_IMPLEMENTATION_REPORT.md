@@ -1,4 +1,4 @@
-# ZIG Agent Implementation Report — Batches 2B–2D, 3
+# ZIG Agent Implementation Report — Batches 2B–2D, 3, 5
 
 ## Scope
 
@@ -123,8 +123,7 @@ failure path, tenant isolation, RBAC denial stopping execution, audit logging, e
 - `npm run lint --workspace web` — clean.
 - `npm run build --workspace web` and `npm run build --workspace admin` — both succeed.
 
-### Explicitly deferred (per "STOP. Do not implement Learning, Reporting, Career, or
-Supervisor agents yet.")
+### Explicitly deferred as of Batch 3 (now partially resolved by Batch 5)
 
 - Learning Path, Reporting, Career Portfolio, and Governance Supervisor agents are not
   implemented.
@@ -134,3 +133,89 @@ Supervisor agents yet.")
   screen is not done — same deferral as Batch 2D, carried forward.
 - The `@zig/frameworks` / `@zig/framework-engine` dual-registry duplication is flagged above
   but not resolved.
+
+## Batch 5 — Learning + Career Agents
+
+### Scope
+
+Wire the two agents named in the mission (Learning Path Agent, Career Portfolio Agent) into
+the same runtime/governance/audit path as Batches 2D and 3, as orchestration layers only. No
+learning, lab, assessment, certification, or portfolio engine was modified or duplicated; no
+new agent id was registered, and the shared `orchestrateDomainAgent()` helper from Batch 3
+was imported rather than re-implemented.
+
+### New package
+
+| Package | Role | Wraps / extends |
+|---|---|---|
+| `@zig/agent-learning-career` | Two agent handlers (Learning Path, Career Portfolio) | `@zig/adaptive-learning`, `@zig/assessment-engine`, `@zig/learning-paths`, `@zig/career-os`, `@zig/credentials`, `@zig/agent-domain-intelligence` (for the shared orchestration helper), `@zig/agent-runtime`, `@zig/agent-governance`, `@zig/agents` |
+
+### Design decisions
+
+- **Reused the existing `"learning"` agentRegistry entry** for the Learning Path Agent — no
+  registration change needed; `"learning"` already exists with exactly the right
+  capabilities (`study_plans`, `skill_gap_analysis`) and no `execute:*` permission, matching
+  "the agent recommends, it never finalizes."
+- **No dedicated "career"/"portfolio" agent or RBAC resource exists.** Rather than adding a
+  13th `AgentKey` and a new `RbacResource` member (which the mission's "do not rebuild" /
+  reuse-first pattern argues against unless a clear gap is documented), the Career Portfolio
+  Agent reuses the existing `"certification"` agentId (semantically the closest: "Forecast
+  certification readiness" already overlaps heavily with portfolio readiness scoring) and
+  the existing `"learning"` RBAC resource (same Academy domain bucket). This is a
+  documented reuse decision, not a silent assumption — recorded in
+  `docs/agents/ZIG_AGENT_PERMISSION_MATRIX.md`'s Batch 5 section. Adding a real "career"
+  resource/agent remains an option for a future batch if the reuse proves too coarse-grained
+  in practice.
+- **Reused `orchestrateDomainAgent()` by import, not by copy.** Since the helper introduced
+  in Batch 3 (`packages/agent-domain-intelligence/src/shared.ts`) is already fully generic
+  over agent id / resource / approval action / produce / toDecision, Batch 5 depends on
+  `@zig/agent-domain-intelligence` directly rather than duplicating the same ~50 lines of
+  runtime/governance wiring into a second package.
+- **`readiness_scoring` approval is set conditionally, not statically.** Unlike the Policy
+  Artifact Agent (Batch 3), which always sets `approvalAction: "policy_finalization"`
+  regardless of its recommendation, the Career Portfolio Agent only passes
+  `approvalAction: "readiness_scoring"` when the caller's input explicitly requests
+  publish/official-readiness/export (`input.requestPublish`). This is a deliberate
+  refinement: the mission's approval rules are about *publishing*, not *drafting*, so most
+  Career Portfolio runs (ordinary progress-triggered drafts) correctly never touch the
+  approval gate.
+- **Learning Path Agent never requires approval.** It has no publish-style action in its
+  vocabulary — every action is a draft recommendation — so no `approvalAction` is ever
+  passed.
+
+### What was proven end-to-end (×2)
+
+```
+domain event -> orchestrateDomainAgent() (imported) -> registry resolution
+  -> governance check -> runtime execution -> existing domain engine(s)
+  -> decision persistence -> audit trail
+```
+
+19 tests total (9 for Learning Path Agent, 10 for Career Portfolio Agent), covering per
+agent: happy path, a failed-assessment/low-readiness remediation path, a
+framework-alignment/skill-mapping path, tenant isolation, RBAC denial stopping execution,
+audit logging, replay of a denied/failed run back to `queued`, explainability
+(reason/dataUsed/confidence present), and an approval-path check (Learning Path Agent
+asserts approval is never required; Career Portfolio Agent asserts both the
+publish-approval-required case and the publish-requested-but-not-ready case).
+
+### Validation
+
+- `npm run typecheck --workspace @zig/agent-learning-career` (`tsc --noEmit`) — clean.
+- `npm run test --workspace @zig/agent-learning-career` — both suites `[PASS]`
+  (`learning-path`, `career-portfolio`).
+- `npm run lint --workspace web` — clean.
+- `npm run build --workspace web` and `npm run build --workspace admin` — both succeed.
+
+### Explicitly deferred (per "STOP HERE. Do not implement Governance Supervisor Agent or
+Agent SOC yet.")
+
+- Governance Supervisor Agent and Agent SOC are not implemented.
+- Readiness Scoring, Remediation, and Reporting agents (named in the still-queued Batch 4
+  prompt) remain unimplemented.
+- Admin-tower UI wiring for the Batch 5 agents' runs/decisions/approvals into a live screen
+  (learning dashboard, module pages, lab workflow, assessment review, career portfolio page,
+  readiness page) is not done — the agents' output shapes are ready for it, but no UI route
+  was added or changed in this batch, consistent with every prior batch's deferral.
+- The dedicated "career"/"portfolio" agent id and RBAC resource gap (reuse decision above)
+  is flagged but not resolved with new registrations.
