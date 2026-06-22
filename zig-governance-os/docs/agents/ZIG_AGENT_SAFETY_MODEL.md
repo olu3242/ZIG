@@ -46,3 +46,30 @@ implying any of `recommend_evidence_acceptance`/`refresh`/`missing`/`rework` eve
 approval_requested, policy_violation) with `agentId`/`tenantId`/`userId`/timestamp — the
 source for admin-tower "denied actions" / "approval requests" / "policy violations" views
 (Part C, admin visibility).
+
+## Batch 6 — Supervisory layer over the safety model
+
+The safe-stop guarantees above are individually enforced at execution time by
+`AgentRuntime`/`AgentGovernanceGuard`. Batch 6 adds a **supervisory** layer
+(`GovernanceSupervisorAgent` in `@zig/supervisor-agents`, see
+`docs/agents/ZIG_AGENT_SUPERVISOR.md`) that audits, after the fact, whether those guarantees
+actually held across a batch of runs — catching cases where a guarantee was bypassed,
+mis-wired, or never invoked for a given run:
+
+- "Execution never proceeds past a denial" is checked retroactively by
+  `detectMissingGovernanceCheck()` (a completed run with no matching governance log entry at
+  all) and `detectApprovalBypass()` (a finalizing run whose governance entry didn't actually
+  require approval).
+- "Handler exceptions ... recorded as `failed`/`dead_letter`" is checked by
+  `detectExcessiveRetries()`, which flags `dead_letter` runs and any run nearing its retry
+  ceiling, recommending replay.
+- The logging guarantee above (`listLog()`) is the direct input to every supervisor detector —
+  the supervisor adds no new logging, it consumes the existing log.
+- `detectMissingAudit()` and `detectMissingTenantContext()` extend the safe-stop guarantee to
+  two failure modes the runtime/governance guard do not themselves check post hoc: a run
+  silently missing from the audit trail, and a run missing tenant/user context entirely.
+
+The supervisor is advisory: it never blocks or replays a run itself. It produces a
+`SupervisorDecision` (severity, escalation/replay/rollback recommendation, rationale) for a
+human or downstream process to act on — it is a meta-agent over records, not a gate in the
+execution path.

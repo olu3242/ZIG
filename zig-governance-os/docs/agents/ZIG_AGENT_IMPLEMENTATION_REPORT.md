@@ -1,4 +1,4 @@
-# ZIG Agent Implementation Report — Batches 2B–2D, 3, 5
+# ZIG Agent Implementation Report — Batches 2B–2D, 3, 4, 5, 6
 
 ## Scope
 
@@ -318,3 +318,72 @@ Portfolio Agent, Governance Supervisor Agent, Agent SOC.")
   folded into the Reporting Agent's existing `isOfficial` flag rather than modeled as a
   separate pipeline call. Worth reconsidering in a future batch if export-specific staging
   (request/authorize/generate/audit/download/archive) proves necessary.
+
+## Batch 6 — Governance Supervisor Agent + Agent SOC
+
+### Scope
+
+Implement the Governance Supervisor Agent (meta-agent over existing run/governance/audit
+records), Agent SOC health/telemetry, policy violation monitoring, and replay/recovery
+visibility — per `ZIG_AGENT_SUPERVISOR.md` and `ZIG_AGENT_SOC.md`. No new domain agent was
+created; no registry, runtime, Event Fabric, governance guard, or `RbacEngine` code was
+modified or duplicated.
+
+### Extended package (not new)
+
+| Package | Role | Wraps / extends |
+|---|---|---|
+| `@zig/supervisor-agents` | `GovernanceSupervisorAgent` (8 detectors + `supervise()`), `computeAgentSocHealth()` | `@zig/agent-runtime`, `@zig/agent-governance`, `@zig/runtime-persistence` |
+
+The package already existed as a 6-line stub (`SupervisorAgent` type +
+`SupervisorAgentPlatform.supervisors()`); both are preserved unchanged. This is the one
+package in Batches 2–6 that was extended in place rather than created fresh, since the
+mission's "extend existing infrastructure" instruction applied directly to it.
+
+### Design decisions
+
+- **No 13th agent id.** The supervisor is not registered in `agentRegistry` and never goes
+  through `AgentRuntime.submit()`/`orchestrateDomainAgent()`. It is pure analysis tooling over
+  records those paths already produce.
+- **Approval-bypass detection unified** across the mission's five separately-named flags
+  (approval bypass; rejected evidence without approval; readiness publication without
+  approval; official report without approval; policy finalization without approval) into one
+  `detectApprovalBypass()` detector, via generic substring matching on `decision.action`
+  (`FINALIZING_ACTION_PATTERNS`). See `ZIG_AGENT_SUPERVISOR.md` for the rationale.
+- **`overrideCount` redefined during implementation.** The naive reading
+  (`outcome === "policy_violation" && result.allowed`) is logically impossible given
+  `AgentGovernanceGuard`'s outcome-derivation rule (`policy_violation` outcome only occurs when
+  `allowed === false`). Corrected to `result.policyViolations.length > 0 && result.allowed`,
+  which models the intended case (a flagged violation that was still allowed through, i.e. an
+  override) without contradicting the guard's own invariants.
+
+### What was proven end-to-end
+
+11 assertions in `packages/supervisor-agents/src/tests/governance-supervisor.test.ts` cover
+every detector named in the mission's test list (unsafe action / missing-governance-check,
+missing rationale, tenant context, failed-run escalation via `supervise()`, replay
+recommendation, duplicate registration, approval bypass — positive and negative case), plus
+missing-audit, unsupported-event-coverage, a clean/healthy `supervise()` run, and
+`computeAgentSocHealth()`.
+
+### Validation
+
+- `npm run typecheck --workspace @zig/supervisor-agents` (`tsc --noEmit`) — clean.
+- `npm run test --workspace @zig/supervisor-agents` — `[PASS]`, 11/11 assertions.
+
+### Explicitly deferred (per "STOP HERE. Do not expand agent count.")
+
+- Admin SOC/control-tower UI wiring: `/admin/agent-soc` still renders synthetic demo data
+  unrelated to `AgentRuntime`/`AgentGovernanceGuard`/the new supervisor; the five other named
+  routes (`/admin/agent-runs`, `/admin/agent-health`, `/admin/agent-approvals`,
+  `/admin/agent-events`, `/admin/agent-replay`) do not exist. Output shapes are ready for a UI
+  to consume — no UI route was added or changed in this batch, consistent with every prior
+  batch's deferral. See `ZIG_AGENT_COVERAGE_REPORT.md`.
+- No live Event Fabric subscription was wired for `agent.run.started` /
+  `agent.run.completed` / `agent.failed` / `approval.required` /
+  `policy.violation.detected` / `replay.requested` / `agent.decision.created` — `supervise()`
+  is called with already-collected record slices rather than as a live event subscriber.
+- This batch addresses only the concrete "Proceed with Batch 6 only" mission text. The
+  separate, broader "Batch 1–6 Full Scope Completion Pass" audit (with its own required
+  `ZIG_AGENT_FULL_IMPLEMENTATION_MATRIX.md` / `ZIG_AGENT_GAP_CLOSURE_REPORT.md` /
+  `ZIG_BATCH_1_6_SCOPE_REVIEW.md` deliverables) was not undertaken in this batch.
