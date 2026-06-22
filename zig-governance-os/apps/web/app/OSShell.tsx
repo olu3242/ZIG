@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import Logo from "./Logo";
+import { logoutAction } from "./lib/actions";
 
 export interface ModuleLink {
   href: string;
@@ -325,6 +326,14 @@ function TopNavigation({ activeModule, onOpenCommand }: { activeModule: ModuleCo
           <Link className="hidden rounded-lg border border-blue-300/30 bg-zinc-900/50 px-3 py-2 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-zinc-900/70 sm:inline-flex" href="/ai-command">
             AI Coach
           </Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 font-medium text-zinc-400 backdrop-blur-md transition-all hover:border-red-400/40 hover:text-red-200"
+            >
+              Log out
+            </button>
+          </form>
         </div>
       </div>
     </header>
