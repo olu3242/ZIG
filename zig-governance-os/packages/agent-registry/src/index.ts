@@ -1,5 +1,19 @@
+import { agentDefinitions, type AgentDefinition, type AgentKey, type AgentOperationalStatus } from "@zig/agents";
+
+/**
+ * @zig/agent-registry is now a compatibility adaptor over the canonical registry in
+ * @zig/agents. See docs/agents/ZIG_AGENT_CORE_DECISION.md for why @zig/agents was
+ * chosen as canonical and why this package was kept (rather than deleted) as a thin
+ * shim: apps/admin/app/admin/agent-control-tower/page.tsx imports `AgentRegistry` and
+ * `GovernedAgent` from here, and that import must keep working unmodified.
+ *
+ * AgentCategory/AgentOperationalStatus/GovernedAgent/AgentRegistry are unchanged in
+ * shape. Only the *data* AgentRegistry.inventory() returns has changed: it now derives
+ * from the canonical agentDefinitions (all 12 ZIG agents) instead of 3 hand-written
+ * example rows, mapped through agentCategoryForKey() below.
+ */
 export type AgentCategory = "learning" | "compliance" | "risk" | "audit" | "career" | "system";
-export type AgentOperationalStatus = "active" | "degraded" | "suspended" | "certifying";
+export type { AgentOperationalStatus };
 export interface GovernedAgent {
   id: string;
   name: string;
@@ -13,12 +27,40 @@ export interface GovernedAgent {
   version: string;
   certificationLevel: number;
 }
+
+const categoryByKey: Record<AgentKey, AgentCategory> = {
+  compliance: "compliance",
+  policy: "compliance",
+  evidence: "compliance",
+  control: "compliance",
+  risk: "risk",
+  vendor_risk: "risk",
+  audit: "audit",
+  assessment: "audit",
+  executive: "system",
+  automation: "system",
+  certification: "career",
+  learning: "learning",
+};
+
+function toGovernedAgent(definition: AgentDefinition): GovernedAgent {
+  return {
+    id: definition.id,
+    name: definition.name,
+    type: categoryByKey[definition.key],
+    owner: definition.owner,
+    department: definition.department,
+    supervisor: definition.supervisor,
+    permissions: definition.permissions,
+    tools: definition.toolAccess.map((access) => access.tool),
+    status: definition.status,
+    version: definition.version,
+    certificationLevel: definition.certificationLevel,
+  };
+}
+
 export class AgentRegistry {
   inventory(): GovernedAgent[] {
-    return [
-      { id: "learning.tutor", name: "Tutor Agent", type: "learning", owner: "Learning", department: "Academy", supervisor: "Learning Supervisor", permissions: ["teach:concepts"], tools: ["content"], status: "active", version: "1.0.0", certificationLevel: 3 },
-      { id: "grc.risk", name: "Risk Agent", type: "risk", owner: "Risk", department: "GRC", supervisor: "Risk Supervisor", permissions: ["read:risks", "recommend:treatments"], tools: ["risk-engine"], status: "certifying", version: "1.0.0", certificationLevel: 2 },
-      { id: "system.automation", name: "Automation Agent", type: "system", owner: "Platform", department: "Engineering", supervisor: "Executive Supervisor", permissions: ["execute:approved_workflows"], tools: ["runtime-queue"], status: "degraded", version: "0.9.0", certificationLevel: 2 },
-    ];
+    return agentDefinitions.map(toGovernedAgent);
   }
 }
