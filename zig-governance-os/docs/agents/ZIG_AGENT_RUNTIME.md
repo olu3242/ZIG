@@ -50,6 +50,17 @@ The Governance Guard (`packages/agent-governance`) sits between resolution and e
 `Event -> Registry -> Governance Guard -> Execute -> Audit`. The Evidence Review Agent
 (`packages/agent-evidence-review`) is the first handler wired through the full path.
 
+## Batch 3/5/4 — same runtime, no changes
+
+Every subsequent batch (Batch 3's four Domain Intelligence Agents, Batch 5's Learning Path
+and Career Portfolio agents, Batch 4's Readiness Scoring/Remediation/Reporting agents) runs
+through this exact `AgentRuntime` unmodified — `resolveAgent()`, retry/dead-letter/replay,
+and `AgentRunRecord`'s shape are untouched. Each batch only adds a `produce()`/`toDecision()`
+pair behind the shared `orchestrateDomainAgent()` helper
+(`packages/agent-domain-intelligence/src/shared.ts`); no batch has needed to extend
+`AgentRuntime` itself. Batch 4's three agents resolve via explicit `agentId`
+(`"assessment"`, `"audit"`, `"executive"`), the same resolution path proven since Phase 2B.
+
 ## Validation
 
 - `npx tsx packages/agent-runtime/src/tests/runtime.test.ts` — 8 assertions, `[PASS]`.

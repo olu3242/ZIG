@@ -191,3 +191,92 @@ route" deferral.
 - `npm run typecheck --workspace @zig/agent-learning-career` (`tsc --noEmit`) — clean.
 - `npm run test --workspace @zig/agent-learning-career` — both suites `[PASS]`
   (`learning-path`: 9 assertions; `career-portfolio`: 10 assertions).
+
+## Batch 4 — Execution Layer Agents
+
+Three agents, same shared orchestration path — reused by import. All three agent modules in
+`packages/agent-execution/src/` import `orchestrateDomainAgent()` directly from
+`@zig/agent-domain-intelligence`, the same Batch 3 helper every prior batch has reused.
+Batch 4 is explicitly scoped to the Execution Layer — turning existing intelligence into
+readiness scores, remediation recommendations, and report outputs — not new scoring/domain
+logic.
+
+```
+domain event (e.g. "control.updated", "gap.detected", "report.requested")
+  -> orchestrateDomainAgent() (imported from @zig/agent-domain-intelligence)
+  -> registry resolution (getAgentById("assessment") / getAgentById("audit") /
+     getAgentById("executive")) — all three reuse existing agentRegistry entries, no new
+     agent id was registered
+  -> governance check (AgentGovernanceGuard.evaluate(), approvalAction set conditionally per
+     agent: Readiness Scoring on input.requestPublish, Remediation on a precomputed
+     critical/high risk band, Reporting on input.isOfficial)
+  -> runtime execution (AgentRuntime.execute())
+  -> existing domain engines (unmodified):
+       FrameworkIntelligenceEngine.score()        (@zig/frameworks)
+       ControlManagementEngine.assess()           (@zig/controls)
+       CertificationReadinessEngine.score()       (@zig/certification-readiness)
+       RiskManagementEngine.score()                (@zig/risks)
+       EvidenceManagementEngine.health()           (@zig/evidence)
+       BoardReportingEngine.manifest()             (@zig/board-reporting)
+  -> decision persistence (AgentRunRecord.decision, audit trail)
+  -> audit trail (AgentGovernanceGuard.listLog() + AgentRuntime.listAuditTrail())
+  -> admin visibility (same existing shapes — no new UI route added)
+```
+
+### Agent definitions (all three reused, none new)
+
+| Agent | Reused `agentId` | RBAC resource | Domain engines called |
+|---|---|---|---|
+| Readiness Scoring Agent | `"assessment"` | `frameworks` | `@zig/frameworks`, `@zig/controls`, `@zig/certification-readiness` |
+| Remediation Agent | `"audit"` | `tasks` | `@zig/risks`, `@zig/controls`, `@zig/evidence` |
+| Reporting Agent | `"executive"` | `reports` | `@zig/board-reporting` |
+
+### Handler responsibilities
+
+- **Readiness Scoring Agent** (`readiness-scoring.ts`): calls three existing, unmodified
+  scoring engines (framework readiness, control effectiveness, certification/learning
+  readiness) plus the caller-supplied `organizationalMaturity` number, and computes a simple
+  arithmetic mean across the four dimensions inside the agent. This mean is aggregation, not
+  a new scoring engine — no dimension's score is invented; each comes from an existing
+  engine. Weak areas (any dimension below 60%) are flagged by name. When
+  `input.requestPublish` is set, readiness at or above 75% with no weak areas produces
+  `request_readiness_publication_approval` (approval required); otherwise
+  `flag_readiness_gaps`. Without a publish request, readiness at or above 75% produces
+  `recommend_readiness_certification_ready`; otherwise `draft_readiness_assessment`.
+- **Remediation Agent** (`remediation.ts`): calls `RiskManagementEngine.score()` to derive a
+  risk band, `ControlManagementEngine.assess()` for control lifecycle/effectiveness, and
+  `EvidenceManagementEngine.health()` for evidence status. Maps the risk band to a priority
+  (critical/high/medium/low), derives an effort estimate and suggested due date from that
+  priority, and surfaces evidence/control gaps as remediation dependencies. Critical or high
+  risk bands produce `request_high_risk_approval` (approval required, decided from the risk
+  band before `produce()` runs); everything else produces `recommend_remediation_plan`. No
+  standalone task-management package exists in the repo, so "remediation tasks" here are
+  structured recommendation output (owner, priority, effort, due date, dependencies), not
+  persisted task records — a documented gap, not a violation, since the mission's "reuse
+  existing task infrastructure if present" anticipated this case.
+- **Reporting Agent** (`reporting.ts`): calls the existing, unmodified
+  `BoardReportingEngine.manifest()` to get the report type/output formats (the engine bakes
+  `requiresApproval: true` into every manifest as informational/narrative content — distinct
+  from the agent-level governance approval gate), builds a readiness/weak-area narrative from
+  the caller's aggregated inputs, and only sets `approvalAction: "report_generation"` when
+  `input.isOfficial` is true (official/external-publication reports), producing
+  `request_report_publication_approval`; otherwise `generate_report`.
+
+### Admin / approval framework note
+
+Same as every prior batch: no new admin UI route was added. `@zig/approvals` and
+`@zig/agent-approvals` were reviewed as candidate "existing approval framework"
+implementations referenced by the mission, but neither is directly instantiated by any
+Batch 4 agent — `AgentGovernanceGuard`'s `requiresApproval`/`escalationTarget` mechanism
+(already adopted by every prior batch) is treated as satisfying "create approval requests
+through existing approval framework," since it already logs every approval-required
+decision to `listLog()`. Wiring `ApprovalEngine`/`AgentApprovalEngine` directly into the
+execution agents remains a documented option for a future batch, not a gap blocking Batch 4.
+
+### Validation
+
+- `npx tsc -p packages/agent-execution/tsconfig.json --noEmit` — clean.
+- `npm run test --workspace @zig/agent-execution` — all three suites `[PASS]`
+  (`readiness-scoring`: 9 assertions; `remediation`: 8 assertions; `reporting`: 8 assertions).
+- `npm run lint --workspace web` — clean.
+- `npm run build --workspace web` and `npm run build --workspace admin` — both succeed.

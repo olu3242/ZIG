@@ -219,3 +219,102 @@ Agent SOC yet.")
   was added or changed in this batch, consistent with every prior batch's deferral.
 - The dedicated "career"/"portfolio" agent id and RBAC resource gap (reuse decision above)
   is flagged but not resolved with new registrations.
+
+## Batch 4 — Execution Layer Agents
+
+### Scope
+
+Wire the three Execution Layer agents named in the mission (Readiness Scoring, Remediation,
+Reporting) into the same runtime/governance/audit path proven in every prior batch, as
+orchestration layers only. The mission explicitly framed this batch as turning existing
+intelligence into action, readiness, and outputs — not additional intelligence — so no new
+scoring/domain engine was written; aggregation/mapping logic lives in the agent only where
+the underlying numbers all originate from existing, unmodified engines.
+
+### New package
+
+| Package | Role | Wraps / extends |
+|---|---|---|
+| `@zig/agent-execution` | Three agent handlers (Readiness Scoring, Remediation, Reporting) | `@zig/frameworks`, `@zig/controls`, `@zig/certification-readiness`, `@zig/risks`, `@zig/evidence`, `@zig/board-reporting`, `@zig/agent-domain-intelligence` (for the shared orchestration helper), `@zig/agent-runtime`, `@zig/agent-governance`, `@zig/agents` |
+
+### Design decisions
+
+- **Reused three existing `agentRegistry` entries** — `"assessment"` (Readiness Scoring,
+  capability literally named `readiness_scoring`), `"audit"` (Remediation, permission
+  literally `recommend:remediation`), `"executive"` (Reporting, capability `board_reporting`)
+  — no new agent id was registered. Tool names follow the existing `${agentId}-engine`
+  convention auto-derived by `packages/agents/src/index.ts`'s `toAgentDefinition()`
+  (`assessment-engine`, `audit-engine`, `executive-engine`).
+- **Readiness Scoring Agent aggregates, it does not score.** Per the mission's explicit "do
+  not create a new scoring engine" instruction, the agent calls three existing engines
+  (`FrameworkIntelligenceEngine.score()`, `ControlManagementEngine.assess()`,
+  `CertificationReadinessEngine.score()`) plus the caller's raw `organizationalMaturity`
+  number (no existing engine models generic organizational maturity), then computes a simple
+  arithmetic mean across the four dimension scores inside the agent. This is treated as
+  permissible aggregation, not a new scoring engine, because every individual dimension's
+  score still originates entirely from an existing, unmodified domain engine.
+- **No standalone "tasks" engine package exists in the repo.** A repo-wide check
+  (`ls packages | grep -iE "task"`) found no `tasks` package. Per the mission's "reuse
+  existing task infrastructure if present," since none exists, the Remediation Agent's
+  output is a structured recommendation shape (priority, owner, effort estimate, due date,
+  dependencies) rather than a persisted task record — a documented gap, not a violation.
+- **`approvalAction` is decided before `produce()` runs, for all three agents**, following
+  the Batch 5 Career Portfolio Agent pattern: because `orchestrateDomainAgent()`'s governance
+  check happens strictly before the agent's `produce()` callback executes, the approval
+  decision can only depend on the input, never on the recommendation's own output. Readiness
+  Scoring keys off `input.requestPublish`; Remediation precomputes a risk band via
+  `RiskManagementEngine.score()` and keys off whether that band is critical/high; Reporting
+  keys off `input.isOfficial`.
+- **`BoardReportingEngine.manifest()`'s `requiresApproval: true` is informational, not the
+  governance gate.** That field is a fixed type-level fact on every manifest the engine
+  produces, regardless of content. The Reporting Agent surfaces it as narrative content in
+  the rationale; the actual governance-level approval gate is the separate, conditional
+  `approvalAction: "report_generation"` driven by `input.isOfficial`.
+- **`@zig/approvals` and `@zig/agent-approvals` were reviewed but not wired in.** Both are
+  candidate "existing approval framework" implementations the mission references for
+  "create approval requests through existing approval framework," but neither package is
+  directly instantiated by any Batch 4 agent. `AgentGovernanceGuard`'s
+  `requiresApproval`/`escalationTarget` signaling — already the approval mechanism every
+  prior batch has relied on — is treated as satisfying that requirement, since it already
+  logs every approval-required decision via `listLog()`. Flagged as a documented design
+  decision, consistent with how prior batches flagged similar reuse-vs-build tradeoffs.
+
+### What was proven end-to-end (×3)
+
+```
+domain event -> orchestrateDomainAgent() (imported) -> registry resolution
+  -> governance check -> runtime execution -> existing domain engine(s)
+  -> decision persistence -> audit trail
+```
+
+25 tests total (9 for Readiness Scoring Agent, 8 for Remediation Agent, 8 for Reporting
+Agent), covering per agent: happy path, failure path, tenant isolation, RBAC denial stopping
+execution, audit logging, replay of a denied/failed run back to `queued`, explainability
+(reason/dataUsed/confidence present), and an approval-path check (Readiness Scoring and
+Reporting also assert a "requested but not ready/non-official" negative case alongside the
+approval-required case).
+
+### Validation
+
+- `npx tsc -p packages/agent-execution/tsconfig.json --noEmit` (`tsc --noEmit`) — clean.
+- `npm run test --workspace @zig/agent-execution` — all three suites `[PASS]`
+  (`readiness-scoring`, `remediation`, `reporting`).
+- `npm run lint --workspace web` — clean.
+- `npm run build --workspace web` and `npm run build --workspace admin` — both succeed.
+
+### Explicitly deferred (per "STOP HERE. Do not implement: Learning Path Agent, Career
+Portfolio Agent, Governance Supervisor Agent, Agent SOC.")
+
+- Governance Supervisor Agent and Agent SOC are not implemented.
+- Admin-tower UI wiring for the Batch 4 agents' runs/decisions/approvals into a live screen
+  (readiness dashboard, remediation/task views, report generation history) is not done — the
+  agents' output shapes are ready for it, but no UI route was added or changed in this batch,
+  consistent with every prior batch's deferral.
+- `@zig/approvals` and `@zig/agent-approvals` remain unwired (reviewed, documented, not
+  adopted in favor of the existing `AgentGovernanceGuard` mechanism) — flagged above as a
+  design decision, not an oversight.
+- `@zig/exports`' `ExportPipeline` (the most direct match for the mission's "external
+  exports" approval trigger) was reviewed but not adopted; "external export" is currently
+  folded into the Reporting Agent's existing `isOfficial` flag rather than modeled as a
+  separate pipeline call. Worth reconsidering in a future batch if export-specific staging
+  (request/authorize/generate/audit/download/archive) proves necessary.

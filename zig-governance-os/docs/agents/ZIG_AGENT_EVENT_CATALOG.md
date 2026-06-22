@@ -149,3 +149,49 @@ This agent reuses the existing `"certification"` agent id (no dedicated "career"
 agent exists) and the existing `"learning"` RBAC resource (no dedicated "career"/"portfolio"
 resource exists in `RbacResource`) — both are documented reuse decisions, not new
 registrations.
+
+## 5. Batch 4 — Execution Layer Agents
+
+All three agents live in `packages/agent-execution`, reusing the shared
+`orchestrateDomainAgent()` helper from `packages/agent-domain-intelligence` by import, the
+same pattern Batch 5 established.
+
+### Readiness Scoring Agent (`assessment`)
+
+Domain triggers: `assessment.completed`, `control.updated`, `evidence.approved`,
+`framework.selected`, `report.requested`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `recommend_readiness_certification_ready` | Aggregate readiness at/above 75% | No |
+| `draft_readiness_assessment` | Aggregate readiness below 75%; weak areas flagged | No |
+| `flag_readiness_gaps` | Publish requested but readiness/weak areas block certification | No |
+| `request_readiness_publication_approval` | Publish requested and readiness supports it | Yes — `readiness_scoring`, set only when `input.requestPublish` is true |
+
+### Remediation Agent (`audit`)
+
+Domain triggers: `gap.detected`, `control.failed`, `evidence.missing`, `risk.high`,
+`assessment.completed`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `recommend_remediation_plan` | Risk band is medium/low; standard remediation plan | No |
+| `request_high_risk_approval` | Risk band is critical/high | Yes — `high_risk_recommendation`, set when the precomputed risk band is critical or high |
+
+Produces a structured remediation plan: priority, recommended owner, estimated effort
+(days), suggested due date (days out), and dependencies (e.g. `evidence:missing`,
+`control:exception`) — not a persisted task record, since no standalone task-management
+package exists in the repo yet.
+
+### Reporting Agent (`executive`)
+
+Domain triggers: `report.requested`, `assessment.completed`, `readiness.updated`.
+
+Also reserved for this surface (named in the mission's event list, not yet emitted by any
+handler in this batch): `gap.detected`, `task.generated`, `report.generated`,
+`report.approved`, `report.rejected`.
+
+| Action | Meaning | Requires approval |
+|---|---|---|
+| `generate_report` | Non-official report; generated directly | No |
+| `request_report_publication_approval` | Official/externally-publishable report | Yes — `report_generation`, set only when `input.isOfficial` is true |
