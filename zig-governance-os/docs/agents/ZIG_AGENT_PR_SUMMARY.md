@@ -10,7 +10,8 @@
 | 4 | Execution Layer Agents: Readiness Scoring, Remediation, Reporting | Complete |
 | 5 | Learning Path Agent, Career Portfolio Agent | Complete |
 | 6 | Governance Supervisor Agent (meta-agent), Agent SOC health/telemetry | Complete |
-| 7 | E2E certification / coverage hardening | Not started — this PR is the merge-readiness checkpoint before that phase begins |
+| 7 | Trigger Automation dispatcher (`@zig/agent-trigger-automation`) + admin test-trigger harness | Complete |
+| 8 | Final readiness review (this PR's merge-readiness checkpoint) | Complete |
 
 ## Agents implemented (11, all routed through the same runtime/governance path)
 
@@ -92,73 +93,146 @@ None. No `supabase/migrations/` content exists in this repo yet (pre-Fable-1 per
 
 ## PR description (ready to use)
 
-**Title:** ZIG Agent OS: Runtime, Governance, Domain Agents, SOC, and E2E Certification
+**Title:** ZIG Agent OS: Runtime, Governance, Domain Agents, Trigger Automation, SOC, and
+E2E Certification
 
-### 1. Summary
+### 1. Executive Summary
 
 Builds the ZIG Agent OS from a flat agent registry into a governed, audited, replayable
-runtime spanning 10 business agents plus a governance supervisor meta-agent, all routed
-through one shared runtime/governance path. No new runtime, no RBAC replacement, no
-duplicated registries.
+runtime spanning 10 business agents, a governance supervisor meta-agent, and an outward-facing
+trigger-automation dispatcher layer — all routed through one shared runtime/governance path.
+No new runtime, no RBAC replacement, no duplicated registries, no new agent count beyond the
+pre-existing 12-entry registry.
 
-### 2. What changed
-
-- Reconciled the Phase 2A agent registry onto a single canonical source.
-- Added `AgentRuntime` (submit/execute/retry/dead-letter/audit) and `AgentGovernanceGuard`
-  (tenant/role/tool/policy/approval checks).
-- Wired 10 business agents (Evidence Review, Framework Mapping, Risk Assessment, Control
-  Advisor, Policy Artifact, Readiness Scoring, Remediation, Reporting, Learning Path, Career
-  Portfolio) into that runtime/governance path via a shared orchestration helper.
-- Added a Governance Supervisor meta-agent and Agent SOC health/telemetry computation over
-  the resulting run/governance/audit records.
-
-### 3. Agents implemented
-
-See "Agents implemented" above — 10 business agents + 1 supervisor meta-agent, 0 new
-registry entries.
-
-### 4. Architecture decisions
+### 2. Architecture Decisions
 
 - Agents are orchestration layers over existing domain engines — no domain engine was
   modified or duplicated.
 - `orchestrateDomainAgent()` is shared by import across Batches 3–5, not copy-pasted.
 - The Governance Supervisor is intentionally **not** a registered agent — it's analysis
-  tooling over existing records, consistent with "do not expand agent count."
-- Approval bypass detection is unified across 5 mission-named flag types via one
+  tooling over already-collected records, consistent with "do not expand agent count."
+- Approval-bypass detection is unified across 5 mission-named flag types via one
   pattern-matching detector rather than 5 separate ones.
+- The trigger-automation dispatcher (`@zig/agent-trigger-automation`) defines a third,
+  deliberately smaller, outward-facing `DomainEventType` vocabulary (10 members) that
+  translates into each agent's own internal trigger union — it is a routing layer, not a
+  parallel runtime; every branch except one (`agent.failed`) calls an existing agent function
+  that already submits through `AgentRuntime`/`AgentGovernanceGuard`.
+- Type-safety for the dispatcher's polymorphic return value uses a generic overload keyed by
+  a literal-mapped result interface (`DomainEventResultMap`), avoiding `any`/unsafe casts at
+  every call site.
 
-### 5. Validation
+### 3. Agent Coverage
 
-Lint clean; `tsc --noEmit` clean across 11 packages; ~83 test assertions across 7 packages,
-all passing; `web` and `admin` both build. Full command-by-command results in
-`docs/agents/ZIG_AGENT_MERGE_READINESS.md`.
+10 business agents (Evidence Review, Framework Mapping, Risk Assessment, Control Advisor,
+Policy Artifact, Readiness Scoring, Remediation, Reporting, Learning Path, Career Portfolio)
++ 1 supervisor meta-agent, **0 new registry entries** — every agent reuses the pre-existing
+12-entry `agentRegistry` from Phase 2A. Full per-agent breakdown (registry/trigger/runtime/
+governance/handler/decision/audit/approval/replay/admin-visibility/tests/docs) in
+`docs/agents/ZIG_AGENT_COVERAGE_MATRIX.md` — every cell COMPLETE except "Admin visibility,"
+honestly marked PARTIAL across every row (no per-agent admin detail view exists anywhere in
+the repo).
 
-### 6. Security / Governance
+### 4. Trigger Automation
+
+New package `@zig/agent-trigger-automation` defines one canonical 10-member `DomainEventType`
+union and one entry point, `emitDomainEvent()`, routing each event to the existing agent
+function(s) that already implement Registry → Governance → Runtime → Decision → Audit.
+`gap.detected` and `module.completed` are fan-out events, each independently invoking two
+agent functions. `agent.failed` is the one documented exception, calling
+`GovernanceSupervisorAgent.supervise()` directly since that meta-agent inspects
+already-collected records rather than producing a new run. Full routing table and payload
+contract in `docs/agents/ZIG_AGENT_TRIGGER_MAP.md`.
+
+### 5. Governance + Approvals
 
 Every agent execution is preceded by a governance check; denials short-circuit before any
-recommendation is produced; risky finalizing actions require explicit approval; every
-evaluation is independently logged via `AgentGovernanceGuard.listLog()`; tenant isolation is
-enforced at the guard level, not just the UI.
+recommendation is produced; risky finalizing actions (evidence rejection, policy
+finalization, readiness/report publication, high-risk remediation, certification-readiness
+publish) require explicit approval, each carrying a named `approvalAction`; every evaluation
+is independently logged via `AgentGovernanceGuard.listLog()`; tenant isolation is enforced at
+the guard level, not just the UI.
 
-### 7. Docs added/updated
+### 6. Runtime + Replay
+
+Every agent flows through the single `AgentRuntime` introduced in Phase 2B (submit/execute,
+retry, dead-letter at 3 attempts, audit trail) — unmodified across every later batch,
+including trigger automation. `AgentRuntime.replay()` re-queues failed/dead-letter runs and
+is proven per-package (e.g. `agent-domain-intelligence`'s `assertReplayPath()`); the
+dispatcher layer does not need its own replay path since it introduces no second runtime.
+
+### 7. Agent SOC
+
+Governance Supervisor meta-agent + Agent SOC health/telemetry computation over run/
+governance/audit record slices (Batch 6, unchanged by this PR's later batches). Honest
+limitation, unchanged since Batch 6: `/admin/agent-soc` renders synthetic demo data, not a
+live fleet-wide aggregation; the new `/admin/agent-soc/test-triggers` panel exercises
+`emitDomainEvent()`/`supervise()` against fresh, synthetic, single-click in-memory state, not
+production records.
+
+### 8. Test Coverage
+
+~83 assertions across 7 packages' own test suites (`agent-runtime`, `agent-governance`,
+`agent-evidence-review`, `agent-domain-intelligence` ×4, `agent-learning-career` ×2,
+`agent-execution` ×3, `supervisor-agents`) plus 12 new dispatcher integration tests in
+`@zig/agent-trigger-automation` (one per canonical trigger + 2 fan-out cases), all `[PASS]`
+via `npx tsx`. Per-suite breakdown in `ZIG_AGENT_IMPLEMENTATION_REPORT.md`.
+
+### 9. Validation Results
+
+| Command | Result |
+|---|---|
+| `npx tsc --noEmit` across all touched packages | Clean |
+| `npm run test --workspace @zig/agent-trigger-automation` | 12/12 `[PASS]` |
+| All other packages' own test suites | All `[PASS]` (~83 assertions) |
+| `npm run lint --workspace web` | Clean |
+| `npm run lint --workspace admin` | Clean |
+| `npm run build --workspace web` | Succeeds |
+| `npm run build --workspace admin` | Succeeds; `/admin/agent-soc/test-triggers` in route manifest |
+
+Full detail in `docs/agents/ZIG_AGENT_FINAL_READINESS.md` and
+`docs/agents/ZIG_AGENT_RELEASE_READINESS.md`.
+
+### 10. Docs Added
 
 `ZIG_AGENT_GAP_REPORT.md`, `ZIG_AGENT_SCOPE_MAP.md`, `ZIG_AGENT_CORE_DECISION.md`,
 `ZIG_AGENT_RUNTIME.md`, `ZIG_AGENT_PERMISSION_MATRIX.md`, `ZIG_AGENT_EVENT_CATALOG.md`,
-`ZIG_AGENT_WORKFLOW_MAP.md`, `ZIG_AGENT_SAFETY_MODEL.md` (updated for Batch 6),
-`ZIG_AGENT_IMPLEMENTATION_REPORT.md` (updated through Batch 6), `ZIG_AGENT_SUPERVISOR.md`,
-`ZIG_AGENT_SOC.md`, `ZIG_AGENT_COVERAGE_REPORT.md`, plus this summary and
-`ZIG_AGENT_MERGE_READINESS.md`.
+`ZIG_AGENT_WORKFLOW_MAP.md`, `ZIG_AGENT_SAFETY_MODEL.md`, `ZIG_AGENT_IMPLEMENTATION_REPORT.md`
+(updated through trigger automation), `ZIG_AGENT_SUPERVISOR.md`, `ZIG_AGENT_SOC.md`,
+`ZIG_AGENT_COVERAGE_REPORT.md`, `ZIG_AGENT_COVERAGE_MATRIX.md` (new),
+`ZIG_AGENT_TRIGGER_MAP.md` (new), `ZIG_AGENT_TEST_TRIGGER_GUIDE.md` (new),
+`ZIG_AGENT_FINAL_READINESS.md` (new), `ZIG_AGENT_RELEASE_READINESS.md` (new), this summary,
+and `ZIG_AGENT_MERGE_READINESS.md`.
 
-### 8. Known limitations
+### 11. Known Limitations
 
-Admin UI not wired to real agent data (still synthetic); no live Event Fabric subscription
-for the supervisor; a handful of documented reuse decisions (career/portfolio agent id,
-remediation task persistence, approvals package adoption) — see "Known limitations" above
-for the full list.
+- Admin UI has no per-agent run-history/detail view — only generic `/admin/runtime` metrics
+  and the manual `/admin/agent-soc/test-triggers` dispatcher harness.
+- Trigger automation is a dispatcher/test-harness layer, not a production event bus — no
+  webhook/UI fires `emitDomainEvent()` outside its own tests and the admin panel; no trigger
+  chaining (each canonical event is dispatched independently).
+- `/admin/agent-soc` fleet dashboard still shows synthetic demo data, not live aggregation.
+- No live Event Fabric subscription for the Governance Supervisor; it operates on
+  already-collected record slices.
+- Pre-existing `@zig/frameworks`/`@zig/framework-engine` dual registry flagged, not resolved
+  (predates this work).
+- No dedicated "career"/"portfolio" agent id or RBAC resource (documented reuse decision).
+- No standalone "tasks" engine for Remediation Agent output.
+- `@zig/approvals`/`@zig/agent-approvals` reviewed, not adopted (governance guard's own
+  approval signaling used instead).
 
-### 9. Reviewer checklist
+Full detail in `docs/agents/ZIG_AGENT_MERGE_READINESS.md` and
+`docs/agents/ZIG_AGENT_RELEASE_READINESS.md`.
 
-- [ ] `agent-governance`/`agent-runtime` core logic
-- [ ] `supervisor-agents` (newest, least-reviewed)
-- [ ] Permission matrix vs. actual approval wiring
-- [ ] Each batch's documented deferrals are genuinely safe to defer
+### 12. Reviewer Checklist
+
+- [ ] `agent-governance`/`agent-runtime` core logic — the shared dependency of every other
+      package
+- [ ] `supervisor-agents` (especially `overrideCount` semantics and the finalizing-action
+      pattern list)
+- [ ] `@zig/agent-trigger-automation`'s `emitDomainEvent()` routing table vs.
+      `ZIG_AGENT_TRIGGER_MAP.md` — confirm every branch genuinely flows through
+      `AgentRuntime`/`AgentGovernanceGuard` except the documented `agent.failed` exception
+- [ ] `ZIG_AGENT_PERMISSION_MATRIX.md` vs. actual `approvalAction` wiring per agent
+- [ ] Each batch's documented deferrals in `ZIG_AGENT_IMPLEMENTATION_REPORT.md` are genuinely
+      safe to defer
