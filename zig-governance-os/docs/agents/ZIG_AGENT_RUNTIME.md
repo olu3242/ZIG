@@ -61,7 +61,29 @@ pair behind the shared `orchestrateDomainAgent()` helper
 `AgentRuntime` itself. Batch 4's three agents resolve via explicit `agentId`
 (`"assessment"`, `"audit"`, `"executive"`), the same resolution path proven since Phase 2B.
 
+## Trigger Automation — a dispatcher layer, not a new runtime path
+
+`packages/agent-trigger-automation`'s `emitDomainEvent()` does not add a new path into this
+runtime. Every branch except one calls an existing agent function (`reviewEvidence()`,
+`runFrameworkMappingAgent()`, `runRiskAssessmentAgent()`, `runControlAdvisorAgent()`,
+`runPolicyArtifactAgent()`, `runRemediationAgent()`, `runReadinessScoringAgent()`,
+`runReportingAgent()`, `runLearningPathAgent()`, `runCareerPortfolioAgent()`), each of which
+already calls `AgentRuntime.submit()`/`execute()` and `AgentGovernanceGuard.evaluate()`
+internally (via `orchestrateDomainAgent()` or `reviewEvidence()`'s equivalent). The
+dispatcher only resolves *which* function(s) to call for a given outward-facing
+`DomainEventType`, fills missing input fields with fixture defaults, and wraps the result in
+a `DomainEventEnvelope` carrying tenant/org/user/correlation-id metadata.
+
+The one exception: `agent.failed` calls `GovernanceSupervisorAgent.supervise()` directly,
+bypassing `AgentRuntime.submit()` entirely, because that meta-agent inspects already-
+collected `AgentRunRecord`/`GovernanceDecisionLogEntry`/`RuntimeRecord` slices rather than
+producing a new run — there is nothing to submit. See `ZIG_AGENT_TRIGGER_MAP.md` for the
+full routing table.
+
 ## Validation
 
 - `npx tsx packages/agent-runtime/src/tests/runtime.test.ts` — 8 assertions, `[PASS]`.
 - `npx tsc -p packages/agent-runtime/tsconfig.json --noEmit` clean.
+- `npm run test --workspace @zig/agent-trigger-automation` — 12 dispatcher integration tests,
+  all `[PASS]`, proving every `DomainEventType` still reaches this runtime's
+  submit/execute/audit path (except the documented `agent.failed` exception).

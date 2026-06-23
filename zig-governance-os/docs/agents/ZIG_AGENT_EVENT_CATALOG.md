@@ -195,3 +195,29 @@ handler in this batch): `gap.detected`, `task.generated`, `report.generated`,
 |---|---|---|
 | `generate_report` | Non-official report; generated directly | No |
 | `request_report_publication_approval` | Official/externally-publishable report | Yes — `report_generation`, set only when `input.isOfficial` is true |
+
+## 6. Trigger Automation — canonical `DomainEventType` (10), dispatcher layer
+
+`packages/agent-trigger-automation` defines a **third, outward-facing** vocabulary: a
+10-member `DomainEventType` union that a caller (admin test panel, future webhook/UI) fires
+through one entry point, `emitDomainEvent()`. This is deliberately smaller and more generic
+than any individual agent's own `triggeringEvent`/`domainEventType` union above —
+`emitDomainEvent()` translates each of the 10 canonical events into the specific trigger
+value the target agent function expects (e.g. dispatcher's `"risk.created"` becomes
+`runRiskAssessmentAgent`'s own `triggeringEvent: "risk.created"`, a 1:1 mapping in this case,
+but not in every case — see `gap.detected` and `module.completed` below).
+
+```ts
+export type DomainEventType =
+  | "evidence.uploaded" | "framework.selected" | "risk.created" | "risk.scored"
+  | "gap.detected" | "assessment.completed" | "report.requested" | "module.completed"
+  | "lab.completed" | "agent.failed";
+```
+
+`gap.detected` and `module.completed` are fan-out events: each routes to **two** existing
+agent functions independently (policy artifact + remediation; learning path + career
+portfolio respectively), returning both outcomes. `agent.failed` is the one documented
+exception to "always flows through `AgentRuntime`/`AgentGovernanceGuard`" — it calls
+`GovernanceSupervisorAgent.supervise()` directly, since that meta-agent inspects already-
+collected records rather than producing a new run. Full routing table, payload contract, and
+fan-out detail: `docs/agents/ZIG_AGENT_TRIGGER_MAP.md`.

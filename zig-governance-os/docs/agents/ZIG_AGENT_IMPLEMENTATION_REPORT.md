@@ -387,3 +387,70 @@ missing-audit, unsupported-event-coverage, a clean/healthy `supervise()` run, an
   separate, broader "Batch 1–6 Full Scope Completion Pass" audit (with its own required
   `ZIG_AGENT_FULL_IMPLEMENTATION_MATRIX.md` / `ZIG_AGENT_GAP_CLOSURE_REPORT.md` /
   `ZIG_BATCH_1_6_SCOPE_REVIEW.md` deliverables) was not undertaken in this batch.
+
+## Trigger Automation + Admin Test Harness (this batch)
+
+### New package
+
+| Package | Role | Wraps / extends |
+|---|---|---|
+| `@zig/agent-trigger-automation` | `emitDomainEvent()` dispatcher over the 10 canonical `DomainEventType`s | All 9 existing `run*Agent()`/`reviewEvidence()` functions, plus `GovernanceSupervisorAgent.supervise()` for `agent.failed` |
+
+No new agent logic, no new RBAC rule, no new runtime queue, no new persistence layer. The
+package's only original code is: the `DomainEventType` union, the routing `switch` in
+`emitDomainEvent()`, fixture defaults (`src/fixtures.ts`, `randomId()`-based, no hardcoded
+production ids), and the `DomainEventEnvelope` wrapper (correlation id, timestamps,
+tenant/org/user passthrough).
+
+### What was proven end-to-end
+
+12 integration tests (`packages/agent-trigger-automation/src/tests/*.test.ts`) — one per
+`DomainEventType` (10) plus two extra fan-out proofs (`gap-detected-fanout.test.ts`,
+`module-completed-fanout.test.ts`) — each confirms: dispatch resolves the correct agent
+function(s), the underlying `AgentRuntime.submit()`/`execute()` and
+`AgentGovernanceGuard.evaluate()` ran (except the documented `agent.failed` exception),
+a decision with a rationale/confidence/action was produced, the run was persisted, both the
+runtime and governance audit trails grew, and (where relevant) the approval flag surfaced
+correctly — e.g. `gap.detected`'s remediation branch with a high-likelihood/impact risk
+payload routes to `request_high_risk_approval` with `governance.requiresApproval === true`;
+`module.completed`'s career-portfolio branch with `requestPublish: true` and high readiness
+inputs routes to `request_portfolio_publish_approval` with the same flag set.
+
+### Admin test harness
+
+`/admin/agent-soc/test-triggers` (Platform-Owner-gated, same `requirePlatformOwner()` guard
+as the rest of `apps/admin`) renders a 10-row panel, one per `DomainEventType`, each with a
+"Fire Event" button backed by a `"use server"` action
+(`apps/admin/app/admin/agent-soc/test-triggers/actions.ts`) that calls `emitDomainEvent()` —
+never an agent handler directly. Each click builds a fresh in-memory
+`AgentRuntime`/`AgentGovernanceGuard` and synthetic tenant/org/user ids (never production
+ids), then displays the returned run id(s)/status/decision action and correlation id.
+
+**Honest depth note**: this is a single-click manual test harness, not a live production
+event console — there is no upstream production code yet that calls `emitDomainEvent()`
+outside this panel and the package's own tests, and the panel does not persist results
+across reloads or chain triggers together. See `ZIG_AGENT_TEST_TRIGGER_GUIDE.md` for the
+full, undiluted depth statement.
+
+### Validation
+
+- `npx tsc -p packages/agent-trigger-automation/tsconfig.json --noEmit` — clean.
+- `npm run test --workspace @zig/agent-trigger-automation` — 12/12 `[PASS]`.
+- `npm run lint --workspace admin` — clean (one initial `no-explicit-any` finding in
+  `actions.ts` was fixed by typing the summarizer's narrowed record shape instead of casting
+  to `any`).
+- `npm run build --workspace admin` — succeeds; `/admin/agent-soc/test-triggers` appears in
+  the route manifest as a dynamic (`ƒ`) server-rendered route.
+- `npm run lint --workspace web` / `npm run build --workspace web` — unaffected, both clean
+  (this batch touches no `apps/web` files).
+
+### Explicitly deferred
+
+- No live production event emitter calls `emitDomainEvent()` yet outside the admin test panel
+  and the package's own tests — wiring a real upstream trigger source (webhook, domain event
+  bus, UI action) is out of scope for this batch.
+- `agent.failed`'s supervisor path is exercised with synthetic `fixtureFailedRunRecord()`
+  data in both the test suite and the admin panel; no live aggregation of real
+  `AgentRunRecord`/`GovernanceDecisionLogEntry`/`RuntimeRecord` slices across the whole fleet
+  is wired yet (that aggregation source did not exist before this batch either — see
+  `ZIG_AGENT_SUPERVISOR.md`).

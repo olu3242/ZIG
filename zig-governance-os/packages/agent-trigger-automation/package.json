@@ -1,0 +1,37 @@
+{
+  "name": "@zig/agent-trigger-automation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/tests/evidence-uploaded.test.ts && tsx src/tests/framework-selected.test.ts && tsx src/tests/risk-created.test.ts && tsx src/tests/risk-scored.test.ts && tsx src/tests/gap-detected.test.ts && tsx src/tests/gap-detected-fanout.test.ts && tsx src/tests/assessment-completed.test.ts && tsx src/tests/report-requested.test.ts && tsx src/tests/module-completed.test.ts && tsx src/tests/module-completed-fanout.test.ts && tsx src/tests/lab-completed.test.ts && tsx src/tests/agent-failed.test.ts"
+  },
+  "dependencies": {
+    "@zig/agents": "0.1.0",
+    "@zig/agent-runtime": "0.1.0",
+    "@zig/agent-governance": "0.1.0",
+    "@zig/agent-domain-intelligence": "0.1.0",
+    "@zig/agent-evidence-review": "0.1.0",
+    "@zig/agent-execution": "0.1.0",
+    "@zig/agent-learning-career": "0.1.0",
+    "@zig/supervisor-agents": "0.1.0",
+    "@zig/governance-engine": "0.1.0",
+    "@zig/risks": "0.1.0",
+    "@zig/controls": "0.1.0",
+    "@zig/policies": "0.1.0",
+    "@zig/career-os": "0.1.0",
+    "@zig/certification-readiness": "0.1.0",
+    "@zig/adaptive-learning": "0.1.0",
+    "@zig/frameworks": "0.1.0",
+    "@zig/board-reporting": "0.1.0",
+    "@zig/evidence": "0.1.0",
+    "@zig/runtime-persistence": "0.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}
