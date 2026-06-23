@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import Logo from "./Logo";
+import { logoutAction } from "./lib/actions";
 
 export interface ModuleLink {
   href: string;
@@ -25,23 +26,30 @@ export const moduleConfig: ModuleConfig[] = [
     id: "governance-command-center",
     label: "Governance Command Center",
     description: "Executive posture, frameworks, controls, evidence, gaps, and command readiness.",
-    match: (pathname) => ["/dashboard", "/frameworks", "/controls", "/evidence", "/gaps", "/command-center"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/dashboard", "/projects", "/assets", "/frameworks", "/framework-mapper", "/controls", "/evidence", "/gaps", "/command-center", "/reports"].some((prefix) => pathname.startsWith(prefix)),
     links: [
       { href: "/command-center", label: "Command Center", kicker: "Exec" },
       { href: "/dashboard", label: "Dashboard", kicker: "Score" },
+      { href: "/projects", label: "Projects", kicker: "Build" },
+      { href: "/assets", label: "Assets", kicker: "Scope" },
       { href: "/frameworks", label: "Frameworks", kicker: "Map" },
+      { href: "/framework-mapper", label: "Framework Mapper", kicker: "Xwalk" },
       { href: "/controls", label: "Controls", kicker: "Test" },
       { href: "/evidence", label: "Evidence", kicker: "Proof" },
       { href: "/gaps", label: "Gaps", kicker: "Close" },
+      { href: "/reports", label: "Reports", kicker: "Export" },
     ],
   },
   {
     id: "risk",
     label: "Risk",
     description: "Risks, scenarios, audits, findings, and readiness work.",
-    match: (pathname) => ["/risks", "/scenarios", "/audits"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/risk", "/risks", "/vendors", "/scenarios", "/audits"].some((prefix) => pathname.startsWith(prefix)),
     links: [
+      { href: "/risk", label: "Risk Register", kicker: "MVP" },
+      { href: "/risk/heatmap", label: "Risk Heatmap", kicker: "Grid" },
       { href: "/risks", label: "Risks", kicker: "Score" },
+      { href: "/vendors", label: "Vendors", kicker: "TPRM" },
       { href: "/scenarios", label: "Scenarios", kicker: "Model" },
       { href: "/audits", label: "Audits", kicker: "Assure" },
     ],
@@ -50,7 +58,7 @@ export const moduleConfig: ModuleConfig[] = [
     id: "policy",
     label: "Policy",
     description: "Policies, learning, settings, and operating governance.",
-    match: (pathname) => ["/policies", "/learning", "/academy", "/apprenticeship", "/skills", "/career", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
+    match: (pathname) => ["/policies", "/learning", "/assessment", "/labs", "/portfolio", "/certifications", "/academy", "/apprenticeship", "/skills", "/career", "/employment", "/learning-command-center", "/corporate-academy", "/university", "/employers", "/enterprise-learning", "/settings"].some((prefix) => pathname.startsWith(prefix)),
     links: [
       { href: "/policies", label: "Policies", kicker: "Govern" },
       { href: "/learning-command-center", label: "Learning Command", kicker: "Kernel" },
@@ -59,6 +67,10 @@ export const moduleConfig: ModuleConfig[] = [
       { href: "/skills", label: "Skills", kicker: "Graph" },
       { href: "/career", label: "Career", kicker: "Jobs" },
       { href: "/learning", label: "Learning", kicker: "Grow" },
+      { href: "/assessment", label: "Assessment", kicker: "Exam" },
+      { href: "/labs", label: "Labs", kicker: "Do" },
+      { href: "/portfolio", label: "Portfolio", kicker: "Proof" },
+      { href: "/certifications", label: "Certifications", kicker: "Cert" },
       { href: "/learning/practice-lab", label: "Practice Lab", kicker: "Sim" },
       { href: "/learning/career", label: "Career OS", kicker: "Job" },
       { href: "/learning/community", label: "Community", kicker: "Mentor" },
@@ -74,11 +86,11 @@ export const moduleConfig: ModuleConfig[] = [
   {
     id: "operations",
     label: "Operations",
-    description: "Projects, integrations, automation, data movement, developer APIs, and marketplace operations.",
-    match: (pathname) => ["/projects", "/integrations", "/automation", "/imports", "/exports", "/developer", "/developers", "/marketplace", "/services", "/partners", "/mission-control", "/ai-command"].some((prefix) => pathname.startsWith(prefix)),
+    description: "Integrations, automation, data movement, developer APIs, and marketplace operations.",
+    match: (pathname) => ["/integrations", "/automation", "/imports", "/exports", "/developer", "/developers", "/marketplace", "/services", "/partners", "/mission-control", "/ai-command", "/coach"].some((prefix) => pathname.startsWith(prefix)),
     links: [
-      { href: "/projects", label: "Projects", kicker: "Build" },
       { href: "/mission-control", label: "Mission Control", kicker: "Act" },
+      { href: "/coach", label: "Coach", kicker: "AI" },
       { href: "/ai-command", label: "AI Command", kicker: "Guide" },
       { href: "/integrations", label: "Integrations", kicker: "Sync" },
       { href: "/automation", label: "Automation", kicker: "Flow" },
@@ -136,10 +148,11 @@ const layerVariants: Variants = {
 export function OSLayout({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [isBooting, setIsBooting] = useState(true);
+  const [readyModuleId, setReadyModuleId] = useState("");
   const [commandOpen, setCommandOpen] = useState(false);
   const [commandQuery, setCommandQuery] = useState("");
   const activeModule = useMemo(() => moduleConfig.find((item) => item.match(pathname)) ?? moduleConfig[0], [pathname]);
+  const isBooting = readyModuleId !== activeModule.id;
   const commandItems = useMemo(
     () =>
       moduleConfig.flatMap((module) =>
@@ -163,8 +176,7 @@ export function OSLayout({ children }: { children: ReactNode }) {
   }, [commandItems, commandQuery]);
 
   useEffect(() => {
-    setIsBooting(true);
-    const timeout = window.setTimeout(() => setIsBooting(false), 800);
+    const timeout = window.setTimeout(() => setReadyModuleId(activeModule.id), 800);
     return () => window.clearTimeout(timeout);
   }, [activeModule.id]);
 
@@ -314,6 +326,14 @@ function TopNavigation({ activeModule, onOpenCommand }: { activeModule: ModuleCo
           <Link className="hidden rounded-lg border border-blue-300/30 bg-zinc-900/50 px-3 py-2 font-semibold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-all hover:border-blue-300/60 hover:bg-zinc-900/70 sm:inline-flex" href="/ai-command">
             AI Coach
           </Link>
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2 font-medium text-zinc-400 backdrop-blur-md transition-all hover:border-red-400/40 hover:text-red-200"
+            >
+              Log out
+            </button>
+          </form>
         </div>
       </div>
     </header>

@@ -1,0 +1,28 @@
+{
+  "name": "@zig/agent-learning-career",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/tests/learning-path.test.ts && tsx src/tests/career-portfolio.test.ts"
+  },
+  "dependencies": {
+    "@zig/agents": "0.1.0",
+    "@zig/agent-runtime": "0.1.0",
+    "@zig/agent-governance": "0.1.0",
+    "@zig/agent-domain-intelligence": "0.1.0",
+    "@zig/governance-engine": "0.1.0",
+    "@zig/adaptive-learning": "0.1.0",
+    "@zig/assessment-engine": "0.1.0",
+    "@zig/learning-paths": "0.1.0",
+    "@zig/career-os": "0.1.0",
+    "@zig/credentials": "0.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

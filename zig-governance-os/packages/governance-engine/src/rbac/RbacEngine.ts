@@ -21,6 +21,20 @@ export interface AccessSubject {
 }
 
 const rolePermissions: Record<RoleName, Partial<Record<RbacResource, RbacAction[]>>> = {
+  "Platform Owner": {
+    tenant: ["view", "create", "edit", "delete", "approve"],
+    users: ["view", "create", "edit", "delete", "approve"],
+    settings: ["view", "create", "edit", "delete", "approve"],
+    projects: ["view", "create", "edit", "delete", "approve"],
+    frameworks: ["view", "create", "edit", "delete", "approve"],
+    assets: ["view", "create", "edit", "delete", "approve"],
+    risks: ["view", "create", "edit", "delete", "approve"],
+    controls: ["view", "create", "edit", "delete", "approve"],
+    evidence: ["view", "create", "edit", "delete", "approve"],
+    tasks: ["view", "create", "edit", "delete", "approve"],
+    learning: ["view", "create", "edit", "delete", "approve"],
+    reports: ["view", "create", "edit", "delete", "approve"],
+  },
   "Platform Admin": {
     tenant: ["view", "create", "edit", "delete", "approve"],
     users: ["view", "create", "edit", "delete", "approve"],
@@ -34,6 +48,34 @@ const rolePermissions: Record<RoleName, Partial<Record<RbacResource, RbacAction[
     tasks: ["view", "create", "edit", "delete", "approve"],
     learning: ["view", "create", "edit", "delete", "approve"],
     reports: ["view", "create", "edit", "delete", "approve"],
+  },
+  "Governance Manager": {
+    projects: ["view", "create", "edit", "approve"],
+    frameworks: ["view"],
+    assets: ["view", "create", "edit", "approve"],
+    risks: ["view", "create", "edit", "approve"],
+    controls: ["view", "create", "edit", "approve"],
+    evidence: ["view", "create", "edit", "approve"],
+    tasks: ["view", "create", "edit", "approve"],
+    learning: ["view"],
+    reports: ["view", "create", "edit", "approve"],
+  },
+  "Risk Manager": {
+    projects: ["view"],
+    assets: ["view", "create", "edit", "approve"],
+    risks: ["view", "create", "edit", "approve"],
+    controls: ["view"],
+    evidence: ["view"],
+    tasks: ["view", "create", "edit", "approve"],
+    reports: ["view", "create"],
+  },
+  "Compliance Manager": {
+    projects: ["view"],
+    frameworks: ["view"],
+    controls: ["view", "create", "edit", "approve"],
+    evidence: ["view", "create", "edit", "approve"],
+    tasks: ["view", "create", "edit", "approve"],
+    reports: ["view", "create", "approve"],
   },
   "Tenant Admin": {
     tenant: ["view", "edit", "approve"],

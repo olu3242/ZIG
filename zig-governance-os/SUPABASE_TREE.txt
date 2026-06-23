@@ -1,0 +1,35 @@
+Folder PATH listing
+Volume serial number is 000001F1 04AA:2BD5
+C:\CDEV\ZIG GRCOS\ZIG-GOVERNANCE-OS\SUPABASE
+|   config.toml
+|   
++---functions
+|       current_tenant_id.sql
+|       README.md
+|       set_updated_at.sql
+|       
++---migrations
+|       202606180001_batch_21_core_data_platform.sql
+|       202606180002_batch_21a_database_foundation.sql
+|       202606180003_frontend_backend_integration.sql
+|       202606180004_platform_layers.sql
+|       202606180005_grc_core_engine.sql
+|       202606180006_production_convergence.sql
+|       202606180007_learning_os_e2e.sql
+|       202606180008_learning_agent_workforce.sql
+|       202606180009_agent_governance_os.sql
+|       202606180010_agent_production_convergence.sql
+|       
++---policies
+|       README.md
+|       tenant-isolation.sql
+|       
++---seed
+|       001_demo_foundation.sql
+|       README.md
+|       
+\---views
+        project_governance_summary.sql
+        README.md
+        tenant_audit_activity.sql
+        

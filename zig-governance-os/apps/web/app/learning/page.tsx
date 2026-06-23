@@ -3,13 +3,13 @@ import { AssessmentEngine } from "@zig/assessment-engine";
 import { LearningAnalytics } from "@zig/learning-analytics";
 import { LearningRuntime } from "@zig/learning-runtime";
 import { SkillsGraph } from "@zig/skills-graph";
+import Link from "next/link";
 import { DataTable, PageHeader, Section, StatCard, StatusBadge } from "@zig/ui";
 import { requireTenantContext } from "@/app/lib/auth";
-import { getZigServices } from "@/app/lib/supabase";
+import { learningPaths } from "@/app/lib/mvp-data";
 
 export default async function LearningPage() {
-  const { context } = await requireTenantContext();
-  const learningPaths = await getZigServices().learning.findMany(context);
+  await requireTenantContext();
   const skills = new SkillsGraph().iso27001Core();
   const runtime = new LearningRuntime().e2eFlow();
   const recommendations = new AdaptiveLearningEngine().recommend([
@@ -79,9 +79,11 @@ export default async function LearningPage() {
             <p className="text-sm text-[var(--zig-ink-muted)]">No learning paths have been assigned to this tenant.</p>
           ) : learningPaths.map((path) => (
             <article key={path.id} className="rounded-md border border-[var(--zig-border)] p-4">
-              <h2 className="font-display text-lg font-semibold">{path.title}</h2>
+              <h2 className="font-display text-lg font-semibold">
+                <Link href={`/learning/${path.id}`} className="underline underline-offset-4">{path.title}</Link>
+              </h2>
               <p className="mt-2 text-sm leading-6 text-[var(--zig-ink-muted)]">{path.description}</p>
-              <p className="mt-3 font-mono text-xs uppercase text-[var(--zig-teal)]">{path.progressPercent}% complete</p>
+              <p className="mt-3 font-mono text-xs uppercase text-[var(--zig-teal)]">{path.progress}% complete</p>
             </article>
           ))}
         </div>

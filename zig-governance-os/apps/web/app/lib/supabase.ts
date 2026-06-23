@@ -1,6 +1,7 @@
 import { createSupabaseRepositories } from "@zig/data-access";
 import { createServices } from "@zig/services";
 import type { Persona } from "@zig/types";
+import { validateAuthEnvironment } from "@zig/auth";
 
 export interface AuthSession {
   accessToken: string;
@@ -10,15 +11,7 @@ export interface AuthSession {
 }
 
 export function getSupabaseConfig() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-  if (!url || !anonKey || !serviceRoleKey) {
-    throw new Error("Supabase environment is not configured. Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, and SUPABASE_SERVICE_ROLE_KEY.");
-  }
-
-  return { url, anonKey, serviceRoleKey };
+  return validateAuthEnvironment();
 }
 
 export function getZigServices() {
@@ -109,6 +102,47 @@ export async function requestPasswordReset(email: string): Promise<void> {
     method: "POST",
     headers: authHeaders(config.anonKey),
     body: JSON.stringify({ email }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+}
+
+export async function createAuthProfile(input: { id: string; email: string; fullName?: string; role?: string }): Promise<void> {
+  const config = getSupabaseConfig();
+  const response = await fetch(`${config.url}/rest/v1/profiles?on_conflict=user_id`, {
+    method: "POST",
+    headers: {
+      ...authHeaders(config.serviceRoleKey),
+      Prefer: "resolution=merge-duplicates,return=minimal",
+    },
+    body: JSON.stringify({
+      user_id: input.id,
+      email: input.email,
+      full_name: input.fullName ?? input.email,
+      status: "active",
+    }),
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+}
+
+export async function recordAuthEvent(input: { userId?: string; eventType: string; ip?: string; metadata?: Record<string, unknown> }): Promise<void> {
+  const config = getSupabaseConfig();
+  const response = await fetch(`${config.url}/rest/v1/auth_events`, {
+    method: "POST",
+    headers: authHeaders(config.serviceRoleKey),
+    body: JSON.stringify({
+      user_id: input.userId,
+      event_type: input.eventType,
+      ip: input.ip,
+      metadata: input.metadata ?? {},
+    }),
     cache: "no-store",
   });
 

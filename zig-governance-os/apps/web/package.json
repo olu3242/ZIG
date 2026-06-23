@@ -20,6 +20,7 @@
     "@zig/agent-workforce": "0.1.0",
     "@zig/agent-memory": "0.1.0",
     "@zig/agents": "0.1.0",
+    "@zig/auth": "0.1.0",
     "@zig/apprenticeship": "0.1.0",
     "@zig/audits": "0.1.0",
     "@zig/automation": "0.1.0",

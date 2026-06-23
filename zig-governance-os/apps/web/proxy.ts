@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-const publicRoutes = new Set(["/", "/login", "/signup", "/forgot-password", "/favicon.svg"]);
+const publicRoutes = new Set(["/", "/demo", "/login", "/signup", "/forgot-password", "/oauth/callback", "/auth/callback", "/auth/success", "/favicon.svg"]);
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -20,5 +20,5 @@ export const config = {
 };
 
 function isPublic(pathname: string): boolean {
-  return publicRoutes.has(pathname);
+  return publicRoutes.has(pathname) || pathname.startsWith("/api/debug/");
 }

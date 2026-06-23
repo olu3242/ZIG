@@ -1,0 +1,29 @@
+{
+  "name": "@zig/agent-execution",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "tsx src/tests/readiness-scoring.test.ts && tsx src/tests/remediation.test.ts && tsx src/tests/reporting.test.ts"
+  },
+  "dependencies": {
+    "@zig/agents": "0.1.0",
+    "@zig/agent-runtime": "0.1.0",
+    "@zig/agent-governance": "0.1.0",
+    "@zig/agent-domain-intelligence": "0.1.0",
+    "@zig/governance-engine": "0.1.0",
+    "@zig/frameworks": "0.1.0",
+    "@zig/controls": "0.1.0",
+    "@zig/risks": "0.1.0",
+    "@zig/evidence": "0.1.0",
+    "@zig/certification-readiness": "0.1.0",
+    "@zig/board-reporting": "0.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4",
+    "typescript": "^5"
+  }
+}

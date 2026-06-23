@@ -1,0 +1,151 @@
+Folder PATH listing
+Volume serial number is 0000029A 04AA:2BD5
+C:\CDEV\ZIG GRCOS\ZIG-GOVERNANCE-OS\DOCS
++---architecture
+|       ai-architecture.md
+|       architecture-diagram.png
+|       architecture-diagram.svg
+|       AUDIT_ARCHITECTURE.md
+|       AUTH_FLOW.md
+|       BACKEND_ARCHITECTURE.md
+|       DATA_ACCESS_LAYER.md
+|       framework-engine.md
+|       FRONTEND_ARCHITECTURE.md
+|       governance-scoring-engine.md
+|       health-advisor-engine.md
+|       multi-tenant-architecture.md
+|       ONBOARDING_FLOW.md
+|       PERSONA_ARCHITECTURE.md
+|       PLATFORM_ARCHITECTURE_STACK.md
+|       SERVICE_LAYER.md
+|       system-architecture.md
+|       ZIG_DEPENDENCY_MAP.md
+|       ZIG_IMPLEMENTATION_MASTER_PLAN.md
+|       ZIG_MODULE_CATALOG.md
+|       ZIG_PLATFORM_STACK.md
+|       ZIG_REFERENCE_ARCHITECTURE.md
+|       ZIG_RELEASE_PLAN.md
+|       
++---audit
+|       APPLICATION_CERTIFICATION.md
+|       ARCHITECTURE_CERTIFICATION.md
+|       FOUNDATION_CERTIFICATION.md
+|       GITIGNORE_CERTIFICATION.md
+|       GIT_AUDIT.md
+|       IMPLEMENTATION_READINESS.md
+|       LOCKFILE_STRATEGY.md
+|       NODE_MODULE_AUDIT.md
+|       PACKAGE_CERTIFICATION.md
+|       REPOSITORY_AUDIT.md
+|       REPOSITORY_STRUCTURE.md
+|       SOURCE_CONTROL_CERTIFICATION.md
+|       WORKSPACE_CERTIFICATION.md
+|       
++---convergence
+|       autonomous-governance.md
+|       certification-ecosystem.md
+|       governance-cloud.md
+|       governance-graph.md
+|       knowledge-graph.md
+|       operational-intelligence.md
+|       
++---data
+|       database-schema.md
+|       DATABASE_SCHEMA.md
+|       domain-model.md
+|       entities.md
+|       ENTITY_RELATIONSHIPS.md
+|       erd.md
+|       relationships.md
+|       RLS_STRATEGY.md
+|       
++---execution
+|       ARCHITECTURE_DECISION_RECORDS.md
+|       CODING_STANDARDS.md
+|       DEFINITION_OF_DONE.md
+|       EXECUTION_TRACKS.md
+|       IMPLEMENTATION_STANDARDS.md
+|       MODULE_ACCEPTANCE_CRITERIA.md
+|       PLATFORM_CERTIFICATION_CHECKLIST.md
+|       RELEASE_GATES.md
+|       SECURITY_BASELINE.md
+|       TECHNICAL_DEBT_REGISTER.md
+|       TESTING_STRATEGY.md
+|       ZIG_EXECUTION_CONTROLLER.md
+|       
++---frameworks
+|       cis-controls.md
+|       hipaa.md
+|       iso27001.md
+|       nist-csf.md
+|       pci-dss.md
+|       soc2.md
+|       universal-governance-model.md
+|       
++---implementation
+|       fable-1.md
+|       fable-2.md
+|       fable-3.md
+|       fable-4.md
+|       fable-5.md
+|       roadmap.md
+|       sprint-plan.md
+|       
++---modules
+|       ai-command.md
+|       assets.md
+|       controls.md
+|       evidence.md
+|       health-advisor.md
+|       mission-control.md
+|       project-builder.md
+|       reporting.md
+|       risks.md
+|       scenarios.md
+|       tasks.md
+|       
++---product
+|       gap-analysis.md
+|       gap-closure-plan.md
+|       information-architecture.md
+|       mvp-definition.md
+|       personas.md
+|       prd.md
+|       user-journeys.md
+|       
++---program
+|       BRANCHING_STRATEGY.md
+|       COMMIT_CONVENTIONS.md
+|       DEPENDENCY_TRACKER.md
+|       EPIC_REGISTRY.md
+|       MVP_DEFINITION.md
+|       RELEASE_TRAINS.md
+|       RELEASE_VERSIONING.md
+|       ROADMAP.md
+|       
++---qa
+|       acceptance-criteria.md
+|       e2e-validation.md
+|       test-plan.md
+|       
++---release
+|       zig-gap-closure-roadmap.md
+|       zig-post-batch-33-roadmap.md
+|       zig-release-trains.md
+|       zig-v1-certification.md
+|       zig-v1-launch-plan.md
+|       zig-v1-roadmap.md
+|       zig-v1-success-criteria.md
+|       
++---ux
+|       dashboards.md
+|       design-system.md
+|       empty-states.md
+|       navigation.md
+|       wireframes.md
+|       
+\---vision
+        positioning.md
+        product-vision.md
+        success-metrics.md
+        
