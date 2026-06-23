@@ -46,6 +46,32 @@ test harness) fires; internally, `emitDomainEvent()` translates each one into th
 | `lab.completed` | `runCareerPortfolioAgent()` (`@zig/agent-learning-career`) | `triggeringEvent: "lab.completed"` | No |
 | `agent.failed` | `GovernanceSupervisorAgent.supervise()` (`@zig/supervisor-agents`) — **direct call, no runtime.submit()** | n/a (meta-agent, not registry-resolved) | No |
 
+## Production wiring status (this batch — `feature/zig-agent-os-live-wiring`)
+
+| Domain event | Status | Real call site |
+|---|---|---|
+| `framework.selected` | **PRODUCTION-WIRED** | `emitFrameworksSelectedEvent()` in `apps/web/app/onboarding/actions.ts`, called from `frameworksSetupAction()` (the real onboarding step where a user picks their frameworks of interest) via `dispatchDomainEvent()` (`apps/web/app/lib/agent-os.ts`) |
+| `evidence.uploaded` | Test-only | `apps/web/app/evidence/page.tsx` is read-only display over static MVP template data (`evidenceTemplates` from `@/app/lib/mvp-data`); there is no upload form, server action, or API route that creates/mutates evidence in `apps/web` yet. No real call site exists to wire. |
+| `risk.created` | Test-only | `apps/web/app/risk/new/page.tsx` renders a risk-intake form whose "Save draft risk" button is `type="button"` with no `formAction`/`onClick` — it does not submit. No server action or persistence path exists yet. |
+| `risk.scored` | Test-only | Same root cause as `risk.created` — no real risk-scoring mutation path exists in `apps/web` yet. |
+| `gap.detected` | Test-only | `apps/web/app/gaps/page.tsx` computes `GapAssessmentEngine.assess()` over hardcoded inputs (`40, index + 3`) purely for display; it is not a real, request-scoped gap-detection event with real entity ids. |
+| `assessment.completed` | Test-only | `apps/web/app/assessment/[id]/page.tsx` reads a static fixture from `assessments` (`@/app/lib/mvp-data`) by id; there is no submission/completion action that transitions an assessment to completed. |
+| `report.requested` | Test-only | `apps/web/app/reports/page.tsx` lists a static report catalog; no "generate"/"request" action exists yet. |
+| `module.completed` | Test-only | `apps/web/app/learning/module/[id]/page.tsx` is a read-only lesson list from static `learningModules`/`lessons` fixtures; no completion action exists. |
+| `lab.completed` | Test-only | `apps/web/app/labs/session/[id]/page.tsx` displays a static `lab.score`/`lab.deliverables`; no real lab-runner completion action exists. |
+| `agent.failed` | Test-only (by design) | This event bypasses `AgentRuntime.submit()` entirely — `GovernanceSupervisorAgent.supervise()` inspects already-collected `AgentRunRecord[]`/`GovernanceDecisionLogEntry[]`/`RuntimeRecord[]` slices supplied by the caller. There is no separate "real" caller distinct from the admin Test Triggers panel, because `apps/web` does not (yet) collect/aggregate those record arrays anywhere in-process. Remains a fixture-driven test/demo path, consistent with the documented exception above. |
+
+Only `framework.selected` had a genuine, pre-existing, real (non-test, non-demo) mutation
+call site in `apps/web` with real `tenantId`/`userId`/entity data in scope at the time of this
+batch — every other product surface in the table above is currently a **read-only page over
+static MVP/demo data** (per `CLAUDE.md`'s "Zero empty states" rule), with no submit handler,
+server action, or API route that performs the underlying business mutation yet. This is an
+honest, current-state finding, not a wiring oversight: the agent-trigger-automation dispatcher
+itself was always correct; what's missing is the upstream application mutation logic those 9
+events would attach to. See `docs/agents/ZIG_AGENT_LIVE_WIRING.md` for full detail, including
+the admin-side reuse (Task 2/3) that makes the existing test harness now show real accumulated
+data within a process's lifetime.
+
 ## Payload contract
 
 `emitDomainEvent()` accepts:
