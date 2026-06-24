@@ -164,11 +164,43 @@ dispatcher layer does not need its own replay path since it introduces no second
 ### 7. Agent SOC
 
 Governance Supervisor meta-agent + Agent SOC health/telemetry computation over run/
-governance/audit record slices (Batch 6, unchanged by this PR's later batches). Honest
-limitation, unchanged since Batch 6: `/admin/agent-soc` renders synthetic demo data, not a
-live fleet-wide aggregation; the new `/admin/agent-soc/test-triggers` panel exercises
-`emitDomainEvent()`/`supervise()` against fresh, synthetic, single-click in-memory state, not
-production records.
+governance/audit record slices. As of `feature/zig-agent-os-live-wiring`, `/admin/agent-soc`
+now renders **real, non-synthetic** fleet health via `computeAgentSocHealth()` over a shared,
+process-local `AgentRuntime`/`AgentGovernanceGuard` pair (the same instances the
+`/admin/agent-soc/test-triggers` panel and `/admin/agent-soc/runs` per-agent history read).
+Honest limitation, now prominently surfaced as a banner in the `/admin/agent-soc` UI itself
+(not just in docs): this is in-memory, process-local data — it resets on every restart/
+redeploy and does not aggregate runs from the separate `apps/web` deployment. No durable
+cross-process store exists for `AgentRunRecord`/`GovernanceDecisionLogEntry` in this repo;
+building one would require new schema/migrations, which is out of scope (no
+`supabase/migrations/` exists yet per root `CLAUDE.md`). The test-trigger panel is now
+explicitly labeled "Dev/Test Trigger Harness — not proof of production workflow wiring."
+
+### 7a. Production Trigger Coverage (re-verified this batch)
+
+Re-checked all 10 canonical triggers against current code. **1/10 is production-wired**:
+`framework.selected`, via `emitFrameworksSelectedEvent()` in
+`apps/web/app/onboarding/actions.ts`, fired only after a real Supabase `profiles` upsert
+succeeds. The remaining 9 are genuinely blocked by missing product workflows, not by
+missing agent-OS capability — confirmed by reading each candidate page's current source:
+
+- `evidence.uploaded`, `assessment.completed`, `report.requested`, `module.completed`,
+  `lab.completed` — read-only pages over static MVP/demo fixtures, no submit handler.
+- `risk.created` / `risk.scored` — `risk/new/page.tsx`'s only button is `type="button"`
+  with no `formAction`; no server action or persistence path exists.
+- `gap.detected` — `gaps/page.tsx` does call a real engine (`GapAssessmentEngine.assess()`
+  from `@zig/gaps`) but with hardcoded inputs (`40`, `index + 3`), not live data — wiring
+  this now would emit events with fabricated readiness numbers, which violates the
+  "never emit before a real mutation succeeds" rule. Classified PARTIAL (real call site,
+  fabricated inputs), not wired.
+- `agent.failed` — bypasses `AgentRuntime.submit()` by design; no real aggregation call
+  site outside the admin test panel/tests exists in `apps/web`.
+
+No new production triggers were wired this batch beyond the pre-existing
+`framework.selected`. This is treated as a fully acceptable outcome per the mission's own
+instructions, not a shortfall: wiring any of the 9 would have required either fabricating a
+UI/handler/persistence path that doesn't exist (explicitly forbidden) or emitting events
+before a real mutation (explicitly forbidden).
 
 ### 8. Test Coverage
 
@@ -206,12 +238,17 @@ and `ZIG_AGENT_MERGE_READINESS.md`.
 
 ### 11. Known Limitations
 
-- Admin UI has no per-agent run-history/detail view — only generic `/admin/runtime` metrics
-  and the manual `/admin/agent-soc/test-triggers` dispatcher harness.
-- Trigger automation is a dispatcher/test-harness layer, not a production event bus — no
-  webhook/UI fires `emitDomainEvent()` outside its own tests and the admin panel; no trigger
-  chaining (each canonical event is dispatched independently).
-- `/admin/agent-soc` fleet dashboard still shows synthetic demo data, not live aggregation.
+- **Production trigger coverage is 1/10** (`framework.selected`) — see section 7a. The
+  other 9 are blocked by missing product workflows (no real form/action/persistence to
+  mutate from), not by missing agent-OS capability.
+- `/admin/agent-soc` fleet dashboard renders real (non-synthetic) data but is
+  process-local/in-memory only — resets on restart, not shared with `apps/web`. Now
+  prominently banner-labeled in the UI itself.
+- Trigger automation's admin panel is a dispatcher/test-harness layer, not a production
+  event bus — no webhook/UI fires `emitDomainEvent()` outside its own tests, the admin
+  panel, and the one real `framework.selected` call site; no trigger chaining (each
+  canonical event is dispatched independently). Now explicitly labeled "Dev/Test Trigger
+  Harness — not proof of production workflow wiring" in `/admin/agent-soc/test-triggers`.
 - No live Event Fabric subscription for the Governance Supervisor; it operates on
   already-collected record slices.
 - Pre-existing `@zig/frameworks`/`@zig/framework-engine` dual registry flagged, not resolved

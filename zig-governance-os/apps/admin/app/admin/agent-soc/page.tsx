@@ -44,6 +44,21 @@ export default async function AgentSocPage() {
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">Agent Security Operations Center</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">Monitor prompt injection, unauthorized access, data leakage, model abuse, credential abuse, and suspicious activity.</p>
       </section>
+      <section className="rounded-md border border-amber-400/40 bg-amber-400/10 px-4 py-3">
+        <p className="font-mono text-xs uppercase tracking-wide text-amber-300">
+          PARTIAL — in-memory only, resets on restart, not shared across processes
+        </p>
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-amber-200/80">
+          This dashboard reads a single process&apos;s in-memory <code>AgentRuntime</code>/
+          <code>AgentGovernanceGuard</code> state. It is not backed by any database table, has no
+          cross-process aggregation, and a restart or redeploy of apps/admin resets it to zero. It
+          also never sees runs from the separate apps/web deployment. There is currently no
+          Supabase-backed (or other durable) store for <code>AgentRunRecord</code>/
+          <code>GovernanceDecisionLogEntry</code> in this repo — building one would require new
+          schema/migrations, which is out of scope for this change. See{" "}
+          <code>docs/agents/ZIG_AGENT_LIVE_WIRING.md</code>.
+        </p>
+      </section>
       <section>
         <div className="mb-3 flex items-center justify-between">
           <h2 className="text-lg font-semibold tracking-tight">Live Fleet Health</h2>
