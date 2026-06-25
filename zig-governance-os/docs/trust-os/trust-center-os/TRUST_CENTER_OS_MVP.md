@@ -1,5 +1,56 @@
 # Trust Center OS — MVP Definition (Batch 40)
 
+## Customer-facing root route
+
+The customer-facing root route is **`/trust`** (tenant-scoped as `/trust/{slug}`, per
+`TRUST_CENTER_ACCESS_CONTROL_MODEL.md`'s `resolveTrustCenterProfile(slug)` guard). This is
+stated unambiguously here because it is referenced by name throughout this batch and must
+not drift to any other path (e.g. `/trust-center`, `/security`) in implementation.
+
+## Information Architecture — 9-section IA tree
+
+The original Batch 31-40 audit scoped six sections. The user's full spec calls for nine
+named sections plus an explicit "Contact Trust Team" entry point. This reconciles the two:
+the original six map directly onto six of the nine; three more (Privacy, Certifications,
+Vendor Assurance) were previously folded into Compliance Center/Documentation Center
+content and are broken out here as explicit, separately-navigable IA nodes so the public
+site structure matches the spec verbatim.
+
+```
+/trust
+├── Security Overview            (SECURITY_OVERVIEW_MODEL.md — Batch 33)
+├── Compliance Center            (COMPLIANCE_CENTER_MODEL.md — Batch 34)
+├── Documentation Center         (DOCUMENTATION_CENTER_MODEL.md — Batch 35)
+├── Evidence Center              (EVIDENCE_CENTER_MODEL.md — Batch 36)
+├── AI Security Assistant        ("ZARA Trust" — AI_SECURITY_ASSISTANT_MODEL.md — Batch 37)
+├── Customer Assurance Portal    (CUSTOMER_ASSURANCE_PORTAL_MODEL.md — Batch 38)
+├── Privacy                      (privacy policy + data-handling disclosures; projected
+│                                  from the same PublishedDocument model as Documentation
+│                                  Center, exposure_tier = public by convention — see
+│                                  DOCUMENTATION_CENTER_MODEL.md's "Privacy" content note)
+├── Certifications               (certification badge wall; the public-facing badge
+│                                  rollup already modeled in Compliance Center, surfaced
+│                                  here as its own top-level IA node since the spec calls
+│                                  it out distinctly from the rest of Compliance Center's
+│                                  framework-readiness content)
+├── Vendor Assurance              (SubprocessorDisclosure rollup — already modeled in
+│                                  TRUST_CENTER_DATA_MODEL.md/TRUST_CENTER_OS_MVP.md's
+│                                  deferred-items list as "Self-service subprocessor list";
+│                                  promoted here to a first-class IA node)
+└── Contact Trust Team           (entry point, not a section page — a persistent
+                                   call-to-action surfaced on every IA node above, routing
+                                   either to a direct contact form or, when the question is
+                                   evidence-shaped, into the Customer Assurance Portal's
+                                   AccessRequest flow; see CUSTOMER_ASSURANCE_PORTAL_MODEL.md)
+```
+
+Certifications and Vendor Assurance are deliberately **not** new data models — they are
+existing Compliance Center / `SubprocessorDisclosure` content, promoted to top-level nav
+entries so the public IA matches the user's nine-section spec exactly. Privacy is rendered
+through the existing `PublishedDocument` publishing pipeline (Documentation Center), not a
+new content type. No new entity is introduced by this IA reconciliation — see
+`TRUST_CENTER_REUSE_MATRIX.md`, unchanged.
+
 ## Scope
 
 This defines the minimum end-to-end Trust Center OS that satisfies CLAUDE.md's
@@ -18,6 +69,33 @@ file in this batch.
 | Evidence Center | Admin-curated `PublishedDocument` (source_type = evidence), filtered automatically by evidence health state. Default exposure-tier suggestions per evidence type (Batch 36 table). |
 | AI Security Assistant | Question/answer over the published, exposure-filtered corpus only, with mandatory citations and the "no match → offer access request" escalation. No support for follow-up conversational context in MVP (each question independent) — multi-turn memory is deferred. |
 | Customer Assurance Portal | Full `AccessRequest` lifecycle (pending → nda_required → nda_signed → approved/denied → expired), manual internal approval, time-limited grant via signed token. NDA "signing" in MVP is a checkbox acceptance + visitor email capture, not a legal e-signature integration. |
+
+## Trust Scoring Dashboard (customer-facing concept)
+
+Security Overview's banded label (above) is the externally-safe projection of the Trust
+Score, but the user's spec also calls for a "Trust Scoring Dashboard" as an explicit
+customer-facing dashboard concept. This reuses PR #7's `TRUST_SCORE_MODEL.md` per-domain
+weights verbatim — no new weighting scheme is introduced — and presents them as a
+per-domain table rather than a single composite label, giving the visitor a slightly
+richer (but still banded, never raw-numeric) view than Security Overview's single
+indicator:
+
+| Domain | Weight (PR #7, unchanged) | Customer-facing presentation |
+|---|---|---|
+| Governance | 15% | Banded label only (`Strong` / `Established` / `Developing`), same band table as Security Overview, applied per-domain instead of to the composite |
+| Risk | 15% | Banded label only |
+| Controls | 20% | Banded label + control-family checklist (reuses Security Overview's existing `PublishedControl` checklist, Batch 33) |
+| Evidence | 20% | Banded label + Evidence Center health-state rollup (reuses `EVIDENCE_HEALTH_MODEL.md`, PR #9 — see `EVIDENCE_CENTER_MODEL.md`) |
+| Audit | 10% | Banded label + coarse "last audited [quarter/year]" indicator (reuses Compliance Center's audit-status projection) |
+| Vendors | 10% | Banded label + Vendor Assurance subprocessor disclosure count |
+| AI Governance | 10% | Banded label only (no AI-specific evidence breakdown is exposed externally in MVP) |
+
+No new score, no new weights, and no raw numeric value is exposed by this dashboard — it
+is the same `TrustScore` composite and the same per-component values defined in PR #7,
+re-banded per-domain using the identical banding thresholds Security Overview already uses
+for the composite (90-100 Strong / 75-89 Established / 50-74 Developing / below 50 not
+published). This table lives here, not as a new section in the 9-section IA tree above,
+because it is a richer *view* of Security Overview's existing data, not a separate IA node.
 
 ## Explicitly deferred (not MVP, noted so scope doesn't silently creep)
 

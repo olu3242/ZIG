@@ -33,6 +33,23 @@ because conflating "please go collect evidence" with "please let me see evidence
 already exists" would blur an internal operational workflow with an external trust
 transaction — a distinction PR #9 itself doesn't need to make, but Trust Center OS does.
 
+## Assurance Request workflow — named stages (user spec)
+
+The user's spec names the Assurance Request workflow with four customer-facing stage
+names: **Customer Request → Trust Review → Evidence Package → Response**. These map onto
+the existing `AccessRequest.status` lifecycle (below) one-to-one — this is a naming/
+presentation layer over the same state machine, not a second workflow:
+
+| User-spec stage | Maps to `AccessRequest.status` | What happens |
+|---|---|---|
+| Customer Request | `pending` (and the `nda_required`/`nda_signed` sub-stages, if applicable) | Visitor submits the request and completes any required NDA acceptance |
+| Trust Review | `pending`/`nda_signed`, under internal review | An internal user with `evidence_external_share` permission reviews the request |
+| Evidence Package | `approved`, grant being assembled | The approved `PublishedDocument` rows are assembled behind the signed, time-limited grant token (`grant_expires_at` set) |
+| Response | `approved` (active) or `denied` | Visitor receives either the scoped access link (active grant) or a denial notice — this is the terminal customer-facing outcome of the workflow |
+
+`expired` (below) is a post-Response state, not a fifth named stage — it represents the
+Evidence Package's access window lapsing after a Response has already been delivered.
+
 ## Lifecycle
 
 ```
@@ -85,3 +102,15 @@ to regain access; the system does not auto-renew.
 - **Access control (Batch 39)**: the actual enforcement of "can this Visitor view this
   document right now" is delegated entirely to the access control model — this document
   defines the lifecycle, not the enforcement mechanism.
+- **Trust Analytics (`TRUST_CENTER_PORTAL_ANALYTICS.md`)**: every `AccessRequest`
+  created/approved/denied feeds the "evidence requests volume" metric in the portal
+  analytics rollup — see that document for the full metric set. This Portal does not
+  itself build a reporting UI; analytics aggregation is that document's job.
+
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), the Customer
+Assurance Portal satisfies the requirement via its **Assurance Request status dashboard**
+(a visitor-facing view of where their request sits across Customer Request → Trust Review
+→ Evidence Package → Response) — a lifecycle/status visualization, not just a text-based
+status field.

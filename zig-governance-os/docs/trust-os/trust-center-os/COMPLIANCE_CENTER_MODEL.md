@@ -19,6 +19,38 @@ Compliance Center is the public projection of:
   but never re-derived
 - `PublishedCertification` (new, Batch 32)
 
+## The 8 frameworks Compliance Center must name explicitly
+
+The user's spec requires Compliance Center to explicitly name 8 frameworks. Confirmed
+directly against `packages/framework-engine/src/FrameworkRegistry.ts` (read for this
+reconciliation pass): the `FrameworkCode` union currently contains exactly
+`ISO27001 | NIST_CSF | SOC2 | HIPAA | PCI_DSS | CIS_CONTROLS` — **six** registered
+frameworks. ISO 42001, NIST AI RMF, and GDPR are **not present** in `FRAMEWORK_REGISTRY`
+today.
+
+| # | Framework | Status in `FrameworkRegistry.ts` (verified this pass) |
+|---|---|---|
+| 1 | SOC 2 | EXISTS — `FRAMEWORK_REGISTRY.SOC2` |
+| 2 | ISO 27001 | EXISTS — `FRAMEWORK_REGISTRY.ISO27001` |
+| 3 | ISO 42001 | **MISSING** — no AI-management-system framework entry exists yet; this is the AI-governance-specific gap the user's spec calls out explicitly. Compliance Center's IA must name it regardless, with its readiness badge withheld (per the publish-threshold rule below) until a `FRAMEWORK_REGISTRY` entry and corresponding `frameworks` row exist. Naming the framework in the IA does not require its registry entry to exist first — the IA names what the product supports or intends to support; the badge only renders once readiness data exists. |
+| 4 | NIST CSF | EXISTS — `FRAMEWORK_REGISTRY.NIST_CSF` |
+| 5 | NIST AI RMF | **MISSING** — no AI Risk Management Framework entry exists; same treatment as ISO 42001 above (named in IA, badge withheld until registry/readiness data exists) |
+| 6 | HIPAA | EXISTS — `FRAMEWORK_REGISTRY.HIPAA` |
+| 7 | PCI DSS | EXISTS — `FRAMEWORK_REGISTRY.PCI_DSS` |
+| 8 | GDPR | **MISSING** — no `frameworks` row or `FrameworkRegistry` entry for GDPR exists today; same treatment as the two AI frameworks above |
+
+CIS Controls (already in `FrameworkRegistry`) is not one of the 8 the user's spec names
+explicitly, but its existing registry entry and any published certification remain
+visible through the general framework-readiness mechanism below — this document does not
+remove existing coverage, it only ensures the 8 specifically named frameworks are
+explicitly represented in Compliance Center's IA, with ISO 42001 the standout addition
+since AI governance is core to this platform per CLAUDE.md's AI Command Center section.
+Adding the three missing `FrameworkRegistry` entries and corresponding `frameworks` seed
+rows is **out of scope for this documentation batch** (no application code or migrations
+are introduced here) — it is flagged as a prerequisite implementation gap that whichever
+Fable phase implements Compliance Center must close before all 8 badges can actually
+render.
+
 ## What it shows externally
 
 1. **Certification badges** — one per `PublishedCertification` row: framework name,
@@ -65,6 +97,14 @@ routes into the Customer Assurance Portal's `AccessRequest` flow (Batch 38), not
 direct download. This is the explicit hand-off point between Compliance Center
 (always-public summary) and Documentation Center/Customer Assurance Portal
 (gated detail).
+
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), Compliance
+Center satisfies the requirement via its **compliance matrix** (the per-framework
+readiness/certification badge table above) and a **framework crosswalk** view, where the
+existing `framework_mappings` rollup (internal) is presented externally only as the
+banded per-framework status, never the per-requirement mapping detail itself.
 
 ## Derivation pipeline
 

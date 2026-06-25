@@ -124,6 +124,29 @@ boundaries (an internal employee with some restricted permissions vs. an externa
 with no employment relationship to the tenant at all). `Visitor` access is enforced
 entirely through the grant-token/RLS mechanism above, never through `RbacEngine`.
 
+## Multi-tenant validation checklist
+
+The user's spec requires an explicit validation checklist confirming tenant-scoping for
+six entity groups. Each ties to the existing `tenant_id = current_tenant_id()` RLS pattern
+established above — none of these introduce a new isolation mechanism; this checklist
+exists so implementation can verify each entity group explicitly rather than assuming
+tenant-scoping transitively:
+
+| Entity group | Tenant-scoping mechanism | Validation |
+|---|---|---|
+| Organizations | `tenant_id` is the organization's own identity column in the existing multi-tenant model (CLAUDE.md: "every record belongs to an Organization and a Project") | An Organization row is itself the tenant boundary — `current_tenant_id()` resolves to an Organization id; no additional check needed beyond the existing foundation-layer RLS, already enforced pre-Trust-Center-OS |
+| Trust Profiles | `TrustCenterProfile.tenant_id = current_tenant_id()` (internal/admin path) — the anonymous public path instead resolves via `resolveTrustCenterProfile(slug)`, which looks up by `slug` + `is_published = true` and never by `current_tenant_id()` at all (no tenant session exists for an anonymous visitor) | Confirm `TrustCenterProfile` carries `tenant_id` and that the internal admin RLS policy (`tenant_admin_access`-equivalent) is present; confirm the public resolver never bypasses the published-flag check |
+| Evidence | Existing `evidence` table's pre-existing `tenant_id = current_tenant_id()` RLS (PR #9) is unchanged; Trust Center OS never grants direct table access to `evidence` itself — it only ever reads through `PublishedDocument`/`PublishedControl`, which carry their own `tenant_id` and the two-policy (`tenant_admin_access` + `public_read_access`) shape defined above | Confirm no new RLS policy on `evidence` itself was added — the exposure boundary is `PublishedDocument`, not `evidence` directly, exactly as `EVIDENCE_CENTER_MODEL.md` (Batch 36) specifies |
+| Documents | `PublishedDocument.tenant_id = current_tenant_id()` for the admin path; `exposure_tier = 'public'` + published-profile check for the anonymous path (the exact `public_read_access` policy shown above) | Confirm both policies coexist additively (not as a replacement) per the "New RLS policy shape" section above |
+| Trust Scores | `governance_scores.tenant_id = current_tenant_id()` (existing, PR #7, unchanged) — Trust Center OS never grants table-level access to `governance_scores`; Security Overview/Trust Scoring Dashboard reads through `TrustCenterService.deriveSecurityOverview(tenantId)`, a server-side projection, never a direct client query against `governance_scores` | Confirm the public route has no RLS policy at all on `governance_scores` — the banding/projection happens server-side before anything is sent to an anonymous client, so no anonymous-readable policy should exist on this table, ever |
+| Questionnaires | Existing `responses`/questionnaire tables retain their pre-existing `tenant_id = current_tenant_id()` RLS (PR #8, unchanged); Trust Center OS (ZARA Trust / AI Security Assistant) never reads `responses` directly — its corpus is restricted to `PublishedDocument`/`PublishedControl` only, per `AI_SECURITY_ASSISTANT_MODEL.md`'s explicit exposure-boundary rule | Confirm no new RLS policy grants anonymous/visitor read access to questionnaire/response tables — ZARA Trust's citation corpus boundary must remain the published-content tables, never the internal questionnaire tables |
+
+Every row above either reuses the existing `tenant_id = current_tenant_id()` policy
+unchanged (Organizations, Evidence, Trust Scores, Questionnaires — Trust Center OS adds no
+new policy to these at all) or extends it additively with the new public/grant-scoped
+policies defined earlier in this document (Trust Profiles, Documents). No entity group is
+tenant-scoped by a mechanism other than the two already described above.
+
 ## Summary: what's reused vs. new
 
 | Mechanism | Reused | New |

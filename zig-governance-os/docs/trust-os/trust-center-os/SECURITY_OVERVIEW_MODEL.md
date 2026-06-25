@@ -1,5 +1,18 @@
 # Security Overview Model (Batch 33)
 
+## Note on source material — visual blueprint unavailable
+
+The user's spec cites "the uploaded blueprint" as the authoritative visual layout for this
+module. No blueprint file was available to this agent at the time of this reconciliation
+pass — it was referenced but not attached/accessible. The structure documented below is
+therefore a **best-effort reconstruction**, grounded in the actual security/compliance
+posture data that already exists in this codebase (the Trust Score components from PR #7's
+`TRUST_SCORE_MODEL.md`, the control-family rollup from PR #7/`controls`, and the audit
+status/certification data surfaced by PR #9's evidence work and PR #7's framework readiness
+work), not an invented layout. This should be reconciled against the actual blueprint as
+soon as it becomes available — flagged explicitly here so a future pass knows this
+section's visual structure is provisional, not blueprint-verified.
+
 ## Purpose
 
 Security Overview is the first thing a prospect sees at `/trust/{slug}`. It must convey
@@ -83,6 +96,13 @@ layer. If the score changes (e.g. a control's evidence expires per
 `EVIDENCE_HEALTH_MODEL.md`), the next Security Overview render simply reflects the new
 band; there is no separate "Trust Center score" to keep in sync, eliminating an entire
 class of staleness bugs that a snapshot table would introduce.
+
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), Security
+Overview satisfies the "at least one visual pattern" requirement via its **trust score
+card** (the banded label rendering) and its **control-family coverage checklist**, which
+doubles as a lightweight coverage map.
 
 ## Explainability boundary
 

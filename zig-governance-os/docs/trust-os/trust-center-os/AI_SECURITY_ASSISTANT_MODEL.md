@@ -1,12 +1,48 @@
-# AI Security Assistant Model (Batch 37)
+# ZARA Trust (AI Security Assistant) Model (Batch 37)
+
+## Naming
+
+This module is named **ZARA Trust**, per the user's explicit spec. "ZARA Trust" is the
+externally-facing brand name for the same module the original batch called the "AI
+Security Assistant" — every mechanism, rule, and data shape below is unchanged from the
+original design; this is a renaming/branding pass, not a redesign. Wherever this document
+(or any other doc in this batch) refers to "the Assistant," that means ZARA Trust.
 
 ## Purpose and explicit non-goal
 
-The AI Security Assistant answers prospect/customer security questions at
-`/trust/{slug}/assistant`. It is **explicitly an extension of the Questionnaire Response
-Engine's no-hallucination, cite-evidence rule (PR #8) — not a new AI pattern.** This
-document does not define a new explainability mechanism; it re-applies the existing one
-to a new, externally-facing channel and a narrower, externally-safe corpus.
+ZARA Trust answers prospect/customer security questions at `/trust/{slug}/assistant`. It
+is **explicitly an extension of the Questionnaire Response Engine's no-hallucination,
+cite-evidence rule (PR #8) — not a new AI pattern.** This document does not define a new
+explainability mechanism; it re-applies the existing one to a new, externally-facing
+channel and a narrower, externally-safe corpus.
+
+## Required response structure (4 parts, every answer)
+
+Every ZARA Trust answer must be structured into exactly four parts, in this order. This is
+additive to the no-hallucination/cite-evidence rule below — it does not replace it, it
+specifies how a compliant answer must be *presented*:
+
+1. **RAG-grounded answer** — the natural-language answer text itself, generated only from
+   the retrieval step's matched corpus (see "Derivation pipeline" below); never generated
+   from unconstrained model knowledge.
+2. **Source citations** — the specific `PublishedDocument`/`PublishedControl` rows the
+   answer draws from, named explicitly (not just referenced internally) so the visitor can
+   see what was used.
+3. **Evidence references** — the underlying `evidence_id`/`control_id` citation set
+   (`cited_evidence_ids`, `cited_control_ids`) that the existing no-hallucination rule
+   already requires every assertion to trace back to (see below) — surfaced to the visitor
+   as part of the answer, not only logged internally.
+4. **Suggested related documents** — a short list of other `PublishedDocument` rows
+   (within the same exposure-filtered corpus) that are topically related to the question,
+   giving the visitor a next step even when the direct answer is fully satisfactory — this
+   keeps ZARA Trust inside the "no dead ends" loop even on a successful match, not only on
+   a no-match escalation (see "Escalation path" below, which already covers the no-match
+   case).
+
+A no-match answer (below) still follows this structure where applicable: parts 1-3 become
+the explicit "no evidence found" statement with an empty citation set, and part 4 (suggested
+related documents) becomes the closest topically-related published documents the visitor
+might still find useful while their `AccessRequest` is pending.
 
 ## The rule being extended (verbatim mechanism, from `QUESTIONNAIRE_RESPONSE_ENGINE.md`)
 
@@ -25,7 +61,7 @@ establishes:
 
 ## How the Assistant extends it
 
-| Questionnaire Response Engine (internal, PR #8) | AI Security Assistant (external, Batch 37) |
+| Questionnaire Response Engine (internal, PR #8) | ZARA Trust (AI Security Assistant) (external, Batch 37) |
 |---|---|
 | Drafts answers to questionnaire questions for internal review before customer delivery | Answers prospect/customer questions directly, in real time, no internal review step |
 | Citation corpus: all `evidence`/`controls` rows the tenant has, via `EvidenceReference`/`ControlReference` | Citation corpus: only `evidence`/`controls` rows reachable through a **published, exposure-safe** path — i.e. rows surfaced via `PublishedDocument`/`PublishedControl` (Batch 32), filtered by the Evidence Center exposure rules (Batch 36) |
@@ -85,7 +121,17 @@ AssistantService.answer(tenantId, visitorId?, questionText)   (new orchestration
         ▼
 Citation set (evidence_ids, control_ids) + Confidence Score (same formula as PR #8)
         │
-        ├─ match found → answer + citations returned, logged to AssistantInteraction
-        └─ no match / nda_required-only match → offer AccessRequest, logged with empty
-            or partial citation set (never fabricated)
+        ├─ match found → 4-part response assembled (RAG-grounded answer, source
+        │   citations, evidence references, suggested related documents), logged to
+        │   AssistantInteraction
+        └─ no match / nda_required-only match → offer AccessRequest, 4-part structure
+            still followed (empty/partial citation set, never fabricated; part 4 becomes
+            related published documents available now)
 ```
+
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), ZARA Trust
+satisfies the requirement via its **evidence status view** embedded in every answer (the
+"evidence references" part of the 4-part response structure above) — each answer doubles
+as a compact, per-question evidence-status display, not just free text.

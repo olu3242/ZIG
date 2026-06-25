@@ -77,6 +77,13 @@ exact staleness risk that a snapshot-based model would create.
 - `evidence_alerts` (PR #9) — these are internal operational signals about evidence
   going stale; never customer-facing.
 
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), Evidence
+Center satisfies the requirement via its **evidence status view** — the binary "currently
+published" / "not shown" rollup above, itself a presentation of PR #9's
+`EVIDENCE_HEALTH_MODEL.md` health states without exposing the raw numeric score.
+
 ## Derivation pipeline
 
 ```

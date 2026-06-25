@@ -33,6 +33,19 @@ This three-tier model is intentionally simpler than `RbacEngine`'s 13-role inter
 model — external visibility only ever needs to ask "public, gated-with-NDA, or not
 published," never which of 13 internal roles is asking.
 
+## Search, filter, version-tracking, and download-tracking
+
+The user's spec requires Documentation Center to explicitly support four capabilities.
+None of these were explicit in the original batch beyond versioning's `version_label`
+field (above) — this section makes all four concrete:
+
+| Capability | Mechanism | New or reused |
+|---|---|---|
+| Search | Free-text search over `PublishedDocument.title`/`summary` (and, for `public`-tier documents only, full content) — a read-only query over the existing `PublishedDocument` projection, no new search index/service required at MVP scale (a Postgres `ilike`/`tsvector` query against the existing table is sufficient; a dedicated search engine is not justified by current scope) | New query, existing table |
+| Filter | Filter by `source_type` (policy vs. evidence-derived), framework (via the existing `framework_mappings` join, surfaced as a filter chip per framework — e.g. "show only SOC 2 documents"), and `exposure_tier` (public-only view vs. "show what requires NDA too," which is itself useful context for a visitor deciding whether to start an `AccessRequest`) | New query parameters over existing columns/joins |
+| Version-tracking | `PublishedDocument.version_label` (already defined above) plus a visible **version history** list: every time an admin re-publishes (per the "Versioning" section above, which creates a new `PublishedDocument` row or updates `version_label`/`published_at`), prior versions remain queryable by `trust_center_profile_id` + document lineage, rendered as a simple "Version history" expandable list per document — not a diffing UI, just an ordered list of past `version_label`/`published_at` pairs | Extends the existing versioning model with a read view, no new table |
+| Download-tracking | Every document view/download by a `Visitor` (or anonymous session) is logged as an `AssistantInteraction`-shaped event — reusing the same logging discipline `AI_SECURITY_ASSISTANT_MODEL.md` already applies to `AssistantInteraction`, applied here to document downloads (`document_id`, `visitor_id?`, `downloaded_at`). This feeds `TRUST_CENTER_PORTAL_ANALYTICS.md`'s "document downloads" metric directly — see that document for the analytics rollup | New logging table/event, same pattern as `AssistantInteraction` |
+
 ## Versioning
 
 `PublishedDocument.version_label` is a **pinned, admin-set label** (e.g. "v3, reviewed
@@ -60,6 +73,24 @@ summary) while the full content remains accessible only after `AccessRequest` ap
 Redaction is manual (admin-authored `summary` text), not automated text-scrubbing —
 automated redaction of arbitrary document content is out of scope for this MVP and would
 require a dedicated redaction engine not justified by current scope.
+
+## Privacy content note (referenced from the IA tree)
+
+`TRUST_CENTER_OS_MVP.md`'s 9-section IA tree lists "Privacy" as a top-level node. Privacy
+content (privacy policy, data-handling disclosures, data subject rights process) is
+rendered through this exact `PublishedDocument` pipeline — a `policy_attestations` row
+(privacy policy) published with `exposure_tier = public` by convention. No separate
+content model or table is introduced for Privacy; it is Documentation Center content
+surfaced at a dedicated top-level nav position rather than nested under a generic document
+list, per the user's explicit 9-section IA requirement.
+
+## Visual Learning Standard compliance
+
+Per the cross-cutting Visual Learning Standard (`TRUST_CENTER_OS_AUDIT.md`), Documentation
+Center satisfies the requirement via its **document coverage/version-history view** above
+(an ordered list functioning as a lightweight coverage map of what's published vs.
+superseded) plus the **filter-by-framework** chips, which double as a minimal framework
+crosswalk for documentation specifically.
 
 ## Derivation pipeline
 

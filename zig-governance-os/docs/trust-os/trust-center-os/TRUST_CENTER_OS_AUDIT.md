@@ -162,6 +162,31 @@ has already resolved a `tenant_id` — there is no anonymous-viewer or signed-to
 pattern anywhere in the codebase today (see `TRUST_CENTER_ACCESS_CONTROL_MODEL.md`,
 Batch 39, for the design that closes this gap without inventing a parallel auth system).
 
+## Visual Learning Standard (cross-cutting requirement, added on reconciliation)
+
+The user's full spec requires every module to include at least one of: dashboards,
+heatmaps, compliance matrices, coverage maps, evidence status views, trust score cards,
+or framework crosswalks. This is a cross-cutting presentation requirement, not a new data
+model — every pattern below is a visualization of data this batch (or PR #7/#8/#9)
+already defines. The table below confirms each of the 9 IA sections (per
+`TRUST_CENTER_OS_MVP.md`'s IA tree) satisfies at least one pattern, with the specific
+section in this batch where that visual element is documented:
+
+| IA section | Visual Learning Standard pattern(s) used | Documented in |
+|---|---|---|
+| Security Overview | Trust score card (banded label) + coverage map (control-family checklist) | `SECURITY_OVERVIEW_MODEL.md` |
+| Compliance Center | Compliance matrix (per-framework readiness/certification table) + framework crosswalk (banded `framework_mappings` rollup) | `COMPLIANCE_CENTER_MODEL.md` |
+| Documentation Center | Coverage map (version-history view) + framework crosswalk (filter-by-framework chips) | `DOCUMENTATION_CENTER_MODEL.md` |
+| Evidence Center | Evidence status view (health-state rollup, reusing PR #9's `EVIDENCE_HEALTH_MODEL.md` states) | `EVIDENCE_CENTER_MODEL.md` |
+| ZARA Trust (AI Security Assistant) | Evidence status view (embedded per-answer evidence references, part of the 4-part response structure) | `AI_SECURITY_ASSISTANT_MODEL.md` |
+| Customer Assurance Portal | Dashboard (Assurance Request status view across Customer Request → Trust Review → Evidence Package → Response) | `CUSTOMER_ASSURANCE_PORTAL_MODEL.md` |
+| Privacy | Coverage map (shares Documentation Center's version-history/coverage view, since Privacy content is rendered through the same `PublishedDocument` pipeline) | `DOCUMENTATION_CENTER_MODEL.md` (Privacy content note) |
+| Certifications | Compliance matrix (shares Compliance Center's certification badge wall) | `COMPLIANCE_CENTER_MODEL.md` |
+| Vendor Assurance | Coverage map (`SubprocessorDisclosure` rollup, listing disclosed subprocessors as a coverage list) | `TRUST_CENTER_OS_MVP.md` (IA tree) / `TRUST_CENTER_DATA_MODEL.md` (`SubprocessorDisclosure`) |
+
+"Contact Trust Team" is an entry point, not a content section (per the IA tree), so it is
+not included in this table — it has no data to visualize.
+
 ## Summary verdict
 
 | Section | Verdict | Genuinely new work |
