@@ -1,8 +1,11 @@
 "use server";
 
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import type { Persona } from "@zig/types";
 import { requireSession, setTenantProfile } from "@/app/lib/auth";
 import { getSupabaseConfig } from "@/app/lib/supabase";
+import { dispatchDomainEvent, webAccessSubject } from "@/app/lib/agent-os";
 
 const frameworkLabels: Record<string, string> = {
   nist_csf: "NIST CSF",
@@ -100,7 +103,35 @@ export async function frameworksSetupAction(formData: FormData): Promise<void> {
   }, "user_id");
 
   await updateProgress(session.userId, { frameworks_selected: frameworks.length > 0, current_step: "career-goals" });
+  await emitFrameworksSelectedEvent(session.userId, frameworks);
   redirect("/onboarding/career-goals");
+}
+
+/**
+ * Real production caller of emitDomainEvent("framework.selected") — fires once per framework
+ * the user selects during onboarding. Additive only: governance/agent-runtime failures are
+ * caught and logged inside dispatchDomainEvent() and never block the onboarding redirect.
+ */
+async function emitFrameworksSelectedEvent(userId: string, frameworks: string[]): Promise<void> {
+  if (frameworks.length === 0) {
+    return;
+  }
+  const cookieStore = await cookies();
+  const tenantId = cookieStore.get("zig_tenant_id")?.value;
+  const persona = cookieStore.get("zig_persona")?.value;
+  if (!tenantId || !persona) {
+    return;
+  }
+  const subject = webAccessSubject({ tenantId, userId, persona });
+  for (const frameworkCode of frameworks) {
+    await dispatchDomainEvent({
+      domainEventType: "framework.selected",
+      subject,
+      context: { tenantId, userId, organizationId: tenantId, persona: persona as Persona },
+      eventId: `web-onboarding:framework-selected:${userId}:${frameworkCode}`,
+      payload: { subjectId: frameworkCode, frameworkCode },
+    });
+  }
 }
 
 export async function careerGoalsSetupAction(formData: FormData): Promise<void> {

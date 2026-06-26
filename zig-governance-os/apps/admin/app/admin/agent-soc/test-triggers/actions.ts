@@ -1,22 +1,24 @@
 "use server";
 
-import { AgentRuntime } from "@zig/agent-runtime";
-import { AgentGovernanceGuard } from "@zig/agent-governance";
 import type { AccessSubject } from "@zig/governance-engine";
 import {
   emitDomainEvent,
   fixtureFailedRunRecord,
   type DomainEventType,
 } from "@zig/agent-trigger-automation";
+import { getAdminAgentRuntime, getAdminAgentGovernanceGuard } from "../agent-os";
 
 /**
- * Server action backing the Agent SOC "Test Triggers" panel. Each invocation builds a
- * fresh, in-memory AgentRuntime + AgentGovernanceGuard (this panel is a manual test harness,
- * not the production runtime singleton) and calls emitDomainEvent() — the same dispatcher
- * the trigger-automation package's own tests exercise. The panel never calls an agent
- * handler directly; emitDomainEvent() is the only entry point, so every action still goes
- * through Registry -> Governance -> Runtime -> Decision -> Audit (or, for agent.failed, the
- * documented GovernanceSupervisorAgent exception).
+ * Server action backing the Agent SOC "Test Triggers" panel. Each invocation reuses the
+ * shared, process-local AgentRuntime + AgentGovernanceGuard from ../agent-os.ts (the same
+ * instances the live Agent SOC dashboard and run-history view read from) and calls
+ * emitDomainEvent() — the same dispatcher the trigger-automation package's own tests
+ * exercise. The panel never calls an agent handler directly; emitDomainEvent() is the only
+ * entry point, so every action still goes through Registry -> Governance -> Runtime ->
+ * Decision -> Audit (or, for agent.failed, the documented GovernanceSupervisorAgent
+ * exception). Reusing the shared runtime (rather than a fresh one per click, as before) means
+ * test-fired runs now accumulate and are visible in /admin/agent-soc and
+ * /admin/agent-soc/runs within this process's lifetime.
  */
 
 export interface TestTriggerResult {
@@ -50,8 +52,8 @@ function summarize(domainEventType: DomainEventType, result: unknown): string {
 }
 
 export async function runTestTrigger(domainEventType: DomainEventType): Promise<TestTriggerResult> {
-  const runtime = new AgentRuntime();
-  const guard = new AgentGovernanceGuard();
+  const runtime = getAdminAgentRuntime();
+  const guard = getAdminAgentGovernanceGuard();
   const tenantId = `tenant-soc-test-${Date.now()}`;
   const subject = platformOwnerSubject(tenantId);
   const eventId = `soc-test:${domainEventType}:${Date.now()}`;

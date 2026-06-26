@@ -11,6 +11,10 @@
   "dependencies": {
     "@tanstack/react-query": "^5.101.0",
     "@zig/adaptive-learning": "0.1.0",
+    "@zig/agent-trigger-automation": "0.1.0",
+    "@zig/agent-runtime": "0.1.0",
+    "@zig/agent-governance": "0.1.0",
+    "@zig/governance-engine": "0.1.0",
     "@zig/ai": "0.1.0",
     "@zig/api": "0.1.0",
     "@zig/approvals": "0.1.0",

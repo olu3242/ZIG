@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { AgentAlerting } from "@zig/agent-alerting";
 import { AgentChaos } from "@zig/agent-chaos";
 import { AgentAuditEngine } from "@zig/agent-audit";
 import { AgentRiskManager, type AgentRiskType } from "@zig/agent-risk";
 import { AgentSelfHealingEngine, type AgentFailureSignal } from "@zig/agent-self-healing";
+import { computeAgentSocHealth } from "@zig/supervisor-agents";
 import { requirePlatformOwner } from "../guard";
+import { listAdminAgentRuns, listAdminGovernanceLog } from "./agent-os";
 
 const alerts: Array<{ type: AgentRiskType; severity: "critical" | "high" | "medium" | "low"; signal: AgentFailureSignal }> = [
   { type: "prompt_injection", severity: "critical", signal: "policy_violation" },
@@ -14,6 +17,9 @@ const alerts: Array<{ type: AgentRiskType; severity: "critical" | "high" | "medi
 
 export default async function AgentSocPage() {
   await requirePlatformOwner();
+  const runs = listAdminAgentRuns();
+  const governanceLog = listAdminGovernanceLog();
+  const health = computeAgentSocHealth(runs, governanceLog);
   const risk = new AgentRiskManager();
   const healing = new AgentSelfHealingEngine();
   const alerting = new AgentAlerting();
@@ -37,6 +43,50 @@ export default async function AgentSocPage() {
         <p className="font-mono text-xs uppercase tracking-[0.22em] text-red-300">Agent SOC</p>
         <h1 className="mt-3 text-4xl font-semibold tracking-tight">Agent Security Operations Center</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-zinc-400">Monitor prompt injection, unauthorized access, data leakage, model abuse, credential abuse, and suspicious activity.</p>
+      </section>
+      <section className="rounded-md border border-amber-400/40 bg-amber-400/10 px-4 py-3">
+        <p className="font-mono text-xs uppercase tracking-wide text-amber-300">
+          PARTIAL — in-memory only, resets on restart, not shared across processes
+        </p>
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-amber-200/80">
+          This dashboard reads a single process&apos;s in-memory <code>AgentRuntime</code>/
+          <code>AgentGovernanceGuard</code> state. It is not backed by any database table, has no
+          cross-process aggregation, and a restart or redeploy of apps/admin resets it to zero. It
+          also never sees runs from the separate apps/web deployment. There is currently no
+          Supabase-backed (or other durable) store for <code>AgentRunRecord</code>/
+          <code>GovernanceDecisionLogEntry</code> in this repo — building one would require new
+          schema/migrations, which is out of scope for this change. See{" "}
+          <code>docs/agents/ZIG_AGENT_LIVE_WIRING.md</code>.
+        </p>
+      </section>
+      <section>
+        <div className="mb-3 flex items-center justify-between">
+          <h2 className="text-lg font-semibold tracking-tight">Live Fleet Health</h2>
+          <Link href="/admin/agent-soc/runs" className="text-xs font-mono uppercase tracking-wide text-teal-300 underline underline-offset-4">
+            Per-agent run history &rarr;
+          </Link>
+        </div>
+        <p className="mb-4 max-w-3xl text-sm leading-6 text-zinc-400">
+          Computed by <code>computeAgentSocHealth()</code> (<code>@zig/supervisor-agents</code>) over this
+          process&apos;s shared, in-memory <code>AgentRuntime</code>/<code>AgentGovernanceGuard</code> instances
+          — the same instances the <Link href="/admin/agent-soc/test-triggers" className="underline underline-offset-4">Test Triggers panel</Link> writes
+          to. Real, not synthetic — but process-local: a fresh deploy/restart resets it to zero,
+          and it does not include runs from the separate apps/web deployment. See{" "}
+          <code>docs/agents/ZIG_AGENT_LIVE_WIRING.md</code> for details.
+        </p>
+        <div className="grid gap-4 md:grid-cols-4">
+          <Metric label="Total Runs" value={health.runCount} />
+          <Metric label="Success Rate" value={`${Math.round(health.successRate * 100)}%`} />
+          <Metric label="Failure Rate" value={`${Math.round(health.failureRate * 100)}%`} />
+          <Metric label="Avg Latency" value={`${health.averageLatencyMs}ms`} />
+          <Metric label="Replays" value={health.replayCount} />
+          <Metric label="Approvals Required" value={health.approvalCount} />
+          <Metric label="Overrides" value={health.overrideCount} />
+          <Metric label="Policy Violations" value={health.policyViolationCount} />
+        </div>
+        <p className="mt-3 font-mono text-xs text-zinc-500">
+          Last success: {health.lastSuccessAt ? health.lastSuccessAt.toISOString() : "no successful runs recorded yet in this process"}
+        </p>
       </section>
       <section className="grid gap-4 md:grid-cols-4">
         <Metric label="Critical Alerts" value={alerts.filter((alert) => alert.severity === "critical").length} />
