@@ -6,9 +6,15 @@ import type {
   AssetRecord,
   AssessmentRecord,
   AuditRecord,
+  ControlEvidenceRecord,
   ControlMappingRecord,
   ControlRecord,
+  EvidenceAlertRecord,
+  EvidenceCollectionRecord,
   EvidenceRecord,
+  EvidenceRequestRecord,
+  EvidenceReviewRecord,
+  EvidenceSourceRecord,
   FrameworkRecord,
   GovernanceScoreRecord,
   LearningModuleRecord,
@@ -40,6 +46,12 @@ export interface ZigRepositories {
   risks: TenantRepository<RiskRecord>;
   riskAssessments: TenantRepository<RiskAssessmentRecord>;
   evidence: TenantRepository<EvidenceRecord>;
+  controlEvidence: TenantRepository<ControlEvidenceRecord>;
+  evidenceReviews: TenantRepository<EvidenceReviewRecord>;
+  evidenceCollections: TenantRepository<EvidenceCollectionRecord>;
+  evidenceSources: TenantRepository<EvidenceSourceRecord>;
+  evidenceRequests: TenantRepository<EvidenceRequestRecord>;
+  evidenceAlerts: TenantRepository<EvidenceAlertRecord>;
   tasks: TenantRepository<TaskRecord>;
   audits: TenantRepository<AuditRecord>;
   assessments: TenantRepository<AssessmentRecord>;
@@ -68,6 +80,12 @@ export function createSupabaseRepositories(config: SupabaseRestConfig): ZigRepos
     risks: new TenantRepository("risks", new SupabaseRestAdapter<RiskRecord>(config), auditEvents),
     riskAssessments: new TenantRepository("risk_assessments", new SupabaseRestAdapter<RiskAssessmentRecord>(config), auditEvents),
     evidence: new TenantRepository("evidence", new SupabaseRestAdapter<EvidenceRecord>(config), auditEvents),
+    controlEvidence: new TenantRepository("control_evidence", new SupabaseRestAdapter<ControlEvidenceRecord>(config), auditEvents),
+    evidenceReviews: new TenantRepository("evidence_reviews", new SupabaseRestAdapter<EvidenceReviewRecord>(config), auditEvents),
+    evidenceCollections: new TenantRepository("evidence_collections", new SupabaseRestAdapter<EvidenceCollectionRecord>(config), auditEvents),
+    evidenceSources: new TenantRepository("evidence_sources", new SupabaseRestAdapter<EvidenceSourceRecord>(config), auditEvents),
+    evidenceRequests: new TenantRepository("evidence_requests", new SupabaseRestAdapter<EvidenceRequestRecord>(config), auditEvents),
+    evidenceAlerts: new TenantRepository("evidence_alerts", new SupabaseRestAdapter<EvidenceAlertRecord>(config), auditEvents),
     tasks: new TenantRepository("tasks", new SupabaseRestAdapter<TaskRecord>(config), auditEvents),
     audits: new TenantRepository("audits", new SupabaseRestAdapter<AuditRecord>(config), auditEvents),
     assessments: new TenantRepository("assessments", new SupabaseRestAdapter<AssessmentRecord>(config), auditEvents),
@@ -97,6 +115,12 @@ export function createInMemoryRepositories(): ZigRepositories {
     risks: new TenantRepository("risks", new InMemoryDatabaseAdapter<RiskRecord>(), auditEvents),
     riskAssessments: new TenantRepository("risk_assessments", new InMemoryDatabaseAdapter<RiskAssessmentRecord>(), auditEvents),
     evidence: new TenantRepository("evidence", new InMemoryDatabaseAdapter<EvidenceRecord>(), auditEvents),
+    controlEvidence: new TenantRepository("control_evidence", new InMemoryDatabaseAdapter<ControlEvidenceRecord>(), auditEvents),
+    evidenceReviews: new TenantRepository("evidence_reviews", new InMemoryDatabaseAdapter<EvidenceReviewRecord>(), auditEvents),
+    evidenceCollections: new TenantRepository("evidence_collections", new InMemoryDatabaseAdapter<EvidenceCollectionRecord>(), auditEvents),
+    evidenceSources: new TenantRepository("evidence_sources", new InMemoryDatabaseAdapter<EvidenceSourceRecord>(), auditEvents),
+    evidenceRequests: new TenantRepository("evidence_requests", new InMemoryDatabaseAdapter<EvidenceRequestRecord>(), auditEvents),
+    evidenceAlerts: new TenantRepository("evidence_alerts", new InMemoryDatabaseAdapter<EvidenceAlertRecord>(), auditEvents),
     tasks: new TenantRepository("tasks", new InMemoryDatabaseAdapter<TaskRecord>(), auditEvents),
     audits: new TenantRepository("audits", new InMemoryDatabaseAdapter<AuditRecord>(), auditEvents),
     assessments: new TenantRepository("assessments", new InMemoryDatabaseAdapter<AssessmentRecord>(), auditEvents),
