@@ -97,20 +97,48 @@ export class EvidenceService extends BaseService<EvidenceRecord> {
     return this.evidenceRequestRepository.create(context, { ...record, status: record.status ?? "requested" });
   }
 
+  // Forward order of EVIDENCE_REQUEST_WORKFLOW.md's lifecycle. A 'rejected' review sends
+  // the request back to 'assigned' -- the one allowed backward transition.
+  private static readonly REQUEST_STATUS_ORDER: EvidenceRequestRecord["status"][] = [
+    "requested",
+    "assigned",
+    "collected",
+    "reviewed",
+    "approved",
+  ];
+
   /**
    * Advance an Evidence Request's status per EVIDENCE_REQUEST_WORKFLOW.md's transition
-   * rules: requested -> assigned -> collected -> reviewed -> approved, with a
-   * 'rejected' review sending the request back to 'assigned' rather than forward (the
-   * caller is responsible for passing 'assigned' as nextStatus in that case -- this method
-   * enforces the transition is one of the documented states, not the rejection branch
-   * itself, which depends on evidence_reviews data this method does not query).
+   * rules: requested -> assigned -> collected -> reviewed -> approved, one step at a time,
+   * or reviewed -> assigned on rejection. Rejects any other jump (e.g. requested ->
+   * approved) so a request can't appear approved without having gone through assignment,
+   * collection, and review.
    */
-  advanceRequestStatus(
+  async advanceRequestStatus(
     context: TenantContext,
     requestId: string,
     nextStatus: EvidenceRequestRecord["status"],
     patch: Partial<Pick<EvidenceRequestRecord, "resultingEvidenceId">> = {},
   ): Promise<EvidenceRequestRecord | null> {
+    const requests = await this.evidenceRequestRepository.findMany(context, { filters: { id: requestId } });
+    const current = requests[0];
+    if (!current) {
+      return null;
+    }
+
+    const currentIndex = EvidenceService.REQUEST_STATUS_ORDER.indexOf(current.status);
+    const nextIndex = EvidenceService.REQUEST_STATUS_ORDER.indexOf(nextStatus);
+    const isForwardStep = nextIndex === currentIndex + 1;
+    const isRejectionRollback = current.status === "reviewed" && nextStatus === "assigned";
+
+    if (!isForwardStep && !isRejectionRollback) {
+      throw new Error(
+        `Invalid evidence request transition: ${current.status} -> ${nextStatus}. ` +
+          `Expected the next step in requested -> assigned -> collected -> reviewed -> approved, ` +
+          `or reviewed -> assigned on rejection.`,
+      );
+    }
+
     return this.evidenceRequestRepository.update(context, requestId, { status: nextStatus, ...patch });
   }
 
@@ -154,13 +182,28 @@ export class EvidenceService extends BaseService<EvidenceRecord> {
       this.evidenceReviewRepository.findMany(context, { filters: { evidenceId: evidence.id } }),
     ]);
 
-    const latestReview = reviews.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0];
+    // The supabase repository adapter only camel-cases keys, not value types, so
+    // createdAt/reviewedAt may arrive as ISO strings rather than Date instances at
+    // runtime even though the type says Date. Normalize before comparing.
+    const toTime = (value: Date | string) => new Date(value).getTime();
+    const latestReview = [...reviews].sort((a, b) => toTime(b.createdAt) - toTime(a.createdAt))[0];
     const primaryMapping = mappings.find((mapping) => mapping.coverage === "primary" || mapping.coverage === "sufficient") ?? mappings[0];
 
+    // Check every control this evidence is mapped to (via the canonical control_evidence
+    // table, plus the legacy evidence.controlId for evidence that predates that mapping)
+    // for a framework crosswalk -- not just the legacy single-control field, so evidence
+    // reused across controls via createMapping() doesn't lose the Mapping component.
+    const candidateControlIds = Array.from(
+      new Set([evidence.controlId, ...mappings.map((mapping) => mapping.controlId)].filter((id): id is string => Boolean(id))),
+    );
     let hasFrameworkMapping = false;
-    if (evidence.controlId) {
-      const frameworkMappings = await this.controlMappingRepository.findMany(context, { filters: { sourceControlId: evidence.controlId } });
-      hasFrameworkMapping = frameworkMappings.length > 0;
+    if (candidateControlIds.length > 0) {
+      const frameworkMappingResults = await Promise.all(
+        candidateControlIds.map((controlId) =>
+          this.controlMappingRepository.findMany(context, { filters: { sourceControlId: controlId } }),
+        ),
+      );
+      hasFrameworkMapping = frameworkMappingResults.some((result) => result.length > 0);
     }
 
     return computeEvidenceHealthScore({
