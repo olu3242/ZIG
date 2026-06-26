@@ -200,6 +200,63 @@ export interface Evidence {
   status: EvidenceStatus;
   submittedById?: string;
   submittedAt?: Date;
+  health?: EvidenceHealthState;
+  healthScore?: number;
+  expiresAt?: Date;
+  evidenceTypeId?: string;
+}
+
+// Canonical persisted Evidence Health vocabulary -- the deduplicated union of
+// EvidenceManagementEngine's 6 states and AutonomousEvidenceEngine's 5 states, per
+// docs/trust-os/evidence-os/EVIDENCE_HEALTH_MODEL.md and
+// docs/trust-os/runtime-convergence/TRUST_OS_DATABASE_ALIGNMENT.md (Contradiction 1).
+// Neither engine's own type is replaced; this is the persisted superset both engines'
+// outputs map into via the routing/adapter layer.
+export type EvidenceHealthState =
+  | "missing"
+  | "pending_review"
+  | "rejected"
+  | "approved"
+  | "current"
+  | "expired"
+  | "fresh"
+  | "expiring";
+
+export type EvidenceSourceType = "policy" | "procedure" | "standard" | "assessment" | "audit_report" | "manual_upload" | "integration";
+export type EvidenceDiscoveredVia = "manual" | "evidence_discovery_engine";
+
+export interface EvidenceSourceRecordShape {
+  id: string;
+  tenantId: string;
+  evidenceId: string;
+  sourceType: EvidenceSourceType;
+  sourceRefId?: string;
+  discoveredVia: EvidenceDiscoveredVia;
+}
+
+export type EvidenceRequestStatus = "requested" | "assigned" | "collected" | "reviewed" | "approved";
+
+export interface EvidenceRequestRecordShape {
+  id: string;
+  tenantId: string;
+  controlId: string;
+  requestedFromUserId?: string;
+  collectionId?: string;
+  status: EvidenceRequestStatus;
+  dueAt?: Date;
+  resultingEvidenceId?: string;
+}
+
+export type EvidenceAlertType = "expiring" | "expired" | "missing";
+
+export interface EvidenceAlertRecordShape {
+  id: string;
+  tenantId: string;
+  evidenceId: string;
+  alertType: EvidenceAlertType;
+  triggeredAt: Date;
+  acknowledgedAt?: Date;
+  acknowledgedBy?: string;
 }
 
 export interface Task {

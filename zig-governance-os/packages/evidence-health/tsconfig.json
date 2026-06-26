@@ -9,13 +9,6 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "paths": {
-      "@zig/types": ["../types/src/index.ts"],
-      "@zig/data-access": ["../data-access/src/index.ts"],
-      "@zig/billing": ["../billing/src/index.ts"],
-      "@zig/automation": ["../automation/src/index.ts"],
-      "@zig/imports": ["../imports/src/index.ts"],
-      "@zig/exports": ["../exports/src/index.ts"],
-      "@zig/evidence-health": ["../evidence-health/src/index.ts"],
       "@zig/evidence": ["../evidence/src/index.ts"],
       "@zig/autonomous-evidence": ["../autonomous-evidence/src/index.ts"]
     }

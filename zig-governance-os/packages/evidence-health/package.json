@@ -1,5 +1,5 @@
 {
-  "name": "@zig/services",
+  "name": "@zig/evidence-health",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,14 +10,8 @@
     "test": "npm run typecheck"
   },
   "dependencies": {
-    "@zig/automation": "0.1.0",
-    "@zig/billing": "0.1.0",
-    "@zig/data-access": "0.1.0",
-    "@zig/evidence-health": "0.1.0",
-    "@zig/exports": "0.1.0",
-    "@zig/framework-engine": "0.1.0",
-    "@zig/imports": "0.1.0",
-    "@zig/types": "0.1.0"
+    "@zig/autonomous-evidence": "0.1.0",
+    "@zig/evidence": "0.1.0"
   },
   "devDependencies": {
     "typescript": "^5"
