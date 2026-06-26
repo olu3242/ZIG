@@ -31,3 +31,15 @@ None (foundational); first Control Matrix entry appears in 03_CONTROL_TO_FRAMEWO
 ## Visual Assets Required
 - Frameworks-as-Metadata Model Diagram
 - Implemented-vs-Compliant Distinction Diagram
+
+## Required Diagram
+- Control Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Framework Crosswalk Table (general) (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Using the Framework Crosswalk Table, place CloudPay's SOC 2 and ISO 27001 control families side by side and identify one control that could satisfy requirements in both, then trace it through the Control Lifecycle to show where evidence makes it "compliant" rather than merely "implemented."

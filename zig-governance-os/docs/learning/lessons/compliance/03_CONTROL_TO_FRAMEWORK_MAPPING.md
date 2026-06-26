@@ -30,3 +30,15 @@ Control Matrix (cross-framework mapping section) — see `docs/artifacts/` Contr
 ## Visual Assets Required
 - Control Mapping Rationale Template Diagram
 - False-Equivalence Risk Example Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Table instead
+
+## Required Workflow
+- Not applicable for this lesson — see Required Table instead
+
+## Required Table
+- ISO ↔ NIST ↔ SOC 2 Crosswalk (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Map CloudPay's access-review control onto the ISO ↔ NIST ↔ SOC 2 Crosswalk, write a mapping rationale for each framework row, and flag any row where the requirements look equivalent but differ in scope.

@@ -16,3 +16,7 @@ export * from "./billing";
 export * from "./automation";
 export * from "./imports";
 export * from "./exports";
+export * from "./CompetencyService";
+export * from "./ScenarioAttemptService";
+export * from "./PortfolioArtifactService";
+export * from "./LearningImportService";

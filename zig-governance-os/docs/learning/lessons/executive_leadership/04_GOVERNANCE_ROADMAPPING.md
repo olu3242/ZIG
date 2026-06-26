@@ -31,3 +31,15 @@ Board Report (roadmap section) — see `docs/artifacts/` Board Report template.
 ## Visual Assets Required
 - 12-Month Governance Roadmap Timeline
 - Roadmap Dependency Sequencing Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow instead
+
+## Required Workflow
+- Board Reporting Flow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for 12-month roadmap sequencing; see Required Workflow instead
+
+## Required Visual Exercise
+- Sequence GovSec's roadmap items (closing the "Respond Function Controls" gap, formalizing board reporting) by dependency, then place the roadmap milestone into the Board Reporting Flow at the point where it would be presented for board review.

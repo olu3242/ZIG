@@ -30,3 +30,16 @@ Risk Register (severity column populated) — see `docs/artifacts/` Risk Registe
 ## Visual Assets Required
 - Risk Scoring Matrix (5x5 grid)
 - Risk Heatmap
+
+## Required Diagram
+- Not applicable for this lesson — see Required Table instead
+
+## Required Workflow
+- Not applicable for this lesson — see Required Table instead
+
+## Required Table
+- Risk Scoring Matrix (see `HEATMAP_LIBRARY.md`)
+- Risk Heatmap (see `HEATMAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Score ManufacturX's "No Tested DR Failover for Plant 1" risk against the Risk Scoring Matrix to derive its severity band, then plot it on the Risk Heatmap alongside its other risks and justify its placement.

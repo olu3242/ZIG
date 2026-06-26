@@ -30,3 +30,15 @@ Risk Register (monitoring/trend section) — see `docs/artifacts/` Risk Register
 ## Visual Assets Required
 - Risk Trend-Over-Time Chart
 - Reassessment Trigger Flow Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Table instead
+
+## Required Workflow
+- Not applicable for this lesson — no indexed workflow entry exists yet for risk monitoring/reassessment; see Required Table instead
+
+## Required Table
+- Risk Heatmap (see `HEATMAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Re-plot ManufacturX's risk register on the Risk Heatmap before and after the network segmentation control is implemented, and explain how the shift feeds the governance score's `riskTreatment` input.

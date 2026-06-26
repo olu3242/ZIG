@@ -30,3 +30,15 @@ Vendor Assessment (scoring section) — see `docs/artifacts/` Vendor Assessment 
 ## Visual Assets Required
 - Vendor Third-Party Risk Model Diagram
 - Vendor Portfolio Risk Ranking Chart
+
+## Required Diagram
+- Third-Party Risk Map (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram/Table instead
+
+## Required Table
+- Vendor Risk Heatmap (see `HEATMAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Plot RetailNova's payment processors and logistics vendors onto the Vendor Risk Heatmap with the data-access multiplier applied, then cross-reference against the Third-Party Risk Map to rank which vendors require enhanced ongoing monitoring.

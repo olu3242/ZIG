@@ -30,3 +30,15 @@ None (foundational); first Control Matrix entry appears in 02_CONTROL_DESIGN_PRI
 ## Visual Assets Required
 - Control Lifecycle Status Diagram
 - Governance-vs-Operations Boundary Diagram
+
+## Required Diagram
+- Control Lifecycle (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for governance-vs-operations boundary content; see Required Diagram instead
+
+## Required Visual Exercise
+- Place each of CloudPay's controls (planned and needs_evidence states) on the Control Lifecycle diagram and identify which ones cannot progress further without an assigned owner.

@@ -29,3 +29,16 @@ Control Matrix (initial entries) — see `docs/artifacts/` Control Matrix templa
 ## Visual Assets Required
 - Control Statement Quality Checklist
 - Control-to-Risk-to-Asset Linkage Diagram
+
+## Required Diagram
+- Threat Flow (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Vulnerability Management Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- MITRE Mapping Table (see `TABLE_LIBRARY.md`)
+- Control Coverage Matrix (see `FRAMEWORK_MAP_LIBRARY.md`)
+
+## Required Visual Exercise
+- Trace a threat against CloudPay's "Access Review Quarterly" control through the Threat Flow diagram, locate the matching technique on the MITRE Mapping Table, and confirm the control's testability by walking it through the Vulnerability Management Workflow.

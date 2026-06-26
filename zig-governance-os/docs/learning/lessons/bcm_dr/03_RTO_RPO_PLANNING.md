@@ -30,3 +30,15 @@ BIA (RTO/RPO section) — see `docs/artifacts/` BIA template.
 ## Visual Assets Required
 - RTO/RPO Definition Diagram
 - Target-vs-Actual Recovery Capability Gap Chart
+
+## Required Diagram
+- Not applicable for this lesson — no indexed diagram entry exists yet for RTO/RPO definition content; see Required Workflow instead
+
+## Required Workflow
+- BIA Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for RTO/RPO gap content; see Required Workflow instead
+
+## Required Visual Exercise
+- Using the BIA Workflow's downtime-cost output for Plant 1, derive an RTO and RPO target, then state the current gap given Plant 1 has no tested failover at all.

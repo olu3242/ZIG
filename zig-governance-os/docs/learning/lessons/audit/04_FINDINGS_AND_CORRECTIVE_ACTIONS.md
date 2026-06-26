@@ -31,3 +31,15 @@ Audit Report (findings section) — see `docs/artifacts/` Audit Report template.
 ## Visual Assets Required
 - Finding Escalation Process Diagram
 - Finding-to-Task Linkage Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow/Table instead
+
+## Required Workflow
+- Finding Escalation Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Finding Severity Decision Tree (see `DECISION_TREE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Write the finding for HealthBridge's incomplete PHI access logging, run it through the Finding Severity Decision Tree to set severity, then route it through the Finding Escalation Workflow to a corrective-action Task with an owner and target date.

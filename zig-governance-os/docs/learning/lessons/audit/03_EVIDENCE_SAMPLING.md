@@ -31,3 +31,15 @@ None directly; sampling output feeds the Audit Report in 05_AUDIT_REPORTING.
 ## Visual Assets Required
 - Evidence Collection Workflow Diagram
 - Sampling Methodology Decision Diagram
+
+## Required Diagram
+- Evidence Collection Workflow Diagram (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for sampling methodology; see Required Diagram instead
+
+## Required Visual Exercise
+- Walk HealthBridge's "Q1 Access Review Export" evidence request through the Evidence Collection Workflow Diagram (Request → Collect → Validate → Link to Control) and determine a defensible sample size given the access-log population size and control criticality.

@@ -30,3 +30,15 @@ None (foundational); first BIA appears in 02_BUSINESS_IMPACT_ANALYSIS.
 ## Visual Assets Required
 - BCM-vs-DR Scope Diagram
 - Asset-Criticality-to-Continuity-Priority Diagram
+
+## Required Diagram
+- Dependency Map (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Not applicable for this lesson — see Required Diagram instead
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for BCM-vs-DR scope content; see Required Diagram instead
+
+## Required Visual Exercise
+- Using the Dependency Map for ManufacturX's OT assets, rank which assets need a continuity plan first based on criticality and upstream/downstream dependency count.

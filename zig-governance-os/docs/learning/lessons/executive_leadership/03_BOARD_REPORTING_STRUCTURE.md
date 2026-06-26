@@ -29,3 +29,15 @@ Board Report (draft) — see `docs/artifacts/` Board Report template.
 ## Visual Assets Required
 - Board Report Structure Diagram
 - Reporting Cadence Decision Diagram
+
+## Required Diagram
+- Governance Dashboard (see `DIAGRAM_LIBRARY.md`)
+
+## Required Workflow
+- Board Reporting Flow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Not applicable for this lesson — no indexed table entry exists yet for reporting-cadence-by-maturity content; see Required Diagram/Workflow instead
+
+## Required Visual Exercise
+- Build GovSec's first board report by walking the Board Reporting Flow end to end, pulling its score trend and top risks from the Governance Dashboard diagram, and deciding what to exclude that would belong in a compliance report instead.

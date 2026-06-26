@@ -31,3 +31,16 @@ None directly; plan is tested in 05_DISASTER_RECOVERY_TESTING.
 ## Visual Assets Required
 - Continuity Plan Structure Diagram
 - Single-Point-of-Failure Identification Diagram
+
+## Required Diagram
+- Not applicable for this lesson — see Required Workflow/Table instead
+
+## Required Workflow
+- Recovery Workflow (see `WORKFLOW_LIBRARY.md`)
+
+## Required Table
+- Crisis Escalation Chart (see `TABLE_LIBRARY.md`)
+- Crisis Escalation Decision Tree (see `DECISION_TREE_LIBRARY.md`)
+
+## Required Visual Exercise
+- Design a continuity plan for ManufacturX's flat OT/IT network segmentation single point of failure by walking the Recovery Workflow end to end, then use the Crisis Escalation Chart and Crisis Escalation Decision Tree to assign notification authority by severity.
